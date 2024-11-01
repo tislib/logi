@@ -49,9 +49,9 @@ api MyAPI {
 
 ```logi
 entity User {
-    id: int
-    name: string
-    email: string
+    id: int [id, required]
+    name: string [required, default: "John Doe"]
+    email: string [transient]
 }
 
 repository UserRepository User {
