@@ -87,32 +87,13 @@ Create a macro to handle events(which does not exists in language)
 
 ```logi-macro
 macro eventHandler {
+    kind: Syntax
+    args (name Name)
+ 
     syntax {
-        args (name Name) 
-        block {
-            on <eventName Name>() CodeBlock
-        }
-    }
-    
-    target {
-        allow: [root]
-    }
-    
-    handler {
-        var definition Definition
-        
-        definition.canInstantiate = false
-        definition.name = name
-        definition.package = this.package
-        
-        for (onBlock in this.block.on) {
-            var event Event
-            event.name = onBlock.eventName
-            event.code = onBlock.code
-            definition.events.add(event)
-        }
-        
-        this.syntax.addDefinition(definition)
+       on <eventName Name>() CodeBlock
+       before <eventName Name>() <returnType Type> CodeBlock
+       before <eventName Name>() CodeBlock
     }
 }
 ```
@@ -189,9 +170,33 @@ For definition of data
         <nestedProperty2>: <nestedValue2>
     }
 }
+
+<elementType> <elementName> {
+    <property1> <value1>
+    <property2> <value2>
+    <property3> {
+        <nestedProperty1> <nestedValue1>
+        <nestedProperty2> <nestedValue2>
+    }
+}
+
+# With commas
+struct User {
+    id: int
+    name: string
+    email: string
+}
+
+# Without commas
+struct User {
+    id int
+    name string
+    email string
+    tags string[]
+}
 ```
 
-For definition of data type
+For definition of a data type
 
 ```
 <elementType> <elementName> {
@@ -201,6 +206,22 @@ For definition of data type
         <nestedProperty1>: <type3>
         <nestedProperty2>: <type4>
     }
+}
+
+# With commas
+User user1 {
+    id: 33
+    name: "John Doe"
+    email: "AbcX"
+    tags: ["tag1", "tag2"]
+}
+
+# Without commas
+User user1 {
+    id 33
+    name "John Doe"
+    email "AbcX"
+    tags ["tag1", "tag2"]
 }
 ```
 
@@ -213,13 +234,192 @@ For definition of code block
 }
 ```
 
+### Full definition
+
+#### Rules
+1. Each Statement should be on a single line. This is for both logi and logi-macro files.
+
+```
+<macroName> <definitionName> 
+```
+
 ## Macros
 
 Macros are the heart of Logi language. They are used to define custom elements, properties, and behaviors.
 
+There are different types of macros:
+
+1. Syntax macros
+2. Helper macros
+3. Marker macros
+
+### Syntax macros
+
+Syntax macros are top level macros that define new syntax elements in the language.
+
+#### Examples:
+
+##### Entity macro
+
+Macro definition:
+
+```logi
+macro entity {
+    kind Syntax
+    
+    syntax {
+       <property Name> <type Type> [id, required, default: <defaultValue>, unique]
+    }
+}
 ```
-macro 
 
+Usage:
 
+```logi
+entity User {
+    id: int [id, required]
+    name: string [required, default: "John Doe"]
+    email: string [transient]
+}
+
+entity Product {
+    id: int [id, required]
+    name: string [required]
+    price: float [required]
+    owner: User [required]
+    description: string
+}
+```
+
+##### Formula macro
+
+Let's imagine, we want to store formulas in our system, later we can use them in different places.
+
+```logi
+macro formula {
+    kind Syntax
+    
+    syntax {
+       args (...<argName Type<Number>>)
+       expr Expression
+    }
+}
+```
+
+Usage:
+
+```logi
+formula AddTwoNumbers {
+    args (a int, b int)
+    expr a + b
+}
+```
+
+##### AI model macro
+
+Let's imagine, we want to store AI models in our system, later we can use them in different places.
+
+```logi
+macro model {
+    kind Syntax
+    
+    defintion {
+       ModelKind <Enum[SEQUENTIAL, RECURRENT]>
+       Activation <Enum[RELU, SIGMOID, TANH, SOFTMAX]>
+       
+       Dense (<length int>, <inputShape int[]>, <activation Activation>)
+       Conv2D (<filters int>, <kernelSize int[]>, <activation Activation>)
+       MaxPooling2D (<poolSize int[]>)
+       
+       Layer <oneOf[Dense, Conv2D, MaxPooling2D]>
+    }
+    
+    syntax {
+       kind ModelKind
+       layers Layer[]
+       output Layer
+    }
+}
+```
+
+Usage:
+
+```logi
+model MyModel {
+    kind SEQUENTIAL
+    layers [
+        Dense(128, [784], RELU),
+        Dense(10, [128], SOFTMAX)
+    ]
+    output Dense(10, [128], SOFTMAX)
+}
+```
+
+##### Html macro
+You can define html elements with help of macros in Logi.
+
+```logi
+macro html {
+    kind Syntax
+    
+    defintion {
+        Head {
+            Title <string>
+            Meta {
+                Charset <string>
+                Name <string>
+                Content <string>
+            }
+        }
+
+        Body {
+          ...Element
+        }
+        
+        H1 {
+            ...Element
+        }
+        
+        H1 <string>
+        
+        // Elements
+        RootElement <oneOf[Head, Body]>
+        Element <oneOf[H1, P]>
+    }
+    
+    syntax {
+       Head [required]
+       Body [required]
+    }
+}
+```
+
+Usage:
+
+```logi
+html MyPage {
+    Head {
+        Title "My Page"
+        Meta {
+            Charset "UTF-8"
+            Name "description"
+            Content "This is my page"
+        }
+    }
+    Body {
+        H1 "Hello, World!"
+        P "This is a paragraph."
+        
+        P {
+            "This is another paragraph."
+            Div {
+                "This is a div."
+            }
+        }
+    }
+}
+```
+
+#### General Principles for Syntax Macros
 
 

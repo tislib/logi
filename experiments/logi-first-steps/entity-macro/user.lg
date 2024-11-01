@@ -1,0 +1,38 @@
+macro entity {
+    kind Syntax
+
+    syntax {
+       <property Name> <type Type> [id, required, default: <defaultValue>, unique]
+    }
+
+    handler {
+        var definition Definition
+
+        definition.canInstantiate = true
+        definition.name = entityType
+        definition.package = this.package
+
+        for (property in this.syntax.properties) {
+            var propertyDefinition PropertyDefinition
+            propertyDefinition.name = property.name
+            propertyDefinition.type = property.type
+            propertyDefinition.id = property.id
+
+            if (property.required) {
+                propertyDefinition.labels.add("required", "true")
+            }
+
+            if (property.default) {
+                propertyDefinition.labels.add("default", property.default)
+            }
+
+            if (property.unique) {
+                propertyDefinition.labels.add("unique", "true")
+            }
+
+            definition.properties.add(propertyDefinition)
+        }
+
+        this.syntax.addDefinition(definition)
+    }
+}

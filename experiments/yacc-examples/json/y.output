@@ -1,0 +1,304 @@
+
+state 0
+	$accept: .json $end 
+
+	LS  shift 16
+	LC  shift 15
+	TRUE  shift 12
+	FALSE  shift 13
+	NULL  shift 14
+	STRING  shift 10
+	NUMBER  shift 11
+	.  error
+
+	true  goto 5
+	false  goto 6
+	value  goto 2
+	number  goto 4
+	null  goto 7
+	str  goto 3
+	object  goto 8
+	array  goto 9
+	json  goto 1
+
+state 1
+	$accept:  json.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	json:  value.    (1)
+
+	.  reduce 1 (src line 37)
+
+
+state 3
+	value:  str.    (2)
+
+	.  reduce 2 (src line 43)
+
+
+state 4
+	value:  number.    (3)
+
+	.  reduce 3 (src line 48)
+
+
+state 5
+	value:  true.    (4)
+
+	.  reduce 4 (src line 52)
+
+
+state 6
+	value:  false.    (5)
+
+	.  reduce 5 (src line 56)
+
+
+state 7
+	value:  null.    (6)
+
+	.  reduce 6 (src line 60)
+
+
+state 8
+	value:  object.    (7)
+
+	.  reduce 7 (src line 64)
+
+
+state 9
+	value:  array.    (8)
+
+	.  reduce 8 (src line 68)
+
+
+state 10
+	str:  STRING.    (17)
+
+	.  reduce 17 (src line 114)
+
+
+state 11
+	number:  NUMBER.    (18)
+
+	.  reduce 18 (src line 120)
+
+
+state 12
+	true:  TRUE.    (19)
+
+	.  reduce 19 (src line 126)
+
+
+state 13
+	false:  FALSE.    (20)
+
+	.  reduce 20 (src line 132)
+
+
+state 14
+	null:  NULL.    (21)
+
+	.  reduce 21 (src line 138)
+
+
+state 15
+	object:  LC.object_data RC 
+	object:  LC.RC 
+
+	RC  shift 18
+	STRING  shift 19
+	.  error
+
+	object_data  goto 17
+
+state 16
+	array:  LS.array_data RS 
+	array:  LS.RS 
+
+	LS  shift 16
+	RS  shift 21
+	LC  shift 15
+	TRUE  shift 12
+	FALSE  shift 13
+	NULL  shift 14
+	STRING  shift 10
+	NUMBER  shift 11
+	.  error
+
+	true  goto 5
+	false  goto 6
+	value  goto 22
+	number  goto 4
+	null  goto 7
+	str  goto 3
+	object  goto 8
+	array  goto 9
+	array_data  goto 20
+
+state 17
+	object:  LC object_data.RC 
+	object_data:  object_data.COMMA STRING COLON value 
+
+	COMMA  shift 24
+	RC  shift 23
+	.  error
+
+
+state 18
+	object:  LC RC.    (10)
+
+	.  reduce 10 (src line 78)
+
+
+state 19
+	object_data:  STRING.COLON value 
+
+	COLON  shift 25
+	.  error
+
+
+state 20
+	array:  LS array_data.RS 
+	array_data:  array_data.COMMA value 
+
+	COMMA  shift 27
+	RS  shift 26
+	.  error
+
+
+state 21
+	array:  LS RS.    (14)
+
+	.  reduce 14 (src line 99)
+
+
+state 22
+	array_data:  value.    (15)
+
+	.  reduce 15 (src line 104)
+
+
+state 23
+	object:  LC object_data RC.    (9)
+
+	.  reduce 9 (src line 73)
+
+
+state 24
+	object_data:  object_data COMMA.STRING COLON value 
+
+	STRING  shift 28
+	.  error
+
+
+state 25
+	object_data:  STRING COLON.value 
+
+	LS  shift 16
+	LC  shift 15
+	TRUE  shift 12
+	FALSE  shift 13
+	NULL  shift 14
+	STRING  shift 10
+	NUMBER  shift 11
+	.  error
+
+	true  goto 5
+	false  goto 6
+	value  goto 29
+	number  goto 4
+	null  goto 7
+	str  goto 3
+	object  goto 8
+	array  goto 9
+
+state 26
+	array:  LS array_data RS.    (13)
+
+	.  reduce 13 (src line 94)
+
+
+state 27
+	array_data:  array_data COMMA.value 
+
+	LS  shift 16
+	LC  shift 15
+	TRUE  shift 12
+	FALSE  shift 13
+	NULL  shift 14
+	STRING  shift 10
+	NUMBER  shift 11
+	.  error
+
+	true  goto 5
+	false  goto 6
+	value  goto 30
+	number  goto 4
+	null  goto 7
+	str  goto 3
+	object  goto 8
+	array  goto 9
+
+state 28
+	object_data:  object_data COMMA STRING.COLON value 
+
+	COLON  shift 31
+	.  error
+
+
+state 29
+	object_data:  STRING COLON value.    (11)
+
+	.  reduce 11 (src line 83)
+
+
+state 30
+	array_data:  array_data COMMA value.    (16)
+
+	.  reduce 16 (src line 109)
+
+
+state 31
+	object_data:  object_data COMMA STRING COLON.value 
+
+	LS  shift 16
+	LC  shift 15
+	TRUE  shift 12
+	FALSE  shift 13
+	NULL  shift 14
+	STRING  shift 10
+	NUMBER  shift 11
+	.  error
+
+	true  goto 5
+	false  goto 6
+	value  goto 32
+	number  goto 4
+	null  goto 7
+	str  goto 3
+	object  goto 8
+	array  goto 9
+
+state 32
+	object_data:  object_data COMMA STRING COLON value.    (12)
+
+	.  reduce 12 (src line 88)
+
+
+14 terminals, 12 nonterminals
+22 grammar rules, 33/16000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+61 working sets used
+memory: parser 47/240000
+20 extra closures
+45 shift entries, 1 exceptions
+15 goto entries
+28 entries saved by goto default
+Optimizer space used: output 39/240000
+39 table entries, 0 zero
+maximum spread: 14, maximum offset: 31
