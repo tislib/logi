@@ -25,10 +25,10 @@ func convertNodeToMacroAst(node yaccMacroNode) (*ast.MacroAst, error) {
 	return res, nil
 }
 
-func convertMacro(child yaccMacroNode) (*ast.Macro, error) {
-	var signature = child.children[0]
+func convertMacro(macroNode yaccMacroNode) (*ast.Macro, error) {
+	var signature = macroNode.children[0]
 	var name = signature.children[0]
-	var body = signature.children[1]
+	var body = macroNode.children[1]
 	var kind = body.children[0].value.(string)
 
 	var result = new(ast.Macro)

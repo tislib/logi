@@ -40,6 +40,7 @@ file: macro eol_allowed {
 	registerRootNode(yylex, $1)
 }
 | file eol_allowed
+| eol_allowed
 | file macro eol_allowed {
 	registerRootNode(yylex, $2)
 }
@@ -58,9 +59,9 @@ macro_signature: MacroKeyword token_identifier
 macro_body: BraceOpen eol_allowed
 	token_identifier token_identifier eol_required
 
-	definition_definition eol_required
+	definition_definition eol_allowed
 
-	syntax_definition eol_required
+	syntax_definition eol_allowed
 
 	BraceClose eol_allowed
 {
@@ -68,7 +69,7 @@ macro_body: BraceOpen eol_allowed
 	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4), $6, $8)
 };
 
-definition_definition: DefinitionKeyword syntax_body
+definition_definition: DefinitionKeyword syntax_body eol_required
 {
 	$$ = appendNode(NodeOpSyntax, $2)
 }
@@ -77,7 +78,7 @@ definition_definition: DefinitionKeyword syntax_body
 	$$ = appendNode(NodeOpDefinition)
 };
 
-syntax_definition: SyntaxKeyword syntax_body
+syntax_definition: SyntaxKeyword syntax_body eol_required
 {
 	$$ = appendNode(NodeOpSyntax, $2)
 }

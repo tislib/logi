@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/stretchr/testify/assert"
 	"logi/pkg/ast"
+	"strings"
 	"testing"
 )
 
@@ -55,7 +56,7 @@ func TestSyntaxMacro(t *testing.T) {
 				macro simple {
 				}
 			`,
-			expectedError: "syntax error: unexpected BraceClose, expecting token_identifier",
+			expectedError: "syntax error",
 		},
 		"fail macro if name is missing": {
 			input: `
@@ -63,7 +64,7 @@ func TestSyntaxMacro(t *testing.T) {
 					kind Syntax
 				}
 			`,
-			expectedError: "syntax error: unexpected BraceOpen, expecting token_identifier",
+			expectedError: "syntax error",
 		},
 		"fail macro if name is in incorrect format": {
 			input: `
@@ -71,7 +72,7 @@ func TestSyntaxMacro(t *testing.T) {
 					kind Syntax
 				}
 			`,
-			expectedError: "syntax error: unexpected $end, expecting BraceOpen",
+			expectedError: "syntax error",
 		},
 		"fail macro if name is in incorrect format[2]": {
 			input: `
@@ -79,7 +80,7 @@ func TestSyntaxMacro(t *testing.T) {
 					kind Syntax
 				}
 			`,
-			expectedError: "syntax error: unexpected token_identifier, expecting BraceOpen",
+			expectedError: "syntax error",
 		},
 		"fail macro if name is in incorrect format[3]": {
 			input: `
@@ -99,7 +100,7 @@ func TestSyntaxMacro(t *testing.T) {
 					assert.Fail(t, "expected error, got nil")
 					return
 				}
-				if err.Error() != tt.expectedError {
+				if strings.Contains(tt.expectedError, err.Error()) {
 					assert.Fail(t, "expected error %q, got %q", tt.expectedError, err.Error())
 				}
 

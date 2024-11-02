@@ -67,8 +67,7 @@ func appendNodeTo(node *yaccMacroNode, child yaccMacroNode) yaccMacroNode {
 }
 
 func registerRootNode(parser yyLexer, n yaccMacroNode) {
-	children := parser.(*yyMakroLexerProxy).Node.children
-	parser.(*yyMakroLexerProxy).Node.children = append([]yaccMacroNode{n}, children...)
+	parser.(*yyMakroLexerProxy).Node.children = append(parser.(*yyMakroLexerProxy).Node.children, n)
 }
 
 func assertEqual(parser yyLexer, a, b interface{}, msg string) {
@@ -79,5 +78,5 @@ func assertEqual(parser yyLexer, a, b interface{}, msg string) {
 
 func init() {
 	yyErrorVerbose = true
-	//yyDebug = 5
+	yyDebug = 5
 }
