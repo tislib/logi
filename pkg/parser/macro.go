@@ -12,7 +12,7 @@ import ()
 //line macro.y:9
 type yySymType struct {
 	yys    int
-	node   yaccMacroNode
+	node   yaccNode
 	bool   bool
 	number interface{}
 	string string

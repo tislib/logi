@@ -7,7 +7,7 @@ import (
 %}
 
 %union {
-	node yaccMacroNode
+	node yaccNode
 	bool bool
 	number interface{}
 	string string
