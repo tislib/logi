@@ -100,6 +100,79 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with simple syntax and definition": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					definition {
+						Hello2 Hello3
+					}
+					
+					syntax {
+						Hello
+						Hello2 Hello3
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Definition: ast.Definition{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello2",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello3",
+											},
+										},
+									},
+								},
+							},
+						},
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello",
+											},
+										},
+									},
+								}, {
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello2",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello3",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {
