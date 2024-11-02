@@ -47,6 +47,9 @@ func convertMacro(macroNode yaccMacroNode) (*ast.Macro, error) {
 	for _, child := range body.children {
 		switch child.op {
 		case NodeOpSyntax:
+			if result.Kind != ast.MacroKindSyntax {
+				return nil, fmt.Errorf("syntax defined for macro of kind %s; but expected Syntax", result.Kind)
+			}
 			if len(child.children) != 0 {
 				syntaxBody, err := convertSyntaxBody(child.children[0])
 
@@ -57,6 +60,9 @@ func convertMacro(macroNode yaccMacroNode) (*ast.Macro, error) {
 				result.Syntax = ast.Syntax{Statements: syntaxBody}
 			}
 		case NodeOpDefinition:
+			if result.Kind != ast.MacroKindSyntax {
+				return nil, fmt.Errorf("definition defined for macro of kind %s; but expected Syntax", result.Kind)
+			}
 			if len(child.children) != 0 {
 				syntaxBody, err := convertSyntaxBody(child.children[0])
 
@@ -115,9 +121,26 @@ func convertSyntaxStatementElement(node yaccMacroNode) (*ast.SyntaxStatementElem
 	case NodeOpSyntaxKeywordElement:
 		result.Kind = ast.SyntaxStatementElementKindKeyword
 		result.KeywordDef = &ast.SyntaxStatementElementKeywordDef{Name: node.value.(string)}
+	case NodeOpSyntaxVariableKeywordElement:
+		result.Kind = ast.SyntaxStatementElementKindVariableKeyword
+		var varName = node.children[0].value.(string)
+		typeDef, err := convertTypeDefinition(node.children[1])
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert type definition: %w", err)
+		}
+
+		result.VariableKeyword = &ast.SyntaxStatementElementVariableKeyword{Name: varName, Type: *typeDef}
 	default:
 		return nil, fmt.Errorf("unexpected syntax statement element op: %s", node.op)
 	}
+
+	return result, nil
+}
+
+func convertTypeDefinition(node yaccMacroNode) (*ast.TypeDefinition, error) {
+	var result = new(ast.TypeDefinition)
+	result.Name = node.value.(string)
 
 	return result, nil
 }

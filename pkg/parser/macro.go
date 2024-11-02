@@ -73,7 +73,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line macro.y:122
+//line macro.y:135
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -84,56 +84,60 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 59
+const yyLast = 67
 
 var yyAct = [...]int8{
-	3, 35, 7, 9, 19, 11, 34, 36, 44, 13,
-	37, 36, 25, 36, 21, 17, 16, 28, 10, 23,
-	10, 5, 10, 24, 20, 20, 26, 30, 31, 5,
-	29, 10, 10, 10, 39, 21, 42, 38, 43, 41,
-	40, 32, 42, 15, 6, 45, 18, 12, 2, 1,
-	8, 33, 27, 22, 14, 4, 10, 0, 5,
+	3, 35, 7, 9, 19, 11, 34, 38, 38, 13,
+	48, 21, 40, 25, 17, 23, 16, 38, 28, 39,
+	39, 10, 10, 24, 10, 20, 5, 30, 31, 39,
+	29, 21, 10, 10, 42, 10, 45, 41, 15, 44,
+	43, 47, 32, 6, 5, 45, 20, 52, 49, 26,
+	51, 10, 46, 18, 12, 1, 2, 5, 8, 36,
+	37, 50, 33, 27, 22, 14, 4,
 }
 
 var yyPact = [...]int16{
-	34, 34, -3, -6, -3, -1000, 41, -6, -3, -6,
-	-1000, 32, -1000, -6, -1000, -3, 9, 40, 0, 11,
-	-1000, -1000, -3, 15, 8, 0, -3, -3, 15, -10,
-	7, -2, 0, 5, 1, -1000, -1000, -3, -10, -4,
-	1, -10, -1000, -6, -1000, -10,
+	33, 33, 20, -3, 20, -1000, 48, -3, 20, -3,
+	-1000, 27, -1000, -3, -1000, 20, 8, 47, 22, 7,
+	-1000, -1000, 20, 38, 9, 22, 20, 20, 38, -13,
+	11, 0, 22, 2, 1, -1000, -1000, -1000, -1000, 46,
+	20, -13, -2, 1, -13, -1000, 44, -3, -1000, -13,
+	30, -1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 48, 55, 54, 53, 52, 12, 51, 6, 1,
-	49, 0, 4,
+	0, 56, 66, 65, 64, 63, 13, 62, 61, 6,
+	1, 60, 59, 55, 0, 4,
 }
 
 var yyR1 = [...]int8{
-	0, 11, 11, 11, 12, 12, 10, 10, 10, 10,
+	0, 14, 14, 14, 15, 15, 13, 13, 13, 13,
 	1, 2, 3, 4, 4, 5, 5, 6, 7, 7,
-	7, 8, 8, 9,
+	7, 9, 9, 10, 10, 12, 11, 8,
 }
 
 var yyR2 = [...]int8{
 	0, 1, 2, 0, 1, 2, 2, 2, 1, 3,
 	3, 2, 11, 3, 0, 3, 0, 5, 2, 3,
-	0, 1, 2, 1,
+	0, 1, 2, 1, 1, 1, 4, 1,
 }
 
 var yyChk = [...]int16{
-	-1000, -10, -1, -11, -2, 24, 10, -11, -1, -11,
-	24, -11, 6, -11, -3, 11, -11, 6, 6, -12,
-	24, 24, -4, 8, -11, -6, 11, -5, 9, -12,
-	-11, -11, -6, -7, -8, -9, 6, 12, -12, -11,
-	-8, -12, -9, -11, 12, -12,
+	-1000, -13, -1, -14, -2, 24, 10, -14, -1, -14,
+	24, -14, 6, -14, -3, 11, -14, 6, 6, -15,
+	24, 24, -4, 8, -14, -6, 11, -5, 9, -15,
+	-14, -14, -6, -7, -9, -10, -12, -11, 6, 18,
+	12, -15, -14, -9, -15, -10, 6, -14, 12, -15,
+	-8, 6, 17,
 }
 
 var yyDef = [...]int8{
 	3, -2, 3, 8, 3, 1, 0, 7, 3, 6,
 	2, 0, 11, 9, 10, 3, 0, 0, 0, 14,
 	4, 5, 3, 0, 16, 0, 3, 3, 0, 13,
-	20, 0, 0, 3, 0, 21, 23, 3, 15, 0,
-	0, 18, 22, 12, 17, 19,
+	20, 0, 0, 3, 0, 21, 23, 24, 25, 0,
+	3, 15, 0, 0, 18, 22, 0, 12, 17, 19,
+	0, 27, 26,
 }
 
 var yyTok1 = [...]int8{
@@ -489,100 +493,112 @@ yydefault:
 
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line macro.y:39
+//line macro.y:40
 		{
 			registerRootNode(yylex, yyDollar[1].node)
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line macro.y:44
+//line macro.y:45
 		{
 			registerRootNode(yylex, yyDollar[2].node)
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line macro.y:50
+//line macro.y:51
 		{
 			yyVAL.node = appendNode(NodeOpMacro, yyDollar[1].node, yyDollar[3].node)
 		}
 	case 11:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line macro.y:55
+//line macro.y:56
 		{
 			yyVAL.node = appendNode(NodeOpSignature, newNode(NodeOpName, yyDollar[2].string))
 		}
 	case 12:
 		yyDollar = yyS[yypt-11 : yypt+1]
-//line macro.y:67
+//line macro.y:68
 		{
 			assertEqual(yylex, yyDollar[3].string, "kind", "First identifier in macro body must be 'kind'")
 			yyVAL.node = appendNode(NodeOpBody, newNode(NodeOpKind, yyDollar[4].string), yyDollar[6].node, yyDollar[8].node)
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line macro.y:73
+//line macro.y:74
 		{
 			yyVAL.node = appendNode(NodeOpDefinition, yyDollar[2].node)
 		}
 	case 14:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line macro.y:77
+//line macro.y:78
 		{
 			yyVAL.node = appendNode(NodeOpDefinition)
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line macro.y:82
+//line macro.y:83
 		{
 			yyVAL.node = appendNode(NodeOpSyntax, yyDollar[2].node)
 		}
 	case 16:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line macro.y:86
+//line macro.y:87
 		{
 			yyVAL.node = appendNode(NodeOpSyntax)
 		}
 	case 17:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line macro.y:92
+//line macro.y:93
 		{
 			yyVAL.node = yyDollar[3].node
 		}
 	case 18:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line macro.y:96
+//line macro.y:97
 		{
 			yyVAL.node = appendNode(NodeOpBody, yyDollar[1].node)
 		}
 	case 19:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line macro.y:99
+//line macro.y:100
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
 		}
 	case 20:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line macro.y:102
+//line macro.y:103
 		{
 			yyVAL.node = appendNode(NodeOpBody)
 		}
 	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line macro.y:108
+//line macro.y:109
 		{
 			yyVAL.node = appendNode(NodeOpSyntaxStatement, yyDollar[1].node)
 		}
 	case 22:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line macro.y:112
+//line macro.y:113
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
 		}
-	case 23:
+	case 25:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line macro.y:118
+//line macro.y:121
 		{
 			yyVAL.node = newNode(NodeOpSyntaxKeywordElement, yyDollar[1].string)
+		}
+	case 26:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line macro.y:126
+		{
+			yyVAL.node = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, yyDollar[2].string), yyDollar[3].node)
+		}
+	case 27:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line macro.y:131
+		{
+			yyVAL.node = newNode(NodeOpTypeDef, yyDollar[1].string)
 		}
 	}
 	goto yystack /* stack new state and value */

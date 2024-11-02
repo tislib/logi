@@ -20,7 +20,8 @@ import (
 
 %token DefinitionKeyword SyntaxKeyword MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content syntax_statement syntax_element
+%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content type_definition
+%type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword
 
 %start file
 
@@ -114,9 +115,21 @@ syntax_statement: syntax_element
 }
 ;
 
-syntax_element: token_identifier
+syntax_element: syntax_element_keyword | syntax_element_variable_keyword
+
+syntax_element_keyword: token_identifier
 {
 	$$ = newNode(NodeOpSyntaxKeywordElement, $1)
+}
+
+syntax_element_variable_keyword: LessThan token_identifier type_definition GreaterThan
+{
+	$$ = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, $2), $3)
+}
+
+type_definition: token_identifier
+{
+	$$ = newNode(NodeOpTypeDef, $1)
 }
 
 %%

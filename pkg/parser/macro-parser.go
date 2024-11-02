@@ -8,16 +8,18 @@ import (
 type NodeOp string
 
 const (
-	NodeOpFile                 = "file"
-	NodeOpMacro                = "macro"
-	NodeOpSignature            = "signature"
-	NodeOpName                 = "name"
-	NodeOpBody                 = "body"
-	NodeOpKind                 = "kind"
-	NodeOpSyntax               = "syntax"
-	NodeOpDefinition           = "definition"
-	NodeOpSyntaxStatement      = "syntax_statement"
-	NodeOpSyntaxKeywordElement = "syntax_keyword_element"
+	NodeOpFile                         = "file"
+	NodeOpMacro                        = "macro"
+	NodeOpSignature                    = "signature"
+	NodeOpName                         = "name"
+	NodeOpBody                         = "body"
+	NodeOpKind                         = "kind"
+	NodeOpSyntax                       = "syntax"
+	NodeOpTypeDef                      = "type_def"
+	NodeOpDefinition                   = "definition"
+	NodeOpSyntaxStatement              = "syntax_statement"
+	NodeOpSyntaxKeywordElement         = "syntax_keyword_element"
+	NodeOpSyntaxVariableKeywordElement = "syntax_variable_keyword_element"
 )
 
 type yaccMacroNode struct {
