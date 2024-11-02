@@ -3,7 +3,6 @@ package parser
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"strconv"
@@ -61,16 +60,6 @@ func (s *macroLexer) lex(lval *yySymType) int {
 		}
 
 		switch r {
-		case 't':
-			if s.scanTrue() {
-				lval.bool = true
-				return token_bool
-			}
-		case 'f':
-			if s.scanFalse() {
-				lval.bool = false
-				return token_bool
-			}
 		case '{':
 			return BraceOpen
 		case '}':
@@ -114,6 +103,12 @@ func (s *macroLexer) lex(lval *yySymType) int {
 					return DefinitionKeyword
 				case "syntax":
 					return SyntaxKeyword
+				case "false":
+					lval.bool = false
+					return token_bool
+				case "true":
+					lval.bool = true
+					return token_bool
 				default:
 					lval.string = identifier
 					return token_identifier
@@ -125,28 +120,6 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			return 0
 		}
 	}
-}
-
-func (s *macroLexer) scanTrue() bool {
-	return s.matchWord("true")
-}
-
-func (s *macroLexer) scanFalse() bool {
-	return s.matchWord("false")
-}
-
-func (s *macroLexer) scanNull() bool {
-	return s.matchWord("null")
-}
-
-func (s *macroLexer) matchWord(word string) bool {
-	for _, ch := range word {
-		if s.read() != ch {
-			s.Err = fmt.Errorf("expected %s", word)
-			return false
-		}
-	}
-	return true
 }
 
 func (s *macroLexer) scanStr() string {

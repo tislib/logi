@@ -52,7 +52,7 @@ const (
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
 	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"
-	SyntaxStatementElementKindMacro           SyntaxStatementElementKind = "Macro"
+	SyntaxStatementElementKindAttributeList   SyntaxStatementElementKind = "AttributeList"
 )
 
 type SyntaxStatementElement struct {
@@ -64,7 +64,7 @@ type SyntaxStatementElement struct {
 	KeywordDef      *SyntaxStatementElementKeywordDef      `json:"keywordDef,omitempty"`
 	VariableKeyword *SyntaxStatementElementVariableKeyword `json:"variableKeyword,omitempty"`
 	CodeBlock       *SyntaxStatementElementCodeBlock       `json:"codeBlock,omitempty"`
-	Macro           *SyntaxStatementElementMacro           `json:"macro,omitempty"`
+	AttributeList   *SyntaxStatementElementAttributeList   `json:"attributeList,omitempty"`
 }
 
 type SyntaxStatementElementDefinitionRef struct {
@@ -73,6 +73,10 @@ type SyntaxStatementElementDefinitionRef struct {
 
 type SyntaxStatementElementParameterList struct {
 	Parameters []SyntaxStatementElementParameter `json:"parameters,omitempty"`
+}
+
+type SyntaxStatementElementAttributeList struct {
+	Attributes []SyntaxStatementElementAttribute `json:"attributes,omitempty"`
 }
 
 type SyntaxStatementElementArgumentList struct {
@@ -103,7 +107,7 @@ type SyntaxStatementElementCodeBlock struct {
 	ReturnType TypeDefinition `json:"returnType,omitempty"`
 }
 
-type SyntaxStatementElementMacro struct {
-	Name  string `json:"name,omitempty"`
-	Value string `json:"value,omitempty"`
+type SyntaxStatementElementAttribute struct {
+	Name string         `json:"name,omitempty"`
+	Type TypeDefinition `json:"type,omitempty"`
 }

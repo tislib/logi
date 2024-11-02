@@ -460,6 +460,60 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with attributes statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						details [required bool, default string, number float]
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "details",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindAttributeList,
+											AttributeList: &ast.SyntaxStatementElementAttributeList{
+												Attributes: []ast.SyntaxStatementElementAttribute{
+													{
+														Name: "required",
+														Type: ast.TypeDefinition{
+															Name: "bool",
+														},
+													},
+													{
+														Name: "default",
+														Type: ast.TypeDefinition{Name: "string"},
+													},
+													{
+														Name: "number",
+														Type: ast.TypeDefinition{Name: "float"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {
@@ -519,7 +573,7 @@ func TestSyntaxMacro(t *testing.T) {
 				return
 			} else {
 				if err != nil {
-					assert.Fail(t, "unexpected error: %s", err)
+					assert.Fail(t, "unexpected error: %w", err)
 				}
 
 				if got == nil {
