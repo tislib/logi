@@ -44,5 +44,80 @@ func convertMacro(macroNode yaccMacroNode) (*ast.Macro, error) {
 		return nil, fmt.Errorf("unexpected kind value: %s", kind)
 	}
 
+	for _, child := range body.children {
+		switch child.op {
+		case NodeOpSyntax:
+			if len(child.children) != 0 {
+				syntaxBody, err := convertSyntaxBody(child.children[0])
+
+				if err != nil {
+					return nil, fmt.Errorf("failed to convert syntax: %w", err)
+				}
+
+				result.Syntax = ast.Syntax{Statements: syntaxBody}
+			}
+		case NodeOpDefinition:
+			if len(child.children) != 0 {
+				syntaxBody, err := convertSyntaxBody(child.children[0])
+
+				if err != nil {
+					return nil, fmt.Errorf("failed to convert definition: %w", err)
+				}
+
+				result.Definition = ast.Definition{Statements: syntaxBody}
+			}
+		}
+	}
+
+	return result, nil
+}
+
+func convertSyntaxBody(syntaxNode yaccMacroNode) ([]ast.SyntaxStatement, error) {
+	if syntaxNode.children == nil {
+		return nil, nil
+	}
+
+	var result []ast.SyntaxStatement
+
+	for _, child := range syntaxNode.children {
+		statement, err := convertSyntaxStatement(child)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert syntax statement: %w", err)
+		}
+
+		result = append(result, *statement)
+	}
+
+	return result, nil
+}
+
+func convertSyntaxStatement(child yaccMacroNode) (*ast.SyntaxStatement, error) {
+	var result = new(ast.SyntaxStatement)
+
+	for _, elementNode := range child.children {
+		element, err := convertSyntaxStatementElement(elementNode)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+		}
+
+		result.Elements = append(result.Elements, *element)
+	}
+
+	return result, nil
+}
+
+func convertSyntaxStatementElement(node yaccMacroNode) (*ast.SyntaxStatementElement, error) {
+	var result = new(ast.SyntaxStatementElement)
+
+	switch node.op {
+	case NodeOpSyntaxKeywordElement:
+		result.Kind = ast.SyntaxStatementElementKindKeyword
+		result.KeywordDef = &ast.SyntaxStatementElementKeywordDef{Name: node.value.(string)}
+	default:
+		return nil, fmt.Errorf("unexpected syntax statement element op: %s", node.op)
+	}
+
 	return result, nil
 }

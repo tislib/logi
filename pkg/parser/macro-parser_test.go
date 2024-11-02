@@ -51,6 +51,55 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with simple syntax": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						Hello
+						Hello2 Hello3
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello",
+											},
+										},
+									},
+								}, {
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello2",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "Hello3",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {

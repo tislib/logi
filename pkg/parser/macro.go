@@ -73,7 +73,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line macro.y:112
+//line macro.y:122
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -84,56 +84,56 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 52
+const yyLast = 59
 
 var yyAct = [...]int8{
-	3, 33, 7, 9, 25, 11, 19, 35, 41, 13,
-	36, 28, 17, 23, 10, 21, 16, 5, 15, 20,
-	10, 26, 10, 24, 6, 10, 10, 30, 31, 21,
-	10, 10, 29, 32, 38, 39, 18, 40, 5, 37,
-	12, 42, 2, 44, 8, 1, 34, 27, 43, 22,
-	14, 4,
+	3, 35, 7, 9, 19, 11, 34, 36, 44, 13,
+	37, 36, 25, 36, 21, 17, 16, 28, 10, 23,
+	10, 5, 10, 24, 20, 20, 26, 30, 31, 5,
+	29, 10, 10, 10, 39, 21, 42, 38, 43, 41,
+	40, 32, 42, 15, 6, 45, 18, 12, 2, 1,
+	8, 33, 27, 22, 14, 4, 10, 0, 5,
 }
 
 var yyPact = [...]int16{
-	14, 14, -7, -10, -7, -1000, 34, -10, -7, -10,
-	-1000, 7, -1000, -10, -1000, -7, 6, 30, -5, 5,
-	-1000, -1000, -7, 10, 2, -5, -7, -7, 10, -9,
-	1, -2, -5, -7, -7, -1000, -7, -9, -4, 1,
-	-10, -5, -7, -9, -10,
+	34, 34, -3, -6, -3, -1000, 41, -6, -3, -6,
+	-1000, 32, -1000, -6, -1000, -3, 9, 40, 0, 11,
+	-1000, -1000, -3, 15, 8, 0, -3, -3, 15, -10,
+	7, -2, 0, 5, 1, -1000, -1000, -3, -10, -4,
+	1, -10, -1000, -6, -1000, -10,
 }
 
 var yyPgo = [...]int8{
-	0, 42, 51, 50, 49, 47, 4, 1, 46, 45,
-	0, 6,
+	0, 48, 55, 54, 53, 52, 12, 51, 6, 1,
+	49, 0, 4,
 }
 
 var yyR1 = [...]int8{
-	0, 10, 10, 10, 11, 11, 9, 9, 9, 9,
+	0, 11, 11, 11, 12, 12, 10, 10, 10, 10,
 	1, 2, 3, 4, 4, 5, 5, 6, 7, 7,
-	7, 8,
+	7, 8, 8, 9,
 }
 
 var yyR2 = [...]int8{
 	0, 1, 2, 0, 1, 2, 2, 2, 1, 3,
-	3, 2, 11, 3, 0, 3, 0, 6, 1, 4,
-	0, 1,
+	3, 2, 11, 3, 0, 3, 0, 5, 2, 3,
+	0, 1, 2, 1,
 }
 
 var yyChk = [...]int16{
-	-1000, -9, -1, -10, -2, 24, 10, -10, -1, -10,
-	24, -10, 6, -10, -3, 11, -10, 6, 6, -11,
-	24, 24, -4, 8, -10, -6, 11, -5, 9, -11,
-	-10, -10, -6, -7, -8, 6, 12, -11, -10, -10,
-	-10, 12, -7, -11, -10,
+	-1000, -10, -1, -11, -2, 24, 10, -11, -1, -11,
+	24, -11, 6, -11, -3, 11, -11, 6, 6, -12,
+	24, 24, -4, 8, -11, -6, 11, -5, 9, -12,
+	-11, -11, -6, -7, -8, -9, 6, 12, -12, -11,
+	-8, -12, -9, -11, 12, -12,
 }
 
 var yyDef = [...]int8{
 	3, -2, 3, 8, 3, 1, 0, 7, 3, 6,
 	2, 0, 11, 9, 10, 3, 0, 0, 0, 14,
 	4, 5, 3, 0, 16, 0, 3, 3, 0, 13,
-	20, 0, 0, 3, 3, 21, 3, 15, 0, 20,
-	12, 0, 3, 0, 19,
+	20, 0, 0, 3, 0, 21, 23, 3, 15, 0,
+	0, 18, 22, 12, 17, 19,
 }
 
 var yyTok1 = [...]int8{
@@ -522,7 +522,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:73
 		{
-			yyVAL.node = appendNode(NodeOpSyntax, yyDollar[2].node)
+			yyVAL.node = appendNode(NodeOpDefinition, yyDollar[2].node)
 		}
 	case 14:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -543,34 +543,46 @@ yydefault:
 			yyVAL.node = appendNode(NodeOpSyntax)
 		}
 	case 17:
-		yyDollar = yyS[yypt-6 : yypt+1]
+		yyDollar = yyS[yypt-5 : yypt+1]
 //line macro.y:92
 		{
-			yyVAL.node = appendNode(NodeOpDefinition)
+			yyVAL.node = yyDollar[3].node
 		}
 	case 18:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line macro.y:96
 		{
-			yyVAL.node = appendNode(NodeOpDefinition, newNode(NodeOpSyntaxElement, yyDollar[1].node))
+			yyVAL.node = appendNode(NodeOpBody, yyDollar[1].node)
 		}
 	case 19:
-		yyDollar = yyS[yypt-4 : yypt+1]
+		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:99
 		{
-			yyVAL.node = appendNodeTo(&yyDollar[3].node, yyDollar[1].node)
+			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
 		}
 	case 20:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line macro.y:102
 		{
-			yyVAL.node = appendNode(NodeOpDefinition)
+			yyVAL.node = appendNode(NodeOpBody)
 		}
 	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line macro.y:108
 		{
-			yyVAL.node = appendNode(NodeOpSyntax, newNode(NodeOpName, yyDollar[1].string))
+			yyVAL.node = appendNode(NodeOpSyntaxStatement, yyDollar[1].node)
+		}
+	case 22:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line macro.y:112
+		{
+			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
+		}
+	case 23:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line macro.y:118
+		{
+			yyVAL.node = newNode(NodeOpSyntaxKeywordElement, yyDollar[1].string)
 		}
 	}
 	goto yystack /* stack new state and value */

@@ -20,7 +20,7 @@ import (
 
 %token DefinitionKeyword SyntaxKeyword MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content syntax_statement
+%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content syntax_statement syntax_element
 
 %start file
 
@@ -71,7 +71,7 @@ macro_body: BraceOpen eol_allowed
 
 definition_definition: DefinitionKeyword syntax_body eol_required
 {
-	$$ = appendNode(NodeOpSyntax, $2)
+	$$ = appendNode(NodeOpDefinition, $2)
 }
 | // empty
 {
@@ -88,25 +88,35 @@ syntax_definition: SyntaxKeyword syntax_body eol_required
 }
 
 // Syntax definition
-syntax_body: BraceOpen eol_allowed syntax_content eol_allowed BraceClose eol_required
+syntax_body: BraceOpen eol_allowed syntax_content eol_allowed BraceClose
 {
-	$$ = appendNode(NodeOpDefinition)
+	$$ = $3
 }
 
-syntax_content: syntax_statement {
-        $$ = appendNode(NodeOpDefinition, newNode(NodeOpSyntaxElement, $1))
+syntax_content: syntax_statement eol_required {
+        $$ = appendNode(NodeOpBody, $1)
 }
-| syntax_statement eol_allowed syntax_content eol_allowed {
-	$$ = appendNodeTo(&$3, $1)
+| syntax_content syntax_statement eol_required {
+	$$ = appendNodeTo(&$1, $2)
 }
 | {
-	$$ = appendNode(NodeOpDefinition)
+	$$ = appendNode(NodeOpBody)
 }
 ;
 
-syntax_statement: token_identifier
+syntax_statement: syntax_element
 {
-	$$ = appendNode(NodeOpSyntax, newNode(NodeOpName, $1))
+	$$ = appendNode(NodeOpSyntaxStatement, $1)
+}
+| syntax_statement syntax_element
+{
+	$$ = appendNodeTo(&$1, $2)
+}
+;
+
+syntax_element: token_identifier
+{
+	$$ = newNode(NodeOpSyntaxKeywordElement, $1)
 }
 
 %%
