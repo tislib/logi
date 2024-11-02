@@ -1,7 +1,7 @@
 package macro
 
 import (
-	"logi/pkg/ast"
+	astMacro "logi/pkg/ast/macro"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ func (y *yyMakroLexerProxy) Error(s string) {
 	y.lexer.Error(s)
 }
 
-func ParseMacroContent(d string) (*ast.MacroAst, error) {
+func ParseMacroContent(d string) (*astMacro.Ast, error) {
 	s := newMacroLexer(strings.NewReader(d), true)
 	parser := yyNewParser()
 	proxy := &yyMakroLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}

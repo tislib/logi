@@ -2,7 +2,7 @@ package macro
 
 import (
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast"
+	astMacro "logi/pkg/ast/macro"
 	"strings"
 	"testing"
 )
@@ -10,20 +10,20 @@ import (
 func TestSyntaxMacro(t *testing.T) {
 	tests := map[string]struct {
 		input         string
-		expected      *ast.MacroAst
+		expected      *astMacro.Ast
 		expectedError string
 	}{
 		"simple syntax macro": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
+						Kind: astMacro.KindSyntax,
 					},
 				},
 			},
@@ -31,22 +31,22 @@ func TestSyntaxMacro(t *testing.T) {
 		"multiple syntax macro": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 				}
 
 				macro simple2 {
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
+						Kind: astMacro.KindSyntax,
 					},
 					{
 						Name: "simple2",
-						Kind: ast.MacroKindSyntax,
+						Kind: astMacro.KindSyntax,
 					},
 				},
 			},
@@ -54,7 +54,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with simple syntax": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						Hello
@@ -62,33 +62,33 @@ func TestSyntaxMacro(t *testing.T) {
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello",
 											},
 										},
 									},
 								}, {
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello2",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello3",
 											},
 										},
@@ -103,7 +103,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with simple syntax and definition": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					definition {
 						Hello2 Hello3
@@ -115,24 +115,24 @@ func TestSyntaxMacro(t *testing.T) {
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Definition: ast.Definition{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Definition: astMacro.Definition{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello2",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello3",
 											},
 										},
@@ -140,28 +140,28 @@ func TestSyntaxMacro(t *testing.T) {
 								},
 							},
 						},
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello",
 											},
 										},
 									},
 								}, {
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello2",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "Hello3",
 											},
 										},
@@ -176,33 +176,33 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with variable keyword statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						hello <userName string>
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindVariableKeyword,
-											VariableKeyword: &ast.SyntaxStatementElementVariableKeyword{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
 												Name: "userName",
-												Type: ast.TypeDefinition{
+												Type: astMacro.TypeDefinition{
 													Name: "string",
 												},
 											},
@@ -218,35 +218,35 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with variable keyword with generic type statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						hello <userName Type<string>>
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindVariableKeyword,
-											VariableKeyword: &ast.SyntaxStatementElementVariableKeyword{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
 												Name: "userName",
-												Type: ast.TypeDefinition{
+												Type: astMacro.TypeDefinition{
 													Name: "Type",
-													SubTypes: []ast.TypeDefinition{
+													SubTypes: []astMacro.TypeDefinition{
 														{
 															Name: "string",
 														},
@@ -265,41 +265,41 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with parameter list statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						hello (<userName string>, <password string>)
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindParameterList,
-											ParameterList: &ast.SyntaxStatementElementParameterList{
-												Parameters: []ast.SyntaxStatementElementParameter{
+											Kind: astMacro.SyntaxStatementElementKindParameterList,
+											ParameterList: &astMacro.SyntaxStatementElementParameterList{
+												Parameters: []astMacro.SyntaxStatementElementParameter{
 													{
 														Name: "userName",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "string",
 														},
 													},
 													{
 														Name: "password",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "string",
 														},
 													},
@@ -317,38 +317,38 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with argument list statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						hello (...[<args Type<string>>])
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindArgumentList,
-											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+											Kind: astMacro.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &astMacro.SyntaxStatementElementArgumentList{
 												VarArgs: true,
-												Arguments: []ast.SyntaxStatementElementArgument{
+												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "Type",
-															SubTypes: []ast.TypeDefinition{
+															SubTypes: []astMacro.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -369,7 +369,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with code block statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						hello (...[<args Type<string>>]) { }
@@ -377,31 +377,31 @@ func TestSyntaxMacro(t *testing.T) {
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindArgumentList,
-											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+											Kind: astMacro.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &astMacro.SyntaxStatementElementArgumentList{
 												VarArgs: true,
-												Arguments: []ast.SyntaxStatementElementArgument{
+												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "Type",
-															SubTypes: []ast.TypeDefinition{
+															SubTypes: []astMacro.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -412,29 +412,29 @@ func TestSyntaxMacro(t *testing.T) {
 											},
 										},
 										{
-											Kind:      ast.SyntaxStatementElementKindCodeBlock,
-											CodeBlock: &ast.SyntaxStatementElementCodeBlock{},
+											Kind:      astMacro.SyntaxStatementElementKindCodeBlock,
+											CodeBlock: &astMacro.SyntaxStatementElementCodeBlock{},
 										},
 									},
 								},
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "hello",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindArgumentList,
-											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+											Kind: astMacro.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &astMacro.SyntaxStatementElementArgumentList{
 												VarArgs: true,
-												Arguments: []ast.SyntaxStatementElementArgument{
+												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "Type",
-															SubTypes: []ast.TypeDefinition{
+															SubTypes: []astMacro.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -445,9 +445,9 @@ func TestSyntaxMacro(t *testing.T) {
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindCodeBlock,
-											CodeBlock: &ast.SyntaxStatementElementCodeBlock{
-												ReturnType: ast.TypeDefinition{
+											Kind: astMacro.SyntaxStatementElementKindCodeBlock,
+											CodeBlock: &astMacro.SyntaxStatementElementCodeBlock{
+												ReturnType: astMacro.TypeDefinition{
 													Name: "string",
 												},
 											},
@@ -463,45 +463,45 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with attributes statement": {
 			input: `
 				macro simple {
-					kind Syntax
+					kind MacroSyntax
 					
 					syntax {
 						details [required bool, default string, number float]
 					}
 				}
 			`,
-			expected: &ast.MacroAst{
-				Macros: []ast.Macro{
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
 					{
 						Name: "simple",
-						Kind: ast.MacroKindSyntax,
-						Syntax: ast.Syntax{
-							Statements: []ast.SyntaxStatement{
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
 								{
-									Elements: []ast.SyntaxStatementElement{
+									Elements: []astMacro.SyntaxStatementElement{
 										{
-											Kind: ast.SyntaxStatementElementKindKeyword,
-											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
 												Name: "details",
 											},
 										},
 										{
-											Kind: ast.SyntaxStatementElementKindAttributeList,
-											AttributeList: &ast.SyntaxStatementElementAttributeList{
-												Attributes: []ast.SyntaxStatementElementAttribute{
+											Kind: astMacro.SyntaxStatementElementKindAttributeList,
+											AttributeList: &astMacro.SyntaxStatementElementAttributeList{
+												Attributes: []astMacro.SyntaxStatementElementAttribute{
 													{
 														Name: "required",
-														Type: ast.TypeDefinition{
+														Type: astMacro.TypeDefinition{
 															Name: "bool",
 														},
 													},
 													{
 														Name: "default",
-														Type: ast.TypeDefinition{Name: "string"},
+														Type: astMacro.TypeDefinition{Name: "string"},
 													},
 													{
 														Name: "number",
-														Type: ast.TypeDefinition{Name: "float"},
+														Type: astMacro.TypeDefinition{Name: "float"},
 													},
 												},
 											},
@@ -524,7 +524,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is missing": {
 			input: `
 				macro {
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -532,7 +532,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format": {
 			input: `
 				macro simple!{
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -540,7 +540,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format[2]": {
 			input: `
 				macro simple simple{
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -548,7 +548,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format[3]": {
 			input: `
 				macro SimPlEE{
-					kind Syntax
+					kind MacroSyntax
 				}
 			`,
 			expectedError: "failed to convert base macro: unexpected name value: SimPlEE",

@@ -1,12 +1,12 @@
-package ast
+package macro
 
 type MacroKind string
 
 const (
-	MacroKindSyntax MacroKind = "Syntax" // see SyntaxMacro
+	KindSyntax MacroKind = "Syntax" // see SyntaxMacro
 )
 
-type MacroAst struct {
+type Ast struct {
 	// The Macros of the package
 	Macros []Macro `json:"macros,omitempty"`
 }

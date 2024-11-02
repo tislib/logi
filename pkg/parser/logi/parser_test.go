@@ -15,8 +15,9 @@ func TestSyntaxLogi(t *testing.T) {
 	}{
 		"simple syntax logi": {
 			input: `
-				logi simple {
-					kind Syntax
+				entity User {
+					id: int [primary, autoincrement]
+					name: string [required, default: "John Doe"]
 				}
 			`,
 			expected: &ast.LogiPlainAst{},
