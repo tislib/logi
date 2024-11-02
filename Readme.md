@@ -324,8 +324,8 @@ macro model {
     kind Syntax
     
     defintion {
-       ModelKind <Enum[SEQUENTIAL, RECURRENT]>
-       Activation <Enum[RELU, SIGMOID, TANH, SOFTMAX]>
+       ModelKind <enum[Sequential, Recurrent]>
+       Activation <enum[Relu, Sigmoid, Softmax]>
        
        Dense (<length int>, <inputShape int[]>, <activation Activation>)
        Conv2D (<filters int>, <kernelSize int[]>, <activation Activation>)
@@ -346,7 +346,7 @@ Usage:
 
 ```logi
 model MyModel {
-    kind SEQUENTIAL
+    kind Sequential
     layers [
         Dense(128, [784], RELU),
         Dense(10, [128], SOFTMAX)
