@@ -8,15 +8,10 @@ const (
 
 type MacroAst struct {
 	// The Macros of the package
-	SyntaxMacros []SyntaxMacro `json:"macros,omitempty"`
+	Macros []Macro `json:"macros,omitempty"`
 }
 
-type BaseMacro struct {
-	Name string    `json:"name,omitempty"`
-	Kind MacroKind `json:"kind,omitempty"`
-}
-
-type SyntaxMacro struct {
+type Macro struct {
 	// The Name of the macro, used to identify it, must be unique in the folder/package
 	// required: true
 	// example: "macro1"

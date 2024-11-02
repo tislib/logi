@@ -1,101 +1,10 @@
 
-state 0
-	$accept: .file $end 
-
-	macro_keyword  shift 4
-	.  error
-
-	syntax_macro_definition  goto 2
-	syntax_macro_signature  goto 3
-	file  goto 1
-
-state 1
-	$accept:  file.$end 
-
-	$end  accept
-	.  error
-
-
-state 2
-	file:  syntax_macro_definition.    (1)
-	file:  syntax_macro_definition.file 
-
-	macro_keyword  shift 4
-	.  reduce 1 (src line 30)
-
-	syntax_macro_definition  goto 2
-	syntax_macro_signature  goto 3
-	file  goto 5
-
-state 3
-	syntax_macro_definition:  syntax_macro_signature.    (3)
-
-	.  reduce 3 (src line 38)
-
-
-state 4
-	syntax_macro_signature:  macro_keyword.token_identifier syntax_macro_body 
-
-	token_identifier  shift 6
-	.  error
-
-
-state 5
-	file:  syntax_macro_definition file.    (2)
-
-	.  reduce 2 (src line 33)
-
-
-state 6
-	syntax_macro_signature:  macro_keyword token_identifier.syntax_macro_body 
-
-	BraceOpen  shift 8
-	.  error
-
-	syntax_macro_body  goto 7
-
-state 7
-	syntax_macro_signature:  macro_keyword token_identifier syntax_macro_body.    (4)
-
-	.  reduce 4 (src line 42)
-
-
-state 8
-	syntax_macro_body:  BraceOpen.token_identifier token_identifier BraceClose 
-
-	token_identifier  shift 9
-	.  error
-
-
-state 9
-	syntax_macro_body:  BraceOpen token_identifier.token_identifier BraceClose 
-
-	token_identifier  shift 10
-	.  error
-
-
-state 10
-	syntax_macro_body:  BraceOpen token_identifier token_identifier.BraceClose 
-
-	BraceClose  shift 11
-	.  error
-
-
-state 11
-	syntax_macro_body:  BraceOpen token_identifier token_identifier BraceClose.    (5)
-
-	.  reduce 5 (src line 47)
-
-
-21 terminals, 5 nonterminals
-6 grammar rules, 12/16000 states
+24 terminals, 15 nonterminals
+14 grammar rules, 0/16000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-54 working sets used
-memory: parser 7/240000
+0 working sets used
+memory: parser 0/240000
 0 extra closures
-7 shift entries, 1 exceptions
-5 goto entries
-2 entries saved by goto default
-Optimizer space used: output 11/240000
-11 table entries, 0 zero
-maximum spread: 10, maximum offset: 10
+0 shift entries, 0 exceptions
+0 goto entries
+0 entries saved by goto default
