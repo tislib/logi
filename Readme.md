@@ -291,7 +291,7 @@ macro model {
        ModelKind <enum[Sequential, Recurrent]>
        Activation <enum[Relu, Sigmoid, Softmax]>
        
-       Dense {<(>}<length int>, <inputShape int[]>, <activation Activation>)
+       Dense (<length int>, <inputShape int[]>, <activation Activation>)
        Conv2D (<filters int>, <kernelSize int[]>, <activation Activation>)
        MaxPooling2D (<poolSize int[]>)
        
