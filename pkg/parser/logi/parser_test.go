@@ -2,7 +2,8 @@ package logi
 
 import (
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast"
+	"logi/pkg/ast/common"
+	"logi/pkg/ast/plain"
 	"strings"
 	"testing"
 )
@@ -10,17 +11,85 @@ import (
 func TestSyntaxLogi(t *testing.T) {
 	tests := map[string]struct {
 		input         string
-		expected      *ast.LogiPlainAst
+		expected      *plain.Ast
 		expectedError string
 	}{
 		"simple syntax logi": {
 			input: `
 				entity User {
-					id: int [primary, autoincrement]
-					name: string [required, default: "John Doe"]
+					id int [primary, autoincrement]
+					name string [required, default "John Doe"]
 				}
 			`,
-			expected: &ast.LogiPlainAst{},
+			expected: &plain.Ast{
+				Definitions: []plain.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Statements: []plain.DefinitionStatement{
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "id",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "int",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindAttributeList,
+										AttributeList: &plain.DefinitionStatementElementAttributeList{
+											Attributes: []plain.DefinitionStatementElementAttribute{
+												{
+													Name: "primary",
+												},
+												{
+													Name: "autoincrement",
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "name",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "string",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindAttributeList,
+										AttributeList: &plain.DefinitionStatementElementAttributeList{
+											Attributes: []plain.DefinitionStatementElementAttribute{
+												{
+													Name: "required",
+												},
+												{
+													Name:  "default",
+													Value: common.PointerValue(common.StringValue("John Doe")),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 	for name, tt := range tests {

@@ -23,11 +23,8 @@ import (
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> logi logi_signature logi_body definition_definition syntax_definition syntax_body syntax_content type_definition
-%type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
-%type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
-%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item
-
+%type<node> definition definition_signature definition_body definition_statements definition_statement definition_statement_element
+%type<node> definition_statement_element_identifier definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %start file
 
 %%
@@ -42,164 +39,96 @@ eol_required: Eol
 | eol_required Eol
 ;
 
-three_dots: Dot Dot Dot
-// End Helpers
-
-file: logi eol_allowed {
+file: definition eol_allowed {
 	registerRootNode(yylex, $1)
 }
 | file eol_allowed
 | eol_allowed
-| file logi eol_allowed {
+| file definition eol_allowed {
 	registerRootNode(yylex, $2)
+};
+
+definition: definition_signature eol_allowed definition_body
+{
+	$$ = appendNode(NodeOpDefinition, $1, $3)
+};
+
+definition_signature: token_identifier token_identifier
+{
+	$$ = appendNode(NodeOpSignature, newNode(NodeOpMacro, $1), newNode(NodeOpName, $2))
+};
+
+definition_body: BraceOpen eol_allowed
+definition_statements eol_allowed
+BraceClose
+{
+	$$ = appendNode(NodeOpBody, $3)
+};
+
+definition_statements: definition_statement eol_required
+{
+	$$ = appendNode(NodeOpStatements, $1)
 }
-;
-
-// Logi definition
-logi: logi_signature eol_allowed logi_body {
-	$$ = appendNode(NodeOpLogi, $1, $3)
-};
-
-logi_signature: LogiKeyword token_identifier
-{
-	$$ = appendNode(NodeOpSignature, newNode(NodeOpName, $2))
-};
-
-logi_body: BraceOpen eol_allowed
-	token_identifier token_identifier eol_required
-
-	definition_definition eol_allowed
-
-	syntax_definition eol_allowed
-
-	BraceClose eol_allowed
-{
-	assertEqual(yylex, $3, "kind", "First identifier in logi body must be 'kind'")
-	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4), $6, $8)
-};
-
-definition_definition: DefinitionKeyword syntax_body eol_required
-{
-	$$ = appendNode(NodeOpDefinition, $2)
-}
-| // empty
-{
-	$$ = appendNode(NodeOpDefinition)
-};
-
-syntax_definition: SyntaxKeyword syntax_body eol_required
-{
-	$$ = appendNode(NodeOpSyntax, $2)
-}
-| // empty
-{
-	$$ = appendNode(NodeOpSyntax)
-};
-
-// Syntax definition
-syntax_body: BraceOpen eol_allowed syntax_content eol_allowed BraceClose
-{
-	$$ = $3
-};
-
-syntax_content: syntax_statement eol_required {
-        $$ = appendNode(NodeOpBody, $1)
-}
-| syntax_content syntax_statement eol_required {
-	$$ = appendNodeTo(&$1, $2)
-}
-| {
-	$$ = appendNode(NodeOpBody)
-};
-
-syntax_statement: syntax_element
-{
-	$$ = appendNode(NodeOpSyntaxStatement, $1)
-}
-| syntax_statement syntax_element
+| definition_statements definition_statement eol_required
 {
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element:syntax_element_code_block | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
-
-syntax_element_keyword: token_identifier
+definition_statement: definition_statement_element
 {
-	$$ = newNode(NodeOpSyntaxKeywordElement, $1)
+	$$ = appendNode(NodeOpStatement, $1)
+}
+| definition_statement definition_statement_element
+{
+	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element_variable_keyword: LessThan token_identifier type_definition GreaterThan
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_attribute_list;
+
+definition_statement_element_identifier: token_identifier
 {
-	$$ = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, $2), $3)
+	$$ = newNode(NodeOpIdentifier, $1)
 };
 
-syntax_element_parameter_list: ParenOpen syntax_element_parameter_list_content ParenClose
+definition_statement_element_value: token_string
+{
+	$$ = newNode(NodeOpValue, $1)
+}
+| token_number
+{
+	$$ = newNode(NodeOpValue, $1)
+}
+| token_bool
+{
+	$$ = newNode(NodeOpValue, $1)
+};
+
+definition_statement_element_attribute_list: BracketOpen definition_statement_element_attribute_list_content BracketClose
 {
 	$$ = $2
 };
 
-syntax_element_parameter_list_content: syntax_element_variable_keyword
+definition_statement_element_attribute_list_content: definition_statement_element_attribute_list_item
 {
-	$$ = appendNode(NodeOpSyntaxParameterListElement, $1)
+	$$ = appendNode(NodeOpAttributeList, $1)
 }
-| syntax_element_parameter_list_content Comma syntax_element_variable_keyword
+| definition_statement_element_attribute_list_content Comma definition_statement_element_attribute_list_item
 {
-	$$ = appendNodeTo(&$1, $3);
+	$$ = appendNodeTo(&$1, $3)
 };
 
-syntax_element_attribute_list: BracketOpen syntax_element_attribute_list_content BracketClose
+definition_statement_element_attribute_list_item: token_identifier
 {
-	$$ = $2
-};
-
-syntax_element_attribute_list_content: syntax_element_attribute_list_item
-{
-	$$ = appendNode(NodeOpSyntaxAttributeListElement, $1)
+	$$ = newNode(NodeOpAttribute, $1)
 }
-| syntax_element_attribute_list_content Comma syntax_element_attribute_list_item
+| token_identifier definition_statement_element_value
 {
-	$$ = appendNodeTo(&$1, $3);
-};
-
-syntax_element_attribute_list_item: token_identifier
-{
-	$$ = newNode(NodeOpName, $1)
-}
-| token_identifier type_definition
-{
-	$$ = newNode(NodeOpValue, $1, $2)
-};
-
-syntax_element_argument_list: ParenOpen three_dots BracketOpen syntax_element_argument_list_content BracketClose ParenClose
-{
-	$$ = $4
-};
-
-syntax_element_argument_list_content: syntax_element_variable_keyword
-{
-	$$ = appendNode(NodeOpSyntaxArgumentListElement, $1)
-}
-| syntax_element_argument_list_content Comma syntax_element_variable_keyword
-{
-	$$ = appendNodeTo(&$1, $3);
-};
-
-syntax_element_code_block: BraceOpen BraceClose
-{
-	$$ = newNode(NodeOpSyntaxCodeBlockElement, nil)
-}
-| BraceOpen type_definition BraceClose
-{
-	$$ = newNode(NodeOpSyntaxCodeBlockElement, nil, $2)
-};
-
-type_definition: token_identifier
-{
-	$$ = newNode(NodeOpTypeDef, $1)
-}
-| token_identifier LessThan type_definition GreaterThan
-{
-	$$ = newNode(NodeOpTypeDef, $1, $3)
+	$$ = newNode(NodeOpAttribute, $1, $2)
 };
 
 %%
+
+// 	entity User {
+//   		id int [primary, autoincrement]
+//  		name string [required, default "John Doe"]
+//   	}

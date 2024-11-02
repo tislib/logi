@@ -3,24 +3,18 @@ package logi
 type NodeOp string
 
 const (
-	NodeOpFile                         = "file"
-	NodeOpLogi                         = "logi"
-	NodeOpSignature                    = "signature"
-	NodeOpName                         = "name"
-	NodeOpValue                        = "value"
-	NodeOpBody                         = "body"
-	NodeOpKind                         = "kind"
-	NodeOpSyntax                       = "syntax"
-	NodeOpTypeDef                      = "type_def"
-	NodeOpDefinition                   = "definition"
-	NodeOpSyntaxStatement              = "syntax_statement"
-	NodeOpSyntaxKeywordElement         = "syntax_keyword_element"
-	NodeOpSyntaxVariableKeywordElement = "syntax_variable_keyword_element"
-	NodeOpSyntaxDefinitionElement      = "syntax_definition_element"
-	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
-	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
-	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
-	NodeOpSyntaxAttributeListElement   = "syntax_attribute_list_element"
+	NodeOpFile          = "file"
+	NodeOpSignature     = "signature"
+	NodeOpMacro         = "macro"
+	NodeOpName          = "name"
+	NodeOpValue         = "value"
+	NodeOpBody          = "body"
+	NodeOpDefinition    = "definition"
+	NodeOpStatements    = "statements"
+	NodeOpStatement     = "statement"
+	NodeOpIdentifier    = "identifier"
+	NodeOpAttributeList = "attributeList"
+	NodeOpAttribute     = "attribute"
 )
 
 type yaccNode struct {

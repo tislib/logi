@@ -1,7 +1,7 @@
 package logi
 
 import (
-	"logi/pkg/ast"
+	"logi/pkg/ast/plain"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ func (y *yyLogiLexerProxy) Error(s string) {
 	y.lexer.Error(s)
 }
 
-func ParseLogiPlainContent(d string) (*ast.LogiPlainAst, error) {
+func ParseLogiPlainContent(d string) (*plain.Ast, error) {
 	s := newLogiLexer(strings.NewReader(d), true)
 	parser := yyNewParser()
 	proxy := &yyLogiLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}
