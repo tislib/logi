@@ -1,10 +1,395 @@
 
-24 terminals, 15 nonterminals
-14 grammar rules, 0/16000 states
-0 shift/reduce, 0 reduce/reduce conflicts reported
-0 working sets used
-memory: parser 0/240000
-0 extra closures
-0 shift entries, 0 exceptions
-0 goto entries
-0 entries saved by goto default
+state 0
+	$accept: .file $end 
+
+	MacroKeyword  shift 4
+	.  error
+
+	macro  goto 2
+	macro_signature  goto 3
+	file  goto 1
+
+1: shift/reduce conflict (shift 8191(0), red'n 3(0)) on $end
+1: shift/reduce conflict (shift 4(0), red'n 3(0)) on MacroKeyword
+1: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 1
+	$accept:  file.$end 
+	file:  file.eol_allowed 
+	file:  file.macro eol_allowed 
+	eol_allowed: .    (3)
+
+	$end  accept
+	MacroKeyword  shift 4
+	Eol  shift 7
+	.  error
+
+	macro  goto 6
+	macro_signature  goto 3
+	eol_allowed  goto 5
+
+2: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 2
+	file:  macro.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 8
+
+3: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 3
+	macro:  macro_signature.eol_allowed macro_body 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 9
+
+state 4
+	macro_signature:  MacroKeyword.token_identifier 
+
+	token_identifier  shift 10
+	.  error
+
+
+5: shift/reduce conflict (shift 11(0), red'n 7(0)) on Eol
+state 5
+	eol_allowed:  eol_allowed.Eol 
+	file:  file eol_allowed.    (7)
+
+	Eol  shift 11
+	.  reduce 7 (src line 42)
+
+
+6: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 6
+	file:  file macro.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 12
+
+state 7
+	eol_allowed:  Eol.    (1)
+
+	.  reduce 1 (src line 30)
+
+
+8: shift/reduce conflict (shift 11(0), red'n 6(0)) on Eol
+state 8
+	eol_allowed:  eol_allowed.Eol 
+	file:  macro eol_allowed.    (6)
+
+	Eol  shift 11
+	.  reduce 6 (src line 39)
+
+
+state 9
+	eol_allowed:  eol_allowed.Eol 
+	macro:  macro_signature eol_allowed.macro_body 
+
+	BraceOpen  shift 14
+	Eol  shift 11
+	.  error
+
+	macro_body  goto 13
+
+state 10
+	macro_signature:  MacroKeyword token_identifier.    (10)
+
+	.  reduce 10 (src line 53)
+
+
+state 11
+	eol_allowed:  eol_allowed Eol.    (2)
+
+	.  reduce 2 (src line 31)
+
+
+12: shift/reduce conflict (shift 11(0), red'n 8(0)) on Eol
+state 12
+	eol_allowed:  eol_allowed.Eol 
+	file:  file macro eol_allowed.    (8)
+
+	Eol  shift 11
+	.  reduce 8 (src line 43)
+
+
+state 13
+	macro:  macro_signature eol_allowed macro_body.    (9)
+
+	.  reduce 9 (src line 49)
+
+
+14: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 14
+	macro_body:  BraceOpen.eol_allowed token_identifier token_identifier eol_required definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 15
+
+state 15
+	eol_allowed:  eol_allowed.Eol 
+	macro_body:  BraceOpen eol_allowed.token_identifier token_identifier eol_required definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed 
+
+	token_identifier  shift 16
+	Eol  shift 11
+	.  error
+
+
+state 16
+	macro_body:  BraceOpen eol_allowed token_identifier.token_identifier eol_required definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed 
+
+	token_identifier  shift 17
+	.  error
+
+
+state 17
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier.eol_required definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed 
+
+	Eol  shift 19
+	.  error
+
+	eol_required  goto 18
+
+18: shift/reduce conflict (shift 20(0), red'n 13(0)) on Eol
+state 18
+	eol_required:  eol_required.Eol 
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required.definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed 
+	definition_definition: .    (13)
+
+	DefinitionKeyword  shift 22
+	Eol  shift 20
+	.  error
+
+	definition_definition  goto 21
+
+state 19
+	eol_required:  Eol.    (4)
+
+	.  reduce 4 (src line 34)
+
+
+state 20
+	eol_required:  eol_required Eol.    (5)
+
+	.  reduce 5 (src line 35)
+
+
+state 21
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition.eol_required syntax_definition eol_required BraceClose eol_allowed 
+
+	Eol  shift 19
+	.  error
+
+	eol_required  goto 23
+
+state 22
+	definition_definition:  DefinitionKeyword.syntax_body 
+
+	BraceOpen  shift 25
+	.  error
+
+	syntax_body  goto 24
+
+23: shift/reduce conflict (shift 20(0), red'n 15(0)) on Eol
+state 23
+	eol_required:  eol_required.Eol 
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_required.syntax_definition eol_required BraceClose eol_allowed 
+	syntax_definition: .    (15)
+
+	SyntaxKeyword  shift 27
+	Eol  shift 20
+	.  error
+
+	syntax_definition  goto 26
+
+state 24
+	definition_definition:  DefinitionKeyword syntax_body.    (12)
+
+	.  reduce 12 (src line 71)
+
+
+25: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 25
+	syntax_body:  BraceOpen.eol_allowed syntax_content eol_allowed BraceClose eol_required 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 28
+
+state 26
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_required syntax_definition.eol_required BraceClose eol_allowed 
+
+	Eol  shift 19
+	.  error
+
+	eol_required  goto 29
+
+state 27
+	syntax_definition:  SyntaxKeyword.syntax_body 
+
+	BraceOpen  shift 25
+	.  error
+
+	syntax_body  goto 30
+
+28: shift/reduce conflict (shift 11(0), red'n 19(0)) on Eol
+state 28
+	eol_allowed:  eol_allowed.Eol 
+	syntax_body:  BraceOpen eol_allowed.syntax_content eol_allowed BraceClose eol_required 
+	syntax_content: .    (19)
+
+	token_identifier  shift 33
+	Eol  shift 11
+	.  reduce 19 (src line 101)
+
+	syntax_content  goto 31
+	syntax_statement  goto 32
+
+state 29
+	eol_required:  eol_required.Eol 
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_required syntax_definition eol_required.BraceClose eol_allowed 
+
+	BraceClose  shift 34
+	Eol  shift 20
+	.  error
+
+
+state 30
+	syntax_definition:  SyntaxKeyword syntax_body.    (14)
+
+	.  reduce 14 (src line 80)
+
+
+31: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 31
+	syntax_body:  BraceOpen eol_allowed syntax_content.eol_allowed BraceClose eol_required 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 35
+
+32: shift/reduce conflict (shift 7(0), red'n 17(0)) on Eol
+ 32: reduce/reduce conflict  (red'ns 17 and 3) on BraceClose
+32: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 32
+	syntax_content:  syntax_statement.    (17)
+	syntax_content:  syntax_statement.eol_allowed syntax_content eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 36
+
+state 33
+	syntax_statement:  token_identifier.    (20)
+
+	.  reduce 20 (src line 106)
+
+
+34: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 34
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_required syntax_definition eol_required BraceClose.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 37
+
+state 35
+	eol_allowed:  eol_allowed.Eol 
+	syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed.BraceClose eol_required 
+
+	BraceClose  shift 38
+	Eol  shift 11
+	.  error
+
+
+36: shift/reduce conflict (shift 11(0), red'n 19(0)) on Eol
+state 36
+	eol_allowed:  eol_allowed.Eol 
+	syntax_content:  syntax_statement eol_allowed.syntax_content eol_allowed 
+	syntax_content: .    (19)
+
+	token_identifier  shift 33
+	Eol  shift 11
+	.  reduce 19 (src line 101)
+
+	syntax_content  goto 39
+	syntax_statement  goto 32
+
+37: shift/reduce conflict (shift 11(0), red'n 11(0)) on Eol
+state 37
+	eol_allowed:  eol_allowed.Eol 
+	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_required syntax_definition eol_required BraceClose eol_allowed.    (11)
+
+	Eol  shift 11
+	.  reduce 11 (src line 58)
+
+
+state 38
+	syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed BraceClose.eol_required 
+
+	Eol  shift 19
+	.  error
+
+	eol_required  goto 40
+
+39: shift/reduce conflict (shift 7(0), red'n 3(0)) on Eol
+state 39
+	syntax_content:  syntax_statement eol_allowed syntax_content.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 7
+	.  reduce 3 (src line 32)
+
+	eol_allowed  goto 41
+
+40: shift/reduce conflict (shift 20(0), red'n 16(0)) on Eol
+state 40
+	eol_required:  eol_required.Eol 
+	syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed BraceClose eol_required.    (16)
+
+	Eol  shift 20
+	.  error
+
+
+41: shift/reduce conflict (shift 11(0), red'n 18(0)) on Eol
+state 41
+	eol_allowed:  eol_allowed.Eol 
+	syntax_content:  syntax_statement eol_allowed syntax_content eol_allowed.    (18)
+
+	Eol  shift 11
+	.  reduce 18 (src line 98)
+
+Rule not reduced: definition_definition:  
+Rule not reduced: syntax_definition:  
+Rule not reduced: syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed BraceClose eol_required 
+Rule not reduced: syntax_content:  syntax_statement 
+
+24 terminals, 12 nonterminals
+21 grammar rules, 42/16000 states
+23 shift/reduce, 1 reduce/reduce conflicts reported
+61 working sets used
+memory: parser 27/240000
+4 extra closures
+42 shift entries, 1 exceptions
+26 goto entries
+2 entries saved by goto default
+Optimizer space used: output 50/240000
+50 table entries, 0 zero
+maximum spread: 24, maximum offset: 39

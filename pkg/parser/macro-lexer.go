@@ -41,6 +41,9 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			log.Print("EOF")
 			return 0
 		}
+		if isEol(r) {
+			return Eol
+		}
 		if isWhitespace(r) {
 			continue
 		}
@@ -100,7 +103,11 @@ func (s *macroLexer) lex(lval *yySymType) int {
 
 				switch identifier {
 				case "macro":
-					return macro_keyword
+					return MacroKeyword
+				case "definition":
+					return DefinitionKeyword
+				case "syntax":
+					return SyntaxKeyword
 				default:
 					lval.string = identifier
 					return token_identifier
@@ -200,6 +207,7 @@ func (s *macroLexer) read() rune {
 func (s *macroLexer) unread() { _ = s.buf.UnreadRune() }
 
 func isWhitespace(ch rune) bool { return ch == ' ' || ch == '\t' || ch == '\n' }
+func isEol(ch rune) bool        { return ch == '\n' || ch == '\r' }
 func isDigit(r rune) bool       { return r >= '0' && r <= '9' }
 func isAlpha(r rune) bool       { return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') }
 func isAlphaNum(r rune) bool    { return isAlpha(r) || isDigit(r) }

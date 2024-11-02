@@ -18,9 +18,9 @@ import (
 %token<string> token_identifier
 %token<bool> token_bool
 
-%token DefinitionKeyword SyntaxKeyWord MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
+%token DefinitionKeyword SyntaxKeyword MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> macro macro_signature macro_body definition syntax definition_definition syntax_definition syntax_body syntax_content syntax_statement
+%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content syntax_statement
 
 %start file
 
@@ -65,7 +65,7 @@ macro_body: BraceOpen eol_allowed
 	BraceClose eol_allowed
 {
 	assertEqual(yylex, $3, "kind", "First identifier in macro body must be 'kind'")
-	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4, $6, $8))
+	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4), $6, $8)
 };
 
 definition_definition: DefinitionKeyword syntax_body
@@ -75,12 +75,11 @@ definition_definition: DefinitionKeyword syntax_body
 | // empty
 {
 	$$ = appendNode(NodeOpDefinition)
-}
+};
 
 syntax_definition: SyntaxKeyword syntax_body
 {
-	assertEqual(yylex, $1, "syntax", "First identifier in macro body must be 'kind'")
-	$$ = appendNode(NodeOpSyntax, newNode(NodeOpName, $1), $2)
+	$$ = appendNode(NodeOpSyntax, $2)
 }
 | // empty
 {
@@ -97,7 +96,7 @@ syntax_content: syntax_statement {
         $$ = appendNode(NodeOpDefinition, newNode(NodeOpSyntaxElement, $1))
 }
 | syntax_statement eol_allowed syntax_content eol_allowed {
-	$$ = appendNodeTo($2, $1)
+	$$ = appendNodeTo(&$3, $1)
 }
 | {
 	$$ = appendNode(NodeOpDefinition)

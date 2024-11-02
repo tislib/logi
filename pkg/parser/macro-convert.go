@@ -13,45 +13,25 @@ func convertNodeToMacroAst(node yaccMacroNode) (*ast.MacroAst, error) {
 	}
 
 	for _, child := range node.children {
-		baseMacro, err := convertBaseMacro(child)
+		macro, err := convertMacro(child)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert base macro: %w", err)
+			return nil, fmt.Errorf("failed to convert syntax macro: %w", err)
 		}
 
-		switch baseMacro.Kind {
-		case ast.MacroKindSyntax:
-			syntaxMacro, err := convertSyntaxMacro(child, baseMacro)
-
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax macro: %w", err)
-			}
-			res.SyntaxMacros = append(res.SyntaxMacros, *syntaxMacro)
-		default:
-			return nil, fmt.Errorf("unexpected macro kind: %s", baseMacro.Kind)
-		}
-
+		res.Macros = append(res.Macros, *macro)
 	}
 
 	return res, nil
 }
 
-func convertSyntaxMacro(child yaccMacroNode, macro *ast.BaseMacro) (*ast.SyntaxMacro, error) {
-	var result = new(ast.SyntaxMacro)
-
-	result.Name = macro.Name
-	result.Kind = macro.Kind
-
-	return result, nil
-}
-
-func convertBaseMacro(child yaccMacroNode) (*ast.BaseMacro, error) {
+func convertMacro(child yaccMacroNode) (*ast.Macro, error) {
 	var signature = child.children[0]
 	var name = signature.children[0]
 	var body = signature.children[1]
 	var kind = body.children[0].value.(string)
 
-	var result = new(ast.BaseMacro)
+	var result = new(ast.Macro)
 	if !NamePattern.MatchString(name.value.(string)) {
 		return nil, fmt.Errorf("unexpected name value: %s", name.value)
 	}

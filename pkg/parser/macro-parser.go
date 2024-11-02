@@ -8,12 +8,15 @@ import (
 type NodeOp string
 
 const (
-	NodeOpFile      = "file"
-	NodeOpMacro     = "macro"
-	NodeOpSignature = "signature"
-	NodeOpName      = "name"
-	NodeOpBody      = "body"
-	NodeOpKind      = "kind"
+	NodeOpFile          = "file"
+	NodeOpMacro         = "macro"
+	NodeOpSignature     = "signature"
+	NodeOpName          = "name"
+	NodeOpBody          = "body"
+	NodeOpKind          = "kind"
+	NodeOpSyntax        = "syntax"
+	NodeOpDefinition    = "definition"
+	NodeOpSyntaxElement = "syntax_element"
 )
 
 type yaccMacroNode struct {
@@ -55,6 +58,12 @@ func appendNode(nodeOp NodeOp, children ...yaccMacroNode) yaccMacroNode {
 
 func newNode(nodeOp NodeOp, value interface{}) yaccMacroNode {
 	return yaccMacroNode{op: nodeOp, value: value}
+}
+
+func appendNodeTo(node *yaccMacroNode, child yaccMacroNode) yaccMacroNode {
+	node.children = append(node.children, child)
+
+	return *node
 }
 
 func registerRootNode(parser yyLexer, n yaccMacroNode) {

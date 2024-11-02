@@ -19,7 +19,7 @@ func TestSyntaxMacro(t *testing.T) {
 				}
 			`,
 			expected: &ast.MacroAst{
-				SyntaxMacros: []ast.SyntaxMacro{
+				Macros: []ast.Macro{
 					{
 						Name: "simple",
 						Kind: ast.MacroKindSyntax,
@@ -38,7 +38,7 @@ func TestSyntaxMacro(t *testing.T) {
 				}
 			`,
 			expected: &ast.MacroAst{
-				SyntaxMacros: []ast.SyntaxMacro{
+				Macros: []ast.Macro{
 					{
 						Name: "simple",
 						Kind: ast.MacroKindSyntax,
