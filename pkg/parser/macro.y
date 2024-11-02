@@ -18,10 +18,14 @@ import (
 %token<string> token_identifier
 %token<bool> token_bool
 
-%token DefinitionKeyword SyntaxKeyword MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
+// Keywords
+%token DefinitionKeyword SyntaxKeyword MacroKeyword
+
+%token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
 %type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content type_definition
 %type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
+%type<node> syntax_element_argument_list syntax_element_argument_list_content
 
 %start file
 
@@ -32,9 +36,12 @@ eol_allowed: Eol
 | eol_allowed Eol
 | // empty
 ;
+
 eol_required: Eol
 | eol_required Eol
 ;
+
+three_dots: Dot Dot Dot
 // End Helpers
 
 file: macro eol_allowed {
@@ -113,7 +120,7 @@ syntax_statement: syntax_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element: syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list;
+syntax_element: syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list;
 
 syntax_element_keyword: token_identifier
 {
@@ -139,9 +146,27 @@ syntax_element_parameter_list_content: syntax_element_variable_keyword
 	$$ = appendNodeTo(&$1, $3);
 };
 
+syntax_element_argument_list: ParenOpen three_dots BracketOpen syntax_element_argument_list_content BracketClose ParenClose
+{
+	$$ = $4
+};
+
+syntax_element_argument_list_content: syntax_element_variable_keyword
+{
+	$$ = appendNode(NodeOpSyntaxArgumentListElement, $1)
+}
+| syntax_element_argument_list_content Comma syntax_element_variable_keyword
+{
+	$$ = appendNodeTo(&$1, $3);
+};
+
 type_definition: token_identifier
 {
 	$$ = newNode(NodeOpTypeDef, $1)
+}
+| token_identifier LessThan type_definition GreaterThan
+{
+	$$ = newNode(NodeOpTypeDef, $1, $3)
 };
 
 %%

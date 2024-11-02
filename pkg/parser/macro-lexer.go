@@ -75,6 +75,10 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			return BraceOpen
 		case '}':
 			return BraceClose
+		case '[':
+			return BracketOpen
+		case ']':
+			return BracketClose
 		case '(':
 			return ParenOpen
 		case ')':
@@ -96,6 +100,8 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			}
 			s.unread()
 			return Dash
+		case '.':
+			return Dot
 		default:
 			if isAlpha(r) {
 				s.unread()
@@ -113,6 +119,7 @@ func (s *macroLexer) lex(lval *yySymType) int {
 					return token_identifier
 				}
 			}
+
 			log.Println("Error: Unrecognized character ", r)
 			s.Err = errors.New("error: unrecognized character")
 			return 0

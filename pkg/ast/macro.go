@@ -77,6 +77,7 @@ type SyntaxStatementElementParameterList struct {
 }
 
 type SyntaxStatementElementArgumentList struct {
+	VarArgs   bool                             `json:"varArgs,omitempty"`
 	Arguments []SyntaxStatementElementArgument `json:"parameters,omitempty"`
 }
 

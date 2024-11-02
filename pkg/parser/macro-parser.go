@@ -22,6 +22,7 @@ const (
 	NodeOpSyntaxVariableKeywordElement = "syntax_variable_keyword_element"
 	NodeOpSyntaxDefinitionElement      = "syntax_definition_element"
 	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
+	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
 )
 
 type yaccMacroNode struct {
@@ -61,8 +62,8 @@ func appendNode(nodeOp NodeOp, children ...yaccMacroNode) yaccMacroNode {
 	return yaccMacroNode{op: nodeOp, children: children}
 }
 
-func newNode(nodeOp NodeOp, value interface{}) yaccMacroNode {
-	return yaccMacroNode{op: nodeOp, value: value}
+func newNode(nodeOp NodeOp, value interface{}, children ...yaccMacroNode) yaccMacroNode {
+	return yaccMacroNode{op: nodeOp, value: value, children: children}
 }
 
 func appendNodeTo(node *yaccMacroNode, child yaccMacroNode) yaccMacroNode {

@@ -215,6 +215,53 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with variable keyword with generic type statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello <userName Type<string>>
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &ast.SyntaxStatementElementVariableKeyword{
+												Name: "userName",
+												Type: ast.TypeDefinition{
+													Name: "Type",
+													SubTypes: []ast.TypeDefinition{
+														{
+															Name: "string",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"syntax macro with parameter list statement": {
 			input: `
 				macro simple {
@@ -254,6 +301,58 @@ func TestSyntaxMacro(t *testing.T) {
 														Name: "password",
 														Type: ast.TypeDefinition{
 															Name: "string",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"syntax macro with argument list statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello (...[<args Type<string>>])
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+												VarArgs: true,
+												Arguments: []ast.SyntaxStatementElementArgument{
+													{
+														Name: "args",
+														Type: ast.TypeDefinition{
+															Name: "Type",
+															SubTypes: []ast.TypeDefinition{
+																{
+																	Name: "string",
+																},
+															},
 														},
 													},
 												},
