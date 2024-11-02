@@ -1,4 +1,4 @@
-package parser
+package macro
 
 import (
 	"github.com/stretchr/testify/assert"

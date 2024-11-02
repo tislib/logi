@@ -1,5 +1,5 @@
 %{
-package parser
+package macro
 
 import (
 )

@@ -1,4 +1,4 @@
-package parser
+package macro
 
 func isWhitespace(ch rune) bool { return ch == ' ' || ch == '\t' || ch == '\n' }
 func isEol(ch rune) bool        { return ch == '\n' || ch == '\r' }

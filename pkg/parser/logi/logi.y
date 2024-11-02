@@ -1,5 +1,5 @@
 %{
-package parser
+package logi
 
 import (
 )
@@ -19,11 +19,11 @@ import (
 %token<bool> token_bool
 
 // Keywords
-%token DefinitionKeyword SyntaxKeyword MacroKeyword
+%token DefinitionKeyword SyntaxKeyword LogiKeyword
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content type_definition
+%type<node> logi logi_signature logi_body definition_definition syntax_definition syntax_body syntax_content type_definition
 %type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
 %type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item
@@ -45,27 +45,27 @@ eol_required: Eol
 three_dots: Dot Dot Dot
 // End Helpers
 
-file: macro eol_allowed {
+file: logi eol_allowed {
 	registerRootNode(yylex, $1)
 }
 | file eol_allowed
 | eol_allowed
-| file macro eol_allowed {
+| file logi eol_allowed {
 	registerRootNode(yylex, $2)
 }
 ;
 
-// Macro definition
-macro: macro_signature eol_allowed macro_body {
-	$$ = appendNode(NodeOpMacro, $1, $3)
+// Logi definition
+logi: logi_signature eol_allowed logi_body {
+	$$ = appendNode(NodeOpLogi, $1, $3)
 };
 
-macro_signature: MacroKeyword token_identifier
+logi_signature: LogiKeyword token_identifier
 {
 	$$ = appendNode(NodeOpSignature, newNode(NodeOpName, $2))
 };
 
-macro_body: BraceOpen eol_allowed
+logi_body: BraceOpen eol_allowed
 	token_identifier token_identifier eol_required
 
 	definition_definition eol_allowed
@@ -74,7 +74,7 @@ macro_body: BraceOpen eol_allowed
 
 	BraceClose eol_allowed
 {
-	assertEqual(yylex, $3, "kind", "First identifier in macro body must be 'kind'")
+	assertEqual(yylex, $3, "kind", "First identifier in logi body must be 'kind'")
 	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4), $6, $8)
 };
 

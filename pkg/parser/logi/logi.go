@@ -24,7 +24,7 @@ const token_identifier = 57348
 const token_bool = 57349
 const DefinitionKeyword = 57350
 const SyntaxKeyword = 57351
-const MacroKeyword = 57352
+const LogiKeyword = 57352
 const BracketOpen = 57353
 const BracketClose = 57354
 const BraceOpen = 57355
@@ -52,7 +52,7 @@ var yyToknames = [...]string{
 	"token_bool",
 	"DefinitionKeyword",
 	"SyntaxKeyword",
-	"MacroKeyword",
+	"LogiKeyword",
 	"BracketOpen",
 	"BracketClose",
 	"BraceOpen",
@@ -530,7 +530,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line logi.y:59
 		{
-			yyVAL.node = appendNode(NodeOpMacro, yyDollar[1].node, yyDollar[3].node)
+			yyVAL.node = appendNode(NodeOpLogi, yyDollar[1].node, yyDollar[3].node)
 		}
 	case 12:
 		yyDollar = yyS[yypt-2 : yypt+1]
@@ -542,7 +542,7 @@ yydefault:
 		yyDollar = yyS[yypt-11 : yypt+1]
 //line logi.y:76
 		{
-			assertEqual(yylex, yyDollar[3].string, "kind", "First identifier in macro body must be 'kind'")
+			assertEqual(yylex, yyDollar[3].string, "kind", "First identifier in logi body must be 'kind'")
 			yyVAL.node = appendNode(NodeOpBody, newNode(NodeOpKind, yyDollar[4].string), yyDollar[6].node, yyDollar[8].node)
 		}
 	case 14:

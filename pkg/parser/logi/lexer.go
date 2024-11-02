@@ -1,4 +1,4 @@
-package macro
+package logi
 
 import (
 	"bufio"
@@ -8,24 +8,24 @@ import (
 	"strconv"
 )
 
-type macroLexer struct {
+type logiLexer struct {
 	buf   *bufio.Reader
 	Err   error
 	debug bool
 }
 
-func newMacroLexer(r io.Reader, debug bool) *macroLexer {
-	return &macroLexer{
+func newLogiLexer(r io.Reader, debug bool) *logiLexer {
+	return &logiLexer{
 		buf:   bufio.NewReader(r),
 		debug: debug,
 	}
 }
 
-func (sc *macroLexer) Error(s string) {
+func (sc *logiLexer) Error(s string) {
 	sc.Err = errors.New(s)
 }
 
-func (sc *macroLexer) Lex(lval *yySymType) int {
+func (sc *logiLexer) Lex(lval *yySymType) int {
 	res := sc.lex(lval)
 	if sc.debug {
 		log.Printf("lex: %d, %v\n", res, lval)
@@ -33,7 +33,7 @@ func (sc *macroLexer) Lex(lval *yySymType) int {
 	return res
 }
 
-func (s *macroLexer) lex(lval *yySymType) int {
+func (s *logiLexer) lex(lval *yySymType) int {
 	for {
 		r := s.read()
 		if r == 0 { // EOF
@@ -97,8 +97,8 @@ func (s *macroLexer) lex(lval *yySymType) int {
 				var identifier = s.scanIdentifier()
 
 				switch identifier {
-				case "macro":
-					return MacroKeyword
+				case "logi":
+					return LogiKeyword
 				case "definition":
 					return DefinitionKeyword
 				case "syntax":
@@ -122,7 +122,7 @@ func (s *macroLexer) lex(lval *yySymType) int {
 	}
 }
 
-func (s *macroLexer) scanStr() string {
+func (s *logiLexer) scanStr() string {
 	var str []rune
 	if s.read() != '"' {
 		return ""
@@ -137,7 +137,7 @@ func (s *macroLexer) scanStr() string {
 	return string(str)
 }
 
-func (s *macroLexer) scanNumber() interface{} {
+func (s *logiLexer) scanNumber() interface{} {
 	var number []rune
 	var isFloat bool
 	for {
@@ -166,7 +166,7 @@ func (s *macroLexer) scanNumber() interface{} {
 	return i
 }
 
-func (s *macroLexer) scanIdentifier() string {
+func (s *logiLexer) scanIdentifier() string {
 	var identifier []rune
 	for {
 		r := s.read()
@@ -179,9 +179,9 @@ func (s *macroLexer) scanIdentifier() string {
 	return string(identifier)
 }
 
-func (s *macroLexer) read() rune {
+func (s *logiLexer) read() rune {
 	ch, _, _ := s.buf.ReadRune()
 	return ch
 }
 
-func (s *macroLexer) unread() { _ = s.buf.UnreadRune() }
+func (s *logiLexer) unread() { _ = s.buf.UnreadRune() }
