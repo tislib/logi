@@ -161,16 +161,6 @@ The common syntax for declaring an element is:
 For definition of data
 
 ```
-
-<elementType> <elementName> {
-    <property1>: <value1>
-    <property2>: <value2>
-    <property3>: {
-        <nestedProperty1>: <nestedValue1>
-        <nestedProperty2>: <nestedValue2>
-    }
-}
-
 <elementType> <elementName> {
     <property1> <value1>
     <property2> <value2>
@@ -180,14 +170,6 @@ For definition of data
     }
 }
 
-# With commas
-struct User {
-    id: int
-    name: string
-    email: string
-}
-
-# Without commas
 struct User {
     id int
     name string
@@ -199,26 +181,8 @@ struct User {
 For definition of a data type
 
 ```
-<elementType> <elementName> {
-    <property1>: <type1>
-    <property2>: <type2>
-    <property3>: {
-        <nestedProperty1>: <type3>
-        <nestedProperty2>: <type4>
-    }
-}
-
-# With commas
 User user1 {
-    id: 33
-    name: "John Doe"
-    email: "AbcX"
-    tags: ["tag1", "tag2"]
-}
-
-# Without commas
-User user1 {
-    id 33
+    id  33
     name "John Doe"
     email "AbcX"
     tags ["tag1", "tag2"]
@@ -300,7 +264,7 @@ macro formula {
     kind Syntax
     
     syntax {
-       args (...<argName Type<Number>>)
+       args (...[<argName Name> <Type<Number>]>)
        expr Expression
     }
 }
