@@ -49,7 +49,6 @@ type SyntaxStatementElementKind string
 const (
 	SyntaxStatementElementKindKeyword         SyntaxStatementElementKind = "Keyword"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
-	SyntaxStatementElementKindDefinition      SyntaxStatementElementKind = "Definition"
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
 	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"

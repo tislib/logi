@@ -163,6 +163,20 @@ func convertSyntaxStatementElement(node yaccMacroNode) (*ast.SyntaxStatementElem
 		}
 
 		result.ArgumentList = &ast.SyntaxStatementElementArgumentList{Arguments: arguments, VarArgs: true}
+	case NodeOpSyntaxCodeBlockElement:
+		result.Kind = ast.SyntaxStatementElementKindCodeBlock
+		result.CodeBlock = &ast.SyntaxStatementElementCodeBlock{}
+
+		if len(node.children) > 0 {
+			returnType, err := convertTypeDefinition(node.children[0])
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert type definition: %w", err)
+			}
+
+			result.CodeBlock.ReturnType = *returnType
+		}
+
 	default:
 		return nil, fmt.Errorf("unexpected syntax statement element op: %s", node.op)
 	}

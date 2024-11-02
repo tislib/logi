@@ -77,7 +77,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line macro.y:172
+//line macro.y:181
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -88,61 +88,64 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 93
+const yyLast = 101
 
 var yyAct = [...]int8{
-	37, 57, 3, 35, 7, 9, 19, 11, 34, 55,
-	43, 13, 6, 40, 21, 25, 10, 23, 16, 5,
-	20, 10, 10, 28, 73, 24, 68, 41, 5, 30,
-	31, 42, 29, 20, 40, 21, 45, 40, 48, 44,
-	10, 47, 46, 52, 32, 17, 54, 15, 41, 62,
-	48, 41, 42, 56, 5, 42, 41, 10, 60, 72,
-	10, 65, 67, 26, 64, 10, 69, 41, 59, 53,
-	63, 70, 74, 61, 71, 58, 49, 18, 12, 2,
-	51, 8, 1, 66, 39, 50, 38, 36, 33, 27,
-	22, 14, 4,
+	38, 52, 3, 35, 7, 9, 19, 11, 34, 60,
+	45, 13, 6, 42, 21, 25, 10, 28, 16, 23,
+	41, 10, 10, 5, 20, 24, 17, 43, 5, 30,
+	31, 44, 29, 20, 10, 78, 47, 21, 50, 46,
+	42, 49, 48, 42, 32, 57, 10, 41, 59, 15,
+	41, 43, 50, 58, 43, 61, 64, 43, 44, 66,
+	5, 44, 10, 10, 74, 69, 43, 71, 73, 65,
+	68, 63, 75, 70, 76, 53, 26, 77, 79, 62,
+	53, 67, 54, 51, 18, 12, 2, 56, 8, 1,
+	36, 72, 40, 55, 39, 37, 33, 27, 22, 14,
+	4,
 }
 
 var yyPact = [...]int16{
-	2, 2, -7, -10, -7, -1000, 72, -10, -7, -10,
-	-1000, 34, -1000, -10, -1000, -7, 39, 71, -6, 9,
-	-1000, -1000, -7, 50, 14, -6, -7, -7, 50, -12,
-	31, -4, -6, 28, 7, -1000, -1000, -1000, -1000, -1000,
-	-1000, 70, 47, -7, -12, -5, 7, -12, -1000, 69,
-	43, 62, -1000, 27, -10, -1000, -12, 51, 44, -1000,
-	36, 36, 4, -1000, 69, -1000, 59, -1000, -1000, 40,
-	-1, 36, -1000, -1000, -1000,
+	2, 2, -3, -10, -3, -1000, 79, -10, -3, -10,
+	-1000, 36, -1000, -10, -1000, -3, 20, 78, -2, 11,
+	-1000, -1000, -3, 63, 8, -2, -3, -3, 63, -12,
+	37, -4, -2, 34, 7, -1000, -1000, -1000, -1000, -1000,
+	-1000, 69, -1000, 76, 31, -3, -12, -5, 7, -12,
+	-1000, -1000, 65, 51, 74, 44, 70, -1000, 48, -10,
+	-1000, -12, -1000, 74, 54, -1000, 46, 46, 42, 53,
+	-1000, -1000, 62, -1000, -1000, -1000, 10, 46, -1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 79, 92, 91, 90, 89, 15, 88, 1, 8,
-	3, 0, 87, 86, 85, 84, 83, 82, 2, 6,
-	80,
+	0, 86, 100, 99, 98, 97, 15, 96, 1, 8,
+	3, 0, 95, 94, 93, 92, 91, 90, 89, 2,
+	6, 87,
 }
 
 var yyR1 = [...]int8{
-	0, 18, 18, 18, 19, 19, 20, 17, 17, 17,
-	17, 1, 2, 3, 4, 4, 5, 5, 6, 7,
-	7, 7, 9, 9, 10, 10, 10, 10, 12, 11,
-	13, 14, 14, 15, 16, 16, 8, 8,
+	0, 19, 19, 19, 20, 20, 21, 18, 18, 18,
+	18, 1, 2, 3, 4, 4, 5, 5, 6, 7,
+	7, 7, 9, 9, 10, 10, 10, 10, 10, 12,
+	11, 13, 14, 14, 15, 16, 16, 17, 17, 8,
+	8,
 }
 
 var yyR2 = [...]int8{
 	0, 1, 2, 0, 1, 2, 3, 2, 2, 1,
 	3, 3, 2, 11, 3, 0, 3, 0, 5, 2,
-	3, 0, 1, 2, 1, 1, 1, 1, 1, 4,
-	3, 1, 3, 6, 1, 3, 1, 4,
+	3, 0, 1, 2, 1, 1, 1, 1, 1, 1,
+	4, 3, 1, 3, 6, 1, 3, 2, 3, 1,
+	4,
 }
 
 var yyChk = [...]int16{
-	-1000, -17, -1, -18, -2, 26, 10, -18, -1, -18,
-	26, -18, 6, -18, -3, 13, -18, 6, 6, -19,
-	26, 26, -4, 8, -18, -6, 13, -5, 9, -19,
-	-18, -18, -6, -7, -9, -10, -12, -11, -13, -15,
-	6, 20, 24, 14, -19, -18, -9, -19, -10, 6,
-	-14, -20, -11, 22, -18, 14, -19, -8, 6, 25,
-	15, 11, 22, 19, 20, -11, -16, -11, 22, -8,
-	12, 15, 19, 25, -11,
+	-1000, -18, -1, -19, -2, 26, 10, -19, -1, -19,
+	26, -19, 6, -19, -3, 13, -19, 6, 6, -20,
+	26, 26, -4, 8, -19, -6, 13, -5, 9, -20,
+	-19, -19, -6, -7, -9, -10, -17, -12, -11, -13,
+	-15, 13, 6, 20, 24, 14, -20, -19, -9, -20,
+	-10, 14, -8, 6, 6, -14, -21, -11, 22, -19,
+	14, -20, 14, 20, -8, 25, 15, 11, 22, -8,
+	19, -11, -16, -11, 22, 19, 12, 15, 25, -11,
 }
 
 var yyDef = [...]int8{
@@ -150,10 +153,10 @@ var yyDef = [...]int8{
 	2, 0, 12, 10, 11, 3, 0, 0, 0, 15,
 	4, 5, 3, 0, 17, 0, 3, 3, 0, 14,
 	21, 0, 0, 3, 0, 22, 24, 25, 26, 27,
-	28, 0, 0, 3, 16, 0, 0, 19, 23, 0,
-	0, 0, 31, 0, 13, 18, 20, 0, 36, 30,
-	0, 0, 0, 29, 0, 32, 0, 34, 6, 0,
-	0, 0, 37, 33, 35,
+	28, 0, 29, 0, 0, 3, 16, 0, 0, 19,
+	23, 37, 0, 39, 0, 0, 0, 32, 0, 13,
+	18, 20, 38, 0, 0, 31, 0, 0, 0, 0,
+	30, 33, 0, 35, 6, 40, 0, 0, 34, 36,
 }
 
 var yyTok1 = [...]int8{
@@ -598,63 +601,75 @@ yydefault:
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
 		}
-	case 28:
+	case 29:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line macro.y:126
 		{
 			yyVAL.node = newNode(NodeOpSyntaxKeywordElement, yyDollar[1].string)
 		}
-	case 29:
+	case 30:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line macro.y:131
 		{
 			yyVAL.node = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, yyDollar[2].string), yyDollar[3].node)
 		}
-	case 30:
+	case 31:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:136
 		{
 			yyVAL.node = yyDollar[2].node
 		}
-	case 31:
+	case 32:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line macro.y:141
 		{
 			yyVAL.node = appendNode(NodeOpSyntaxParameterListElement, yyDollar[1].node)
 		}
-	case 32:
+	case 33:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:145
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[3].node)
 		}
-	case 33:
+	case 34:
 		yyDollar = yyS[yypt-6 : yypt+1]
 //line macro.y:150
 		{
 			yyVAL.node = yyDollar[4].node
 		}
-	case 34:
+	case 35:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line macro.y:155
 		{
 			yyVAL.node = appendNode(NodeOpSyntaxArgumentListElement, yyDollar[1].node)
 		}
-	case 35:
+	case 36:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:159
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[3].node)
 		}
-	case 36:
-		yyDollar = yyS[yypt-1 : yypt+1]
+	case 37:
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line macro.y:164
+		{
+			yyVAL.node = newNode(NodeOpSyntaxCodeBlockElement, nil)
+		}
+	case 38:
+		yyDollar = yyS[yypt-3 : yypt+1]
+//line macro.y:168
+		{
+			yyVAL.node = newNode(NodeOpSyntaxCodeBlockElement, nil, yyDollar[2].node)
+		}
+	case 39:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line macro.y:173
 		{
 			yyVAL.node = newNode(NodeOpTypeDef, yyDollar[1].string)
 		}
-	case 37:
+	case 40:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line macro.y:168
+//line macro.y:177
 		{
 			yyVAL.node = newNode(NodeOpTypeDef, yyDollar[1].string, yyDollar[3].node)
 		}

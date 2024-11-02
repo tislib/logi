@@ -23,6 +23,7 @@ const (
 	NodeOpSyntaxDefinitionElement      = "syntax_definition_element"
 	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
 	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
+	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
 )
 
 type yaccMacroNode struct {

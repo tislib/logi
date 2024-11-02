@@ -91,9 +91,9 @@ macro eventHandler {
     args (name Name)
  
     syntax {
-       on <eventName Name>() CodeBlock
-       before <eventName Name>() <returnType Type> CodeBlock
-       before <eventName Name>() CodeBlock
+       on <eventName Name>() { }
+       before <eventName Name>() <returnType Type> { }
+       before <eventName Name>() { }
     }
 }
 ```

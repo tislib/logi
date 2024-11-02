@@ -366,6 +366,100 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with code block statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello (...[<args Type<string>>]) { }
+						hello (...[<args Type<string>>]) { string }
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+												VarArgs: true,
+												Arguments: []ast.SyntaxStatementElementArgument{
+													{
+														Name: "args",
+														Type: ast.TypeDefinition{
+															Name: "Type",
+															SubTypes: []ast.TypeDefinition{
+																{
+																	Name: "string",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Kind:      ast.SyntaxStatementElementKindCodeBlock,
+											CodeBlock: &ast.SyntaxStatementElementCodeBlock{},
+										},
+									},
+								},
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindArgumentList,
+											ArgumentList: &ast.SyntaxStatementElementArgumentList{
+												VarArgs: true,
+												Arguments: []ast.SyntaxStatementElementArgument{
+													{
+														Name: "args",
+														Type: ast.TypeDefinition{
+															Name: "Type",
+															SubTypes: []ast.TypeDefinition{
+																{
+																	Name: "string",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindCodeBlock,
+											CodeBlock: &ast.SyntaxStatementElementCodeBlock{
+												ReturnType: ast.TypeDefinition{
+													Name: "string",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {
