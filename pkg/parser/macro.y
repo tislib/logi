@@ -21,7 +21,7 @@ import (
 %token DefinitionKeyword SyntaxKeyword MacroKeyword BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
 %type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content type_definition
-%type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword
+%type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 
 %start file
 
@@ -86,13 +86,13 @@ syntax_definition: SyntaxKeyword syntax_body eol_required
 | // empty
 {
 	$$ = appendNode(NodeOpSyntax)
-}
+};
 
 // Syntax definition
 syntax_body: BraceOpen eol_allowed syntax_content eol_allowed BraceClose
 {
 	$$ = $3
-}
+};
 
 syntax_content: syntax_statement eol_required {
         $$ = appendNode(NodeOpBody, $1)
@@ -102,8 +102,7 @@ syntax_content: syntax_statement eol_required {
 }
 | {
 	$$ = appendNode(NodeOpBody)
-}
-;
+};
 
 syntax_statement: syntax_element
 {
@@ -112,24 +111,37 @@ syntax_statement: syntax_element
 | syntax_statement syntax_element
 {
 	$$ = appendNodeTo(&$1, $2)
-}
-;
+};
 
-syntax_element: syntax_element_keyword | syntax_element_variable_keyword
+syntax_element: syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list;
 
 syntax_element_keyword: token_identifier
 {
 	$$ = newNode(NodeOpSyntaxKeywordElement, $1)
-}
+};
 
 syntax_element_variable_keyword: LessThan token_identifier type_definition GreaterThan
 {
 	$$ = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, $2), $3)
+};
+
+syntax_element_parameter_list: ParenOpen syntax_element_parameter_list_content ParenClose
+{
+	$$ = $2
+};
+
+syntax_element_parameter_list_content: syntax_element_variable_keyword
+{
+	$$ = appendNode(NodeOpSyntaxParameterListElement, $1)
 }
+| syntax_element_parameter_list_content Comma syntax_element_variable_keyword
+{
+	$$ = appendNodeTo(&$1, $3);
+};
 
 type_definition: token_identifier
 {
 	$$ = newNode(NodeOpTypeDef, $1)
-}
+};
 
 %%

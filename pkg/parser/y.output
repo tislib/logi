@@ -272,16 +272,18 @@ state 29
 	.  reduce 13 (src line 73)
 
 
-30: shift/reduce conflict (shift 38(0), red'n 20(0)) on token_identifier
-30: shift/reduce conflict (shift 39(0), red'n 20(0)) on LessThan
+30: shift/reduce conflict (shift 39(0), red'n 20(0)) on token_identifier
+30: shift/reduce conflict (shift 40(0), red'n 20(0)) on LessThan
+30: shift/reduce conflict (shift 41(0), red'n 20(0)) on ParenOpen
 30: shift/reduce conflict (shift 10(0), red'n 20(0)) on Eol
 state 30
 	eol_allowed:  eol_allowed.Eol 
 	syntax_body:  BraceOpen eol_allowed.syntax_content eol_allowed BraceClose 
 	syntax_content: .    (20)
 
-	token_identifier  shift 38
-	LessThan  shift 39
+	token_identifier  shift 39
+	LessThan  shift 40
+	ParenOpen  shift 41
 	Eol  shift 10
 	.  reduce 20 (src line 103)
 
@@ -290,12 +292,13 @@ state 30
 	syntax_element  goto 35
 	syntax_element_variable_keyword  goto 37
 	syntax_element_keyword  goto 36
+	syntax_element_parameter_list  goto 38
 
 state 31
 	eol_allowed:  eol_allowed.Eol 
 	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_allowed syntax_definition eol_allowed.BraceClose eol_allowed 
 
-	BraceClose  shift 40
+	BraceClose  shift 42
 	Eol  shift 10
 	.  error
 
@@ -306,7 +309,7 @@ state 32
 	Eol  shift 20
 	.  error
 
-	eol_required  goto 41
+	eol_required  goto 43
 
 33: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
 state 33
@@ -314,74 +317,93 @@ state 33
 	syntax_content:  syntax_content.syntax_statement eol_required 
 	eol_allowed: .    (3)
 
-	token_identifier  shift 38
-	LessThan  shift 39
+	token_identifier  shift 39
+	LessThan  shift 40
+	ParenOpen  shift 41
 	Eol  shift 5
 	.  reduce 3 (src line 33)
 
-	syntax_statement  goto 43
+	syntax_statement  goto 45
 	syntax_element  goto 35
 	syntax_element_variable_keyword  goto 37
 	syntax_element_keyword  goto 36
-	eol_allowed  goto 42
+	syntax_element_parameter_list  goto 38
+	eol_allowed  goto 44
 
 state 34
 	syntax_content:  syntax_statement.eol_required 
 	syntax_statement:  syntax_statement.syntax_element 
 
-	token_identifier  shift 38
-	LessThan  shift 39
+	token_identifier  shift 39
+	LessThan  shift 40
+	ParenOpen  shift 41
 	Eol  shift 20
 	.  error
 
-	syntax_element  goto 45
+	syntax_element  goto 47
 	syntax_element_variable_keyword  goto 37
 	syntax_element_keyword  goto 36
-	eol_required  goto 44
+	syntax_element_parameter_list  goto 38
+	eol_required  goto 46
 
 state 35
 	syntax_statement:  syntax_element.    (21)
 
-	.  reduce 21 (src line 108)
+	.  reduce 21 (src line 107)
 
 
 state 36
 	syntax_element:  syntax_element_keyword.    (23)
 
-	.  reduce 23 (src line 118)
+	.  reduce 23 (src line 116)
 
 
 state 37
 	syntax_element:  syntax_element_variable_keyword.    (24)
 
-	.  reduce 24 (src line 118)
+	.  reduce 24 (src line 116)
 
 
 state 38
-	syntax_element_keyword:  token_identifier.    (25)
+	syntax_element:  syntax_element_parameter_list.    (25)
 
-	.  reduce 25 (src line 120)
+	.  reduce 25 (src line 116)
 
 
 state 39
+	syntax_element_keyword:  token_identifier.    (26)
+
+	.  reduce 26 (src line 118)
+
+
+state 40
 	syntax_element_variable_keyword:  LessThan.token_identifier type_definition GreaterThan 
 
-	token_identifier  shift 46
+	token_identifier  shift 48
 	.  error
 
 
-40: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
-state 40
+state 41
+	syntax_element_parameter_list:  ParenOpen.syntax_element_parameter_list_content ParenClose 
+
+	LessThan  shift 40
+	.  error
+
+	syntax_element_variable_keyword  goto 50
+	syntax_element_parameter_list_content  goto 49
+
+42: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 42
 	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_allowed syntax_definition eol_allowed BraceClose.eol_allowed 
 	eol_allowed: .    (3)
 
 	Eol  shift 5
 	.  reduce 3 (src line 33)
 
-	eol_allowed  goto 47
+	eol_allowed  goto 51
 
-41: shift/reduce conflict (shift 21(0), red'n 15(0)) on Eol
-state 41
+43: shift/reduce conflict (shift 21(0), red'n 15(0)) on Eol
+state 43
 	eol_required:  eol_required.Eol 
 	syntax_definition:  SyntaxKeyword syntax_body eol_required.    (15)
 
@@ -389,31 +411,33 @@ state 41
 	.  reduce 15 (src line 82)
 
 
-state 42
+state 44
 	eol_allowed:  eol_allowed.Eol 
 	syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed.BraceClose 
 
-	BraceClose  shift 48
+	BraceClose  shift 52
 	Eol  shift 10
 	.  error
 
 
-state 43
+state 45
 	syntax_content:  syntax_content syntax_statement.eol_required 
 	syntax_statement:  syntax_statement.syntax_element 
 
-	token_identifier  shift 38
-	LessThan  shift 39
+	token_identifier  shift 39
+	LessThan  shift 40
+	ParenOpen  shift 41
 	Eol  shift 20
 	.  error
 
-	syntax_element  goto 45
+	syntax_element  goto 47
 	syntax_element_variable_keyword  goto 37
 	syntax_element_keyword  goto 36
-	eol_required  goto 49
+	syntax_element_parameter_list  goto 38
+	eol_required  goto 53
 
-44: shift/reduce conflict (shift 21(0), red'n 18(0)) on Eol
-state 44
+46: shift/reduce conflict (shift 21(0), red'n 18(0)) on Eol
+state 46
 	eol_required:  eol_required.Eol 
 	syntax_content:  syntax_statement eol_required.    (18)
 
@@ -421,22 +445,37 @@ state 44
 	.  reduce 18 (src line 97)
 
 
-state 45
+state 47
 	syntax_statement:  syntax_statement syntax_element.    (22)
 
-	.  reduce 22 (src line 112)
+	.  reduce 22 (src line 111)
 
 
-state 46
+state 48
 	syntax_element_variable_keyword:  LessThan token_identifier.type_definition GreaterThan 
 
-	token_identifier  shift 51
+	token_identifier  shift 55
 	.  error
 
-	type_definition  goto 50
+	type_definition  goto 54
 
-47: shift/reduce conflict (shift 10(0), red'n 12(0)) on Eol
-state 47
+state 49
+	syntax_element_parameter_list:  ParenOpen syntax_element_parameter_list_content.ParenClose 
+	syntax_element_parameter_list_content:  syntax_element_parameter_list_content.Comma syntax_element_variable_keyword 
+
+	Comma  shift 57
+	ParenClose  shift 56
+	.  error
+
+
+state 50
+	syntax_element_parameter_list_content:  syntax_element_variable_keyword.    (29)
+
+	.  reduce 29 (src line 133)
+
+
+51: shift/reduce conflict (shift 10(0), red'n 12(0)) on Eol
+state 51
 	eol_allowed:  eol_allowed.Eol 
 	macro_body:  BraceOpen eol_allowed token_identifier token_identifier eol_required definition_definition eol_allowed syntax_definition eol_allowed BraceClose eol_allowed.    (12)
 
@@ -444,14 +483,14 @@ state 47
 	.  reduce 12 (src line 60)
 
 
-state 48
+state 52
 	syntax_body:  BraceOpen eol_allowed syntax_content eol_allowed BraceClose.    (17)
 
 	.  reduce 17 (src line 92)
 
 
-49: shift/reduce conflict (shift 21(0), red'n 19(0)) on Eol
-state 49
+53: shift/reduce conflict (shift 21(0), red'n 19(0)) on Eol
+state 53
 	eol_required:  eol_required.Eol 
 	syntax_content:  syntax_content syntax_statement eol_required.    (19)
 
@@ -459,34 +498,54 @@ state 49
 	.  reduce 19 (src line 100)
 
 
-state 50
+state 54
 	syntax_element_variable_keyword:  LessThan token_identifier type_definition.GreaterThan 
 
-	GreaterThan  shift 52
+	GreaterThan  shift 58
 	.  error
 
 
-state 51
-	type_definition:  token_identifier.    (27)
+state 55
+	type_definition:  token_identifier.    (31)
 
-	.  reduce 27 (src line 130)
-
-
-state 52
-	syntax_element_variable_keyword:  LessThan token_identifier type_definition GreaterThan.    (26)
-
-	.  reduce 26 (src line 125)
+	.  reduce 31 (src line 142)
 
 
-24 terminals, 16 nonterminals
-28 grammar rules, 53/16000 states
-28 shift/reduce, 0 reduce/reduce conflicts reported
-65 working sets used
-memory: parser 44/240000
-4 extra closures
-55 shift entries, 1 exceptions
-34 goto entries
-8 entries saved by goto default
-Optimizer space used: output 67/240000
-67 table entries, 0 zero
-maximum spread: 24, maximum offset: 43
+state 56
+	syntax_element_parameter_list:  ParenOpen syntax_element_parameter_list_content ParenClose.    (28)
+
+	.  reduce 28 (src line 128)
+
+
+state 57
+	syntax_element_parameter_list_content:  syntax_element_parameter_list_content Comma.syntax_element_variable_keyword 
+
+	LessThan  shift 40
+	.  error
+
+	syntax_element_variable_keyword  goto 59
+
+state 58
+	syntax_element_variable_keyword:  LessThan token_identifier type_definition GreaterThan.    (27)
+
+	.  reduce 27 (src line 123)
+
+
+state 59
+	syntax_element_parameter_list_content:  syntax_element_parameter_list_content Comma syntax_element_variable_keyword.    (30)
+
+	.  reduce 30 (src line 137)
+
+
+24 terminals, 18 nonterminals
+32 grammar rules, 60/16000 states
+29 shift/reduce, 0 reduce/reduce conflicts reported
+67 working sets used
+memory: parser 52/240000
+8 extra closures
+63 shift entries, 1 exceptions
+38 goto entries
+11 entries saved by goto default
+Optimizer space used: output 77/240000
+77 table entries, 0 zero
+maximum spread: 24, maximum offset: 57

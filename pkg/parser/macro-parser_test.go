@@ -215,6 +215,58 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with parameter list statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello (<userName string>, <password string>)
+					}
+				}
+			`,
+			expected: &ast.MacroAst{
+				Macros: []ast.Macro{
+					{
+						Name: "simple",
+						Kind: ast.MacroKindSyntax,
+						Syntax: ast.Syntax{
+							Statements: []ast.SyntaxStatement{
+								{
+									Elements: []ast.SyntaxStatementElement{
+										{
+											Kind: ast.SyntaxStatementElementKindKeyword,
+											KeywordDef: &ast.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: ast.SyntaxStatementElementKindParameterList,
+											ParameterList: &ast.SyntaxStatementElementParameterList{
+												Parameters: []ast.SyntaxStatementElementParameter{
+													{
+														Name: "userName",
+														Type: ast.TypeDefinition{
+															Name: "string",
+														},
+													},
+													{
+														Name: "password",
+														Type: ast.TypeDefinition{
+															Name: "string",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {

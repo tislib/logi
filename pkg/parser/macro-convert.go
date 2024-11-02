@@ -131,9 +131,40 @@ func convertSyntaxStatementElement(node yaccMacroNode) (*ast.SyntaxStatementElem
 		}
 
 		result.VariableKeyword = &ast.SyntaxStatementElementVariableKeyword{Name: varName, Type: *typeDef}
+	case NodeOpSyntaxParameterListElement:
+		result.Kind = ast.SyntaxStatementElementKindParameterList
+
+		var parameters []ast.SyntaxStatementElementParameter
+
+		for _, parameterNode := range node.children {
+			parameter, err := convertSyntaxStatementElementParameter(parameterNode)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert syntax statement element parameter: %w", err)
+			}
+
+			parameters = append(parameters, *parameter)
+		}
+
+		result.ParameterList = &ast.SyntaxStatementElementParameterList{Parameters: parameters}
 	default:
 		return nil, fmt.Errorf("unexpected syntax statement element op: %s", node.op)
 	}
+
+	return result, nil
+}
+
+func convertSyntaxStatementElementParameter(node yaccMacroNode) (*ast.SyntaxStatementElementParameter, error) {
+	var result = new(ast.SyntaxStatementElementParameter)
+	var varName = node.children[0].value.(string)
+	typeDef, err := convertTypeDefinition(node.children[1])
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert type definition: %w", err)
+	}
+
+	result.Name = varName
+	result.Type = *typeDef
 
 	return result, nil
 }
