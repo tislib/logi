@@ -8,26 +8,28 @@ type CodeBlock struct {
 type Statement struct {
 	Kind StatementKind `json:"kind"`
 
-	ExprStmt   *ExpressionStatement `json:"exprStmt,omitempty"`
-	AssignStmt *AssignmentStatement `json:"assignStmt,omitempty"`
-	IfStmt     *IfStatement         `json:"ifStmt,omitempty"`
-	ReturnStmt *ReturnStatement     `json:"returnStmt,omitempty"`
-	ForStmt    *ForStatement        `json:"forStmt,omitempty"`
-	SwitchStmt *SwitchStatement     `json:"switchStmt,omitempty"`
-	VarDecl    *VarDeclaration      `json:"varDecl,omitempty"`
+	ExprStmt   *ExpressionStatement   `json:"exprStmt,omitempty"`
+	AssignStmt *AssignmentStatement   `json:"assignStmt,omitempty"`
+	IfStmt     *IfStatement           `json:"ifStmt,omitempty"`
+	ReturnStmt *ReturnStatement       `json:"returnStmt,omitempty"`
+	ForStmt    *ForStatement          `json:"forStmt,omitempty"`
+	SwitchStmt *SwitchStatement       `json:"switchStmt,omitempty"`
+	VarDecl    *VarDeclaration        `json:"varDecl,omitempty"`
+	FuncCall   *FunctionCallStatement `json:"funcCall,omitempty"`
 }
 
 // StatementKind is an enum-like type representing the kind of statement.
 type StatementKind string
 
 const (
-	ExprStatementKind   StatementKind = "expression"
-	AssignStatementKind StatementKind = "assignment"
-	IfStatementKind     StatementKind = "if"
-	ReturnStatementKind StatementKind = "return"
-	ForStatementKind    StatementKind = "for"
-	SwitchStatementKind StatementKind = "switch"
-	VarDeclKind         StatementKind = "var_declaration"
+	ExprStatementKind     StatementKind = "expression"
+	AssignStatementKind   StatementKind = "assignment"
+	IfStatementKind       StatementKind = "if"
+	ReturnStatementKind   StatementKind = "return"
+	ForStatementKind      StatementKind = "for"
+	SwitchStatementKind   StatementKind = "switch"
+	VarDeclKind           StatementKind = "var_declaration"
+	FuncCallStatementKind StatementKind = "function_call"
 )
 
 // ExpressionStatement represents a standalone expression, like a function call.
@@ -72,6 +74,10 @@ type SwitchStatement struct {
 type CaseStatement struct {
 	Condition *Expression `json:"condition,omitempty"`
 	Body      *CodeBlock  `json:"body"`
+}
+
+type FunctionCallStatement struct {
+	Call *FunctionCall `json:"call"`
 }
 
 // VarDeclaration represents a variable declaration, e.g., `var x int = 5`.

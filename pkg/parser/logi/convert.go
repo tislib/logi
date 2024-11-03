@@ -17,6 +17,14 @@ func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 				return nil, fmt.Errorf("failed to convert definition: %w", err)
 			}
 			res.Definitions = append(res.Definitions, *definition)
+		case NodeOpFunctionDefinition:
+			function, err := convertFunctionDefinition(child)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert function definition: %w", err)
+			}
+			res.Functions = append(res.Functions, *function)
+		default:
+			return nil, fmt.Errorf("unexpected node op: %s", child.op)
 		}
 	}
 
@@ -229,5 +237,30 @@ func convertValue(element yaccNode) (*common.Value, error) {
 	}
 
 	return &value, nil
+}
 
+func convertFunctionDefinition(node yaccNode) (*plain.Function, error) {
+	function := new(plain.Function)
+
+	var nameNode = node.children[0]
+	var argumentListNode = node.children[1]
+	var codeBlockNode = node.children[2]
+
+	function.Name = nameNode.value.(string)
+
+	for _, argument := range argumentListNode.children {
+		arg, err := convertArgument(argument)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert argument: %w", err)
+		}
+		function.Arguments = append(function.Arguments, *arg)
+	}
+
+	codeBlock, err := convertCodeBlock(codeBlockNode)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert code block: %w", err)
+	}
+	function.CodeBlock = *codeBlock
+
+	return function, nil
 }

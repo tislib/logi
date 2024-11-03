@@ -7,6 +7,7 @@ import (
 
 type Ast struct {
 	Definitions []Definition `json:"definitions"`
+	Functions   []Function   `json:"functions"`
 }
 
 type Definition struct {
@@ -18,12 +19,17 @@ type Definition struct {
 	Methods         []Method                    `json:"methods"`
 }
 
+type Function struct {
+	Name      string     `json:"name"`
+	Arguments []Argument `json:"arguments"`
+	CodeBlock common.CodeBlock
+}
+
 type Property struct {
 	Name       string                `json:"name"`
 	Type       common.TypeDefinition `json:"type"`
 	Attributes []Attribute           `json:"attributes"`
 	Parameters []Parameter           `json:"parameters"`
-	CodeBlock  *common.CodeBlock     `json:"codeBlock"`
 }
 
 type MethodSignature struct {
@@ -40,7 +46,7 @@ type Method struct {
 	Attributes []Attribute           `json:"attributes"`
 	Parameters []Parameter           `json:"parameters"`
 	Arguments  []Argument            `json:"arguments"`
-	CodeBlock  *common.CodeBlock     `json:"codeBlock"`
+	CodeBlock  common.CodeBlock      `json:"codeBlock"`
 }
 
 type Attribute struct {

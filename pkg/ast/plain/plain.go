@@ -7,6 +7,7 @@ import (
 type Ast struct {
 	// The Macros of the package
 	Definitions []Definition `json:"definitions"`
+	Functions   []Function   `json:"functions"`
 }
 
 type Definition struct {
@@ -14,6 +15,12 @@ type Definition struct {
 	Name      string `json:"name"`
 
 	Statements []DefinitionStatement `json:"elements"`
+}
+
+type Function struct {
+	Name      string                               `json:"name"`
+	Arguments []DefinitionStatementElementArgument `json:"arguments"`
+	CodeBlock common.CodeBlock
 }
 
 type DefinitionStatement struct {

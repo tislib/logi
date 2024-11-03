@@ -48,6 +48,16 @@ func prepareAst(plainAst plain.Ast, macroAst macroAst.Ast) (*logi.Ast, error) {
 		result.Definitions = append(result.Definitions, *definition)
 	}
 
+	for _, plainFunction := range plainAst.Functions {
+		function, err := prepareFunction(plainFunction)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert function: %w", err)
+		}
+
+		result.Functions = append(result.Functions, *function)
+	}
+
 	return result, nil
 }
 
@@ -100,6 +110,19 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 	}
 
 	return definition, nil
+}
+
+func prepareFunction(plainFunction plain.Function) (*logi.Function, error) {
+	function := new(logi.Function)
+
+	function.Name = plainFunction.Name
+	function.CodeBlock = plainFunction.CodeBlock
+
+	for _, argument := range plainFunction.Arguments {
+		function.Arguments = append(function.Arguments, logi.Argument{Name: argument.Name, Type: argument.Type})
+	}
+
+	return function, nil
 }
 
 func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.Property, error) {
@@ -198,7 +221,7 @@ func prepareMethod(statement plain.DefinitionStatement, syntaxStatement *macroAs
 				method.Arguments = append(method.Arguments, logi.Argument{Name: argument.Name, Type: argument.Type})
 			}
 		case macroAst.SyntaxStatementElementKindCodeBlock:
-			method.CodeBlock = &element.CodeBlock.CodeBlock
+			method.CodeBlock = element.CodeBlock.CodeBlock
 		}
 	}
 

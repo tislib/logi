@@ -109,6 +109,8 @@ func (s *logiLexer) lex(lval *yySymType) int {
 				switch identifier {
 				case "if":
 					return IfKeyword
+				case "func":
+					return FuncKeyword
 				case "var":
 					return VarKeyword
 				//case "for":
@@ -119,8 +121,6 @@ func (s *logiLexer) lex(lval *yySymType) int {
 					return SwitchKeyword
 				case "case":
 					return CaseKeyword
-				case "logi":
-					return LogiKeyword
 				case "definition":
 					return DefinitionKeyword
 				case "syntax":

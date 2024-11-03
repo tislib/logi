@@ -49,7 +49,18 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 
 				VarDecl: varDeclaration,
 			})
+		case NodeOpFunctionCall:
+			functionCall, err := convertFunctionCallStatement(child)
 
+			if err != nil {
+				return nil, err
+			}
+
+			codeBlock.Statements = append(codeBlock.Statements, common.Statement{
+				Kind: common.FuncCallStatementKind,
+
+				FuncCall: functionCall,
+			})
 		default:
 			return nil, fmt.Errorf("unexpected node op: %s", child.op)
 		}
@@ -131,6 +142,20 @@ func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
 	return ifStatement, nil
 }
 
+func convertFunctionCallStatement(element yaccNode) (*common.FunctionCallStatement, error) {
+	functionCall := new(common.FunctionCallStatement)
+
+	expression, err := convertExpression(element.children[0])
+
+	if err != nil {
+		return nil, err
+	}
+
+	functionCall.Call = expression.FuncCall
+
+	return functionCall, nil
+}
+
 func convertExpression(element yaccNode) (*common.Expression, error) {
 	expression := new(common.Expression)
 
@@ -162,11 +187,54 @@ func convertExpression(element yaccNode) (*common.Expression, error) {
 
 		expression.Kind = common.VariableKind
 		expression.Variable = variable
+	case NodeOpFunctionCall:
+		functionCall, err := convertFunctionCall(element)
+
+		if err != nil {
+			return nil, err
+		}
+
+		expression.Kind = common.FuncCallKind
+		expression.FuncCall = functionCall
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
 	}
 
 	return expression, nil
+}
+
+func convertFunctionCall(element yaccNode) (*common.FunctionCall, error) {
+	functionCall := new(common.FunctionCall)
+
+	functionCall.Name = element.value.(string)
+
+	if len(element.children) > 0 {
+		arguments, err := convertArguments(element.children[0])
+
+		if err != nil {
+			return nil, err
+		}
+
+		functionCall.Arguments = arguments
+	}
+
+	return functionCall, nil
+}
+
+func convertArguments(element yaccNode) ([]*common.Expression, error) {
+	var arguments []*common.Expression
+
+	for _, child := range element.children {
+		argument, err := convertExpression(child)
+
+		if err != nil {
+			return nil, err
+		}
+
+		arguments = append(arguments, argument)
+	}
+
+	return arguments, nil
 }
 
 func convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error) {

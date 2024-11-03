@@ -20,7 +20,7 @@ import (
 %token<bool> token_bool
 
 // Keywords
-%token DefinitionKeyword SyntaxKeyword LogiKeyword
+%token DefinitionKeyword SyntaxKeyword FuncKeyword
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dot Arrow ParenOpen ParenClose Eol
 %token IfKeyword ElseKeyword ReturnKeyword SwitchKeyword CaseKeyword VarKeyword
@@ -30,9 +30,10 @@ import (
 %type<node> definition definition_signature definition_body definition_statements definition_statement definition_statement_element
 %type<node> definition_statement_element_identifier definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
-%type<node> code_block code_block_statements code_block_statement expression_statement assignment_statement if_statement return_statement variable_declaration_statement
+%type<node> code_block code_block_statements code_block_statement assignment_statement if_statement return_statement variable_declaration_statement function_call_statement
 %type<node> expression literal variable binary_expression function_call
 %type<node> function_params
+%type<node> function_definition
 %type<string> operator
 %start file
 
@@ -51,11 +52,18 @@ eol_required: Eol
 file: definition eol_allowed {
 	registerRootNode(yylex, $1)
 }
+| function_definition eol_allowed {
+  	registerRootNode(yylex, $1)
+}
 | file eol_allowed
 | eol_allowed
 | file definition eol_allowed {
 	registerRootNode(yylex, $2)
-};
+}
+| file function_definition eol_allowed {
+	registerRootNode(yylex, $2)
+}
+| // empty;
 
 definition: definition_signature eol_allowed definition_body
 {
@@ -138,6 +146,10 @@ definition_statement_element_attribute_list_item: token_identifier
 definition_statement_element_argument_list: ParenOpen definition_statement_element_argument_list_content ParenClose
 {
 	$$ = $2
+}
+| ParenOpen ParenClose
+{
+	$$ = appendNode(NodeOpArgumentList)
 };
 
 definition_statement_element_argument_list_content: definition_statement_element_argument_list_item
@@ -186,13 +198,12 @@ code_block_statements: code_block_statement eol_required
 }
 ;
 
-code_block_statement: expression_statement | assignment_statement | if_statement | return_statement | variable_declaration_statement;
+code_block_statement: function_call_statement | assignment_statement | if_statement | return_statement | variable_declaration_statement;
 
 // Statements
-
-expression_statement: expression
+function_call_statement: function_call
 {
-	$$ = appendNode(NodeOpExpression, $1)
+	$$ = appendNode(NodeOpFunctionCall, $1)
 };
 
 assignment_statement: expression Equal expression
@@ -292,7 +303,7 @@ binary_expression: expression operator expression
 
 function_call: token_identifier ParenOpen function_params ParenClose
 {
-	$$ = newNode(NodeOpFunctionCall, $1)
+	$$ = newNode(NodeOpFunctionCall, $1, $3)
 };
 
 function_params: expression
@@ -311,8 +322,10 @@ function_params: expression
 
 // ################################################################
 
-
-
+function_definition: FuncKeyword token_identifier definition_statement_element_argument_list code_block
+{
+	$$ = appendNode(NodeOpFunctionDefinition, newNode(NodeOpName, $2), $3, $4)
+};
 
 %%
 

@@ -275,7 +275,7 @@ func TestParserFull(t *testing.T) {
 										Value: common.PointerValue(common.StringValue("User")),
 									},
 								},
-								CodeBlock: &common.CodeBlock{
+								CodeBlock: common.CodeBlock{
 									Statements: []common.Statement{
 										{
 											Kind: common.ReturnStatementKind,

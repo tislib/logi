@@ -31,6 +31,7 @@ const (
 	NodeOpFunctionParams      = "function_params"
 	NodeOpCodeBlock           = "code_block"
 	NodeOpOperator            = "operator"
+	NodeOpFunctionDefinition  = "function_definition"
 )
 
 type yaccNode struct {
