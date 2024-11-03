@@ -17,7 +17,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"simple syntax macro": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expected: &astMacro.Ast{
@@ -32,11 +32,11 @@ func TestSyntaxMacro(t *testing.T) {
 		"multiple syntax macro": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 				}
 
 				macro simple2 {
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expected: &astMacro.Ast{
@@ -55,7 +55,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with simple syntax": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						Hello
@@ -104,7 +104,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with simple syntax and definition": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					definition {
 						Hello2 Hello3
@@ -177,7 +177,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with variable keyword statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						hello <userName string>
@@ -219,7 +219,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with variable keyword with generic type statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						hello <userName Type<string>>
@@ -266,7 +266,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with parameter list statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						hello (<userName string>, <password string>)
@@ -318,7 +318,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with argument list statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						hello (...[<args Type<string>>])
@@ -370,7 +370,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with code block statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						hello (...[<args Type<string>>]) { }
@@ -464,7 +464,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"syntax macro with attributes statement": {
 			input: `
 				macro simple {
-					kind MacroSyntax
+					kind Syntax
 					
 					syntax {
 						details [required bool, default string, number float]
@@ -525,7 +525,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is missing": {
 			input: `
 				macro {
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -533,7 +533,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format": {
 			input: `
 				macro simple!{
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -541,7 +541,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format[2]": {
 			input: `
 				macro simple simple{
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expectedError: "syntax error",
@@ -549,7 +549,7 @@ func TestSyntaxMacro(t *testing.T) {
 		"fail macro if name is in incorrect format[3]": {
 			input: `
 				macro SimPlEE{
-					kind MacroSyntax
+					kind Syntax
 				}
 			`,
 			expectedError: "failed to convert base macro: unexpected name value: SimPlEE",

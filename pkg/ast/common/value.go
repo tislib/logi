@@ -1,5 +1,7 @@
 package common
 
+import "fmt"
+
 type ValueKind string
 
 const (
@@ -16,6 +18,23 @@ type Value struct {
 	Boolean *bool    `json:"boolean,omitempty"`
 	Float   *float64 `json:"float,omitempty"`
 	Integer *int64   `json:"integer,omitempty"`
+}
+
+func (v Value) ToDisplayName() string {
+	switch v.Kind {
+	case ValueKindString:
+		return *v.String
+	case ValueKindBoolean:
+		if *v.Boolean {
+			return "true"
+		}
+		return "false"
+	case ValueKindFloat:
+		return fmt.Sprintf("%f", *v.Float)
+	case ValueKindInteger:
+		return fmt.Sprintf("%d", *v.Integer)
+	}
+	return ""
 }
 
 func StringValue(s string) Value {

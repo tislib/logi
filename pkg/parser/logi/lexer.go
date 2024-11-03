@@ -37,7 +37,6 @@ func (s *logiLexer) lex(lval *yySymType) int {
 	for {
 		r := s.read()
 		if r == 0 { // EOF
-			log.Print("EOF")
 			return 0
 		}
 		if isEol(r) {

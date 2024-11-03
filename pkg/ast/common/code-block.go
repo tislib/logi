@@ -1,6 +1,4 @@
-package plain
-
-import "logi/pkg/ast/common"
+package common
 
 type CodeBlock struct {
 	Statements []Statement `json:"statements"`
@@ -78,9 +76,9 @@ type CaseStatement struct {
 
 // VarDeclaration represents a variable declaration, e.g., `var x int = 5`.
 type VarDeclaration struct {
-	Name  string                `json:"name"`
-	Type  common.TypeDefinition `json:"type,omitempty"`
-	Value *Expression           `json:"value,omitempty"`
+	Name  string         `json:"name"`
+	Type  TypeDefinition `json:"type,omitempty"`
+	Value *Expression    `json:"value,omitempty"`
 }
 
 // Expressions
@@ -106,7 +104,7 @@ const (
 
 // Literal represents basic values like integers, strings, etc.
 type Literal struct {
-	Value common.Value `json:"value"`
+	Value Value `json:"value"`
 }
 
 // Variable represents a variable, e.g., `x`.

@@ -2,11 +2,11 @@ package logi
 
 import (
 	"fmt"
-	"logi/pkg/ast/plain"
+	"logi/pkg/ast/common"
 )
 
-func convertCodeBlock(element yaccNode) (*plain.CodeBlock, error) {
-	codeBlock := new(plain.CodeBlock)
+func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
+	codeBlock := new(common.CodeBlock)
 
 	var statementsElement = element.children[0].children
 
@@ -19,8 +19,8 @@ func convertCodeBlock(element yaccNode) (*plain.CodeBlock, error) {
 				return nil, err
 			}
 
-			codeBlock.Statements = append(codeBlock.Statements, plain.Statement{
-				Kind: plain.IfStatementKind,
+			codeBlock.Statements = append(codeBlock.Statements, common.Statement{
+				Kind: common.IfStatementKind,
 
 				IfStmt: ifStatement,
 			})
@@ -31,8 +31,8 @@ func convertCodeBlock(element yaccNode) (*plain.CodeBlock, error) {
 				return nil, err
 			}
 
-			codeBlock.Statements = append(codeBlock.Statements, plain.Statement{
-				Kind: plain.ReturnStatementKind,
+			codeBlock.Statements = append(codeBlock.Statements, common.Statement{
+				Kind: common.ReturnStatementKind,
 
 				ReturnStmt: returnStatement,
 			})
@@ -44,8 +44,8 @@ func convertCodeBlock(element yaccNode) (*plain.CodeBlock, error) {
 				return nil, err
 			}
 
-			codeBlock.Statements = append(codeBlock.Statements, plain.Statement{
-				Kind: plain.VarDeclKind,
+			codeBlock.Statements = append(codeBlock.Statements, common.Statement{
+				Kind: common.VarDeclKind,
 
 				VarDecl: varDeclaration,
 			})
@@ -58,8 +58,8 @@ func convertCodeBlock(element yaccNode) (*plain.CodeBlock, error) {
 	return codeBlock, nil
 }
 
-func convertReturnStatement(element yaccNode) (*plain.ReturnStatement, error) {
-	returnStatement := new(plain.ReturnStatement)
+func convertReturnStatement(element yaccNode) (*common.ReturnStatement, error) {
+	returnStatement := new(common.ReturnStatement)
 
 	expression, err := convertExpression(element.children[0])
 
@@ -72,8 +72,8 @@ func convertReturnStatement(element yaccNode) (*plain.ReturnStatement, error) {
 	return returnStatement, nil
 }
 
-func convertVariableDeclaration(child yaccNode) (*plain.VarDeclaration, error) {
-	varDeclaration := new(plain.VarDeclaration)
+func convertVariableDeclaration(child yaccNode) (*common.VarDeclaration, error) {
+	varDeclaration := new(common.VarDeclaration)
 
 	varDeclaration.Name = child.children[0].value.(string)
 
@@ -99,8 +99,8 @@ func convertVariableDeclaration(child yaccNode) (*plain.VarDeclaration, error) {
 
 }
 
-func convertIfStatement(element yaccNode) (*plain.IfStatement, error) {
-	ifStatement := new(plain.IfStatement)
+func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
+	ifStatement := new(common.IfStatement)
 
 	condition, err := convertExpression(element.children[0])
 
@@ -131,8 +131,8 @@ func convertIfStatement(element yaccNode) (*plain.IfStatement, error) {
 	return ifStatement, nil
 }
 
-func convertExpression(element yaccNode) (*plain.Expression, error) {
-	expression := new(plain.Expression)
+func convertExpression(element yaccNode) (*common.Expression, error) {
+	expression := new(common.Expression)
 
 	switch element.op {
 	case NodeOpBinaryExpression:
@@ -142,7 +142,7 @@ func convertExpression(element yaccNode) (*plain.Expression, error) {
 			return nil, err
 		}
 
-		expression.Kind = plain.BinaryExprKind
+		expression.Kind = common.BinaryExprKind
 		expression.BinaryExpr = binaryExpression
 	case NodeOpLiteral:
 		literal, err := convertValue(element)
@@ -151,8 +151,8 @@ func convertExpression(element yaccNode) (*plain.Expression, error) {
 			return nil, err
 		}
 
-		expression.Kind = plain.LiteralKind
-		expression.Literal = &plain.Literal{Value: *literal}
+		expression.Kind = common.LiteralKind
+		expression.Literal = &common.Literal{Value: *literal}
 	case NodeOpVariable:
 		variable, err := convertVariable(element)
 
@@ -160,7 +160,7 @@ func convertExpression(element yaccNode) (*plain.Expression, error) {
 			return nil, err
 		}
 
-		expression.Kind = plain.VariableKind
+		expression.Kind = common.VariableKind
 		expression.Variable = variable
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
@@ -169,8 +169,8 @@ func convertExpression(element yaccNode) (*plain.Expression, error) {
 	return expression, nil
 }
 
-func convertBinaryExpression(element yaccNode) (*plain.BinaryExpression, error) {
-	binaryExpression := new(plain.BinaryExpression)
+func convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error) {
+	binaryExpression := new(common.BinaryExpression)
 
 	left, err := convertExpression(element.children[0])
 
@@ -193,8 +193,8 @@ func convertBinaryExpression(element yaccNode) (*plain.BinaryExpression, error) 
 	return binaryExpression, nil
 }
 
-func convertVariable(element yaccNode) (*plain.Variable, error) {
-	variable := new(plain.Variable)
+func convertVariable(element yaccNode) (*common.Variable, error) {
+	variable := new(common.Variable)
 
 	variable.Name = element.value.(string)
 

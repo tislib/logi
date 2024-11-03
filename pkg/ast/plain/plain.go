@@ -67,5 +67,5 @@ type DefinitionStatementElementArgument struct {
 }
 
 type DefinitionStatementElementCodeBlock struct {
-	CodeBlock CodeBlock `json:"codeBlock"`
+	CodeBlock common.CodeBlock `json:"codeBlock"`
 }

@@ -12,7 +12,7 @@ func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 	for _, child := range node.children {
 		switch child.op {
 		case NodeOpDefinition:
-			definition, err := convertDefinition(child)
+			definition, err := convertPlainDefinition(child)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert definition: %w", err)
 			}
@@ -23,7 +23,7 @@ func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 	return res, nil
 }
 
-func convertDefinition(child yaccNode) (*plain.Definition, error) {
+func convertPlainDefinition(child yaccNode) (*plain.Definition, error) {
 	definition := new(plain.Definition)
 
 	var signature = child.children[0]

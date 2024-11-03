@@ -65,5 +65,4 @@ func assertEqual(parser yyLexer, a, b interface{}, msg string) {
 
 func init() {
 	yyErrorVerbose = true
-	yyDebug = 5
 }

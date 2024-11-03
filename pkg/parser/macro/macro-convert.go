@@ -39,7 +39,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 
 	result.Name = name.value.(string)
 	switch kind {
-	case "MacroSyntax":
+	case "Syntax":
 		result.Kind = astMacro.KindSyntax
 	default:
 		return nil, fmt.Errorf("unexpected kind value: %s", kind)
@@ -49,7 +49,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 		switch child.op {
 		case NodeOpSyntax:
 			if result.Kind != astMacro.KindSyntax {
-				return nil, fmt.Errorf("syntax defined for macro of kind %s; but expected MacroSyntax", result.Kind)
+				return nil, fmt.Errorf("syntax defined for macro of kind %s; but expected Syntax", result.Kind)
 			}
 			if len(child.children) != 0 {
 				syntaxBody, err := convertSyntaxBody(child.children[0])
@@ -62,7 +62,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 			}
 		case NodeOpDefinition:
 			if result.Kind != astMacro.KindSyntax {
-				return nil, fmt.Errorf("definition defined for macro of kind %s; but expected MacroSyntax", result.Kind)
+				return nil, fmt.Errorf("definition defined for macro of kind %s; but expected Syntax", result.Kind)
 			}
 			if len(child.children) != 0 {
 				syntaxBody, err := convertSyntaxBody(child.children[0])

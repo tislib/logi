@@ -18,8 +18,8 @@ func (y *yyLogiLexerProxy) Error(s string) {
 	y.lexer.Error(s)
 }
 
-func ParseLogiPlainContent(d string) (*plain.Ast, error) {
-	s := newLogiLexer(strings.NewReader(d), true)
+func ParsePlainContent(d string) (*plain.Ast, error) {
+	s := newLogiLexer(strings.NewReader(d), false)
 	parser := yyNewParser()
 	proxy := &yyLogiLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}
 

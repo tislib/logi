@@ -19,7 +19,7 @@ func (y *yyMakroLexerProxy) Error(s string) {
 }
 
 func ParseMacroContent(d string) (*astMacro.Ast, error) {
-	s := newMacroLexer(strings.NewReader(d), true)
+	s := newMacroLexer(strings.NewReader(d), false)
 	parser := yyNewParser()
 	proxy := &yyMakroLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}
 

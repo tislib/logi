@@ -1,9 +1,7 @@
 package logi
 
 import (
-	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"logi/pkg/ast/common"
 	"logi/pkg/ast/plain"
 	"strings"
@@ -194,40 +192,40 @@ func TestSyntaxLogi(t *testing.T) {
 										Kind: plain.DefinitionStatementElementKindCodeBlock,
 
 										CodeBlock: &plain.DefinitionStatementElementCodeBlock{
-											CodeBlock: plain.CodeBlock{
-												Statements: []plain.Statement{
+											CodeBlock: common.CodeBlock{
+												Statements: []common.Statement{
 													{
-														Kind: plain.IfStatementKind,
-														IfStmt: &plain.IfStatement{
-															Condition: &plain.Expression{
-																Kind: plain.BinaryExprKind,
-																BinaryExpr: &plain.BinaryExpression{
-																	Left: &plain.Expression{
-																		Kind: plain.VariableKind,
-																		Variable: &plain.Variable{
+														Kind: common.IfStatementKind,
+														IfStmt: &common.IfStatement{
+															Condition: &common.Expression{
+																Kind: common.BinaryExprKind,
+																BinaryExpr: &common.BinaryExpression{
+																	Left: &common.Expression{
+																		Kind: common.VariableKind,
+																		Variable: &common.Variable{
 																			Name: "age",
 																		},
 																	},
 																	Operator: "<",
-																	Right: &plain.Expression{
-																		Kind: plain.LiteralKind,
+																	Right: &common.Expression{
+																		Kind: common.LiteralKind,
 
-																		Literal: &plain.Literal{
+																		Literal: &common.Literal{
 																			Value: common.IntegerValue(18),
 																		},
 																	},
 																},
 															},
-															ThenBlock: &plain.CodeBlock{
-																Statements: []plain.Statement{
+															ThenBlock: &common.CodeBlock{
+																Statements: []common.Statement{
 																	{
-																		Kind: plain.ReturnStatementKind,
+																		Kind: common.ReturnStatementKind,
 
-																		ReturnStmt: &plain.ReturnStatement{
-																			Result: &plain.Expression{
-																				Kind: plain.LiteralKind,
+																		ReturnStmt: &common.ReturnStatement{
+																			Result: &common.Expression{
+																				Kind: common.LiteralKind,
 
-																				Literal: &plain.Literal{
+																				Literal: &common.Literal{
 																					Value: common.IntegerValue(0),
 																				},
 																			},
@@ -239,13 +237,13 @@ func TestSyntaxLogi(t *testing.T) {
 													},
 
 													{
-														Kind: plain.ReturnStatementKind,
+														Kind: common.ReturnStatementKind,
 
-														ReturnStmt: &plain.ReturnStatement{
-															Result: &plain.Expression{
-																Kind: plain.LiteralKind,
+														ReturnStmt: &common.ReturnStatement{
+															Result: &common.Expression{
+																Kind: common.LiteralKind,
 
-																Literal: &plain.Literal{
+																Literal: &common.Literal{
 																	Value: common.IntegerValue(1),
 																},
 															},
@@ -265,14 +263,7 @@ func TestSyntaxLogi(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := ParseLogiPlainContent(tt.input)
-
-			gotJ, _ := json.Marshal(got)
-
-			expJ, _ := json.Marshal(tt.expected)
-
-			log.Print(string(gotJ))
-			log.Print(string(expJ))
+			got, err := ParsePlainContent(tt.input)
 
 			if tt.expectedError != "" {
 				if err == nil {
