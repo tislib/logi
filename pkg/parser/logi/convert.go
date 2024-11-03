@@ -100,6 +100,15 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 
 		statement.Kind = plain.DefinitionStatementElementKindArgumentList
 		statement.ArgumentList = argumentList
+	case NodeOpCodeBlock:
+		codeBlock, err := convertCodeBlock(element)
+
+		if err != nil {
+			return nil, err
+		}
+
+		statement.Kind = plain.DefinitionStatementElementKindCodeBlock
+		statement.CodeBlock = &plain.DefinitionStatementElementCodeBlock{CodeBlock: *codeBlock}
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
 	}
@@ -212,7 +221,7 @@ func convertValue(element yaccNode) (*common.Value, error) {
 	case string:
 		value = common.StringValue(element.value.(string))
 	case int:
-		value = common.IntegerValue(element.value.(int64))
+		value = common.IntegerValue(int64(element.value.(int)))
 	case bool:
 		value = common.BooleanValue(element.value.(bool))
 	default:

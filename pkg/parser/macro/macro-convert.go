@@ -2,6 +2,7 @@ package macro
 
 import (
 	"fmt"
+	"logi/pkg/ast/common"
 	astMacro "logi/pkg/ast/macro"
 )
 
@@ -248,8 +249,8 @@ func convertSyntaxStatementElementAttribute(node yaccNode) (*astMacro.SyntaxStat
 	return result, nil
 }
 
-func convertTypeDefinition(node yaccNode) (*astMacro.TypeDefinition, error) {
-	var result = new(astMacro.TypeDefinition)
+func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
+	var result = new(common.TypeDefinition)
 	result.Name = node.value.(string)
 
 	if len(node.children) > 0 {

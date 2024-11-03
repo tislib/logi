@@ -2,6 +2,7 @@ package macro
 
 import (
 	"github.com/stretchr/testify/assert"
+	"logi/pkg/ast/common"
 	astMacro "logi/pkg/ast/macro"
 	"strings"
 	"testing"
@@ -202,7 +203,7 @@ func TestSyntaxMacro(t *testing.T) {
 											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
 											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
 												Name: "userName",
-												Type: astMacro.TypeDefinition{
+												Type: common.TypeDefinition{
 													Name: "string",
 												},
 											},
@@ -244,9 +245,9 @@ func TestSyntaxMacro(t *testing.T) {
 											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
 											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
 												Name: "userName",
-												Type: astMacro.TypeDefinition{
+												Type: common.TypeDefinition{
 													Name: "Type",
-													SubTypes: []astMacro.TypeDefinition{
+													SubTypes: []common.TypeDefinition{
 														{
 															Name: "string",
 														},
@@ -293,13 +294,13 @@ func TestSyntaxMacro(t *testing.T) {
 												Parameters: []astMacro.SyntaxStatementElementParameter{
 													{
 														Name: "userName",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "string",
 														},
 													},
 													{
 														Name: "password",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "string",
 														},
 													},
@@ -346,9 +347,9 @@ func TestSyntaxMacro(t *testing.T) {
 												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "Type",
-															SubTypes: []astMacro.TypeDefinition{
+															SubTypes: []common.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -399,9 +400,9 @@ func TestSyntaxMacro(t *testing.T) {
 												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "Type",
-															SubTypes: []astMacro.TypeDefinition{
+															SubTypes: []common.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -432,9 +433,9 @@ func TestSyntaxMacro(t *testing.T) {
 												Arguments: []astMacro.SyntaxStatementElementArgument{
 													{
 														Name: "args",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "Type",
-															SubTypes: []astMacro.TypeDefinition{
+															SubTypes: []common.TypeDefinition{
 																{
 																	Name: "string",
 																},
@@ -447,7 +448,7 @@ func TestSyntaxMacro(t *testing.T) {
 										{
 											Kind: astMacro.SyntaxStatementElementKindCodeBlock,
 											CodeBlock: &astMacro.SyntaxStatementElementCodeBlock{
-												ReturnType: astMacro.TypeDefinition{
+												ReturnType: common.TypeDefinition{
 													Name: "string",
 												},
 											},
@@ -491,17 +492,17 @@ func TestSyntaxMacro(t *testing.T) {
 												Attributes: []astMacro.SyntaxStatementElementAttribute{
 													{
 														Name: "required",
-														Type: astMacro.TypeDefinition{
+														Type: common.TypeDefinition{
 															Name: "bool",
 														},
 													},
 													{
 														Name: "default",
-														Type: astMacro.TypeDefinition{Name: "string"},
+														Type: common.TypeDefinition{Name: "string"},
 													},
 													{
 														Name: "number",
-														Type: astMacro.TypeDefinition{Name: "float"},
+														Type: common.TypeDefinition{Name: "float"},
 													},
 												},
 											},

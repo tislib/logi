@@ -1,7 +1,9 @@
 package logi
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"logi/pkg/ast/common"
 	"logi/pkg/ast/plain"
 	"strings"
@@ -152,15 +154,34 @@ func TestSyntaxLogi(t *testing.T) {
 			expected: &plain.Ast{
 				Definitions: []plain.Definition{
 					{
-						MacroName: "entity",
-						Name:      "User",
+						MacroName: "service",
+						Name:      "UserService",
 						Statements: []plain.DefinitionStatement{
 							{
 								Elements: []plain.DefinitionStatementElement{
 									{
 										Kind: plain.DefinitionStatementElementKindIdentifier,
 										Identifier: &plain.DefinitionStatementElementIdentifier{
-											Identifier: "id",
+											Identifier: "createUser",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindArgumentList,
+										ArgumentList: &plain.DefinitionStatementElementArgumentList{
+											Arguments: []plain.DefinitionStatementElementArgument{
+												{
+													Name: "name",
+													TypeDefinition: &common.TypeDefinition{
+														Name: "string",
+													},
+												},
+												{
+													Name: "age",
+													TypeDefinition: &common.TypeDefinition{
+														Name: "int",
+													},
+												},
+											},
 										},
 									},
 									{
@@ -170,44 +191,66 @@ func TestSyntaxLogi(t *testing.T) {
 										},
 									},
 									{
-										Kind: plain.DefinitionStatementElementKindAttributeList,
-										AttributeList: &plain.DefinitionStatementElementAttributeList{
-											Attributes: []plain.DefinitionStatementElementAttribute{
-												{
-													Name: "primary",
-												},
-												{
-													Name: "autoincrement",
-												},
-											},
-										},
-									},
-								},
-							},
-							{
-								Elements: []plain.DefinitionStatementElement{
-									{
-										Kind: plain.DefinitionStatementElementKindIdentifier,
-										Identifier: &plain.DefinitionStatementElementIdentifier{
-											Identifier: "name",
-										},
-									},
-									{
-										Kind: plain.DefinitionStatementElementKindIdentifier,
-										Identifier: &plain.DefinitionStatementElementIdentifier{
-											Identifier: "string",
-										},
-									},
-									{
-										Kind: plain.DefinitionStatementElementKindAttributeList,
-										AttributeList: &plain.DefinitionStatementElementAttributeList{
-											Attributes: []plain.DefinitionStatementElementAttribute{
-												{
-													Name: "required",
-												},
-												{
-													Name:  "default",
-													Value: common.PointerValue(common.StringValue("John Doe")),
+										Kind: plain.DefinitionStatementElementKindCodeBlock,
+
+										CodeBlock: &plain.DefinitionStatementElementCodeBlock{
+											CodeBlock: plain.CodeBlock{
+												Statements: []plain.Statement{
+													{
+														Kind: plain.IfStatementKind,
+														IfStmt: &plain.IfStatement{
+															Condition: &plain.Expression{
+																Kind: plain.BinaryExprKind,
+																BinaryExpr: &plain.BinaryExpression{
+																	Left: &plain.Expression{
+																		Kind: plain.VariableKind,
+																		Variable: &plain.Variable{
+																			Name: "age",
+																		},
+																	},
+																	Operator: "<",
+																	Right: &plain.Expression{
+																		Kind: plain.LiteralKind,
+
+																		Literal: &plain.Literal{
+																			Value: common.IntegerValue(18),
+																		},
+																	},
+																},
+															},
+															ThenBlock: &plain.CodeBlock{
+																Statements: []plain.Statement{
+																	{
+																		Kind: plain.ReturnStatementKind,
+
+																		ReturnStmt: &plain.ReturnStatement{
+																			Result: &plain.Expression{
+																				Kind: plain.LiteralKind,
+
+																				Literal: &plain.Literal{
+																					Value: common.IntegerValue(0),
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+
+													{
+														Kind: plain.ReturnStatementKind,
+
+														ReturnStmt: &plain.ReturnStatement{
+															Result: &plain.Expression{
+																Kind: plain.LiteralKind,
+
+																Literal: &plain.Literal{
+																	Value: common.IntegerValue(1),
+																},
+															},
+														},
+													},
 												},
 											},
 										},
@@ -223,6 +266,13 @@ func TestSyntaxLogi(t *testing.T) {
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			got, err := ParseLogiPlainContent(tt.input)
+
+			gotJ, _ := json.Marshal(got)
+
+			expJ, _ := json.Marshal(tt.expected)
+
+			log.Print(string(gotJ))
+			log.Print(string(expJ))
 
 			if tt.expectedError != "" {
 				if err == nil {

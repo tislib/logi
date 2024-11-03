@@ -1,0 +1,1145 @@
+
+0: shift/reduce conflict (shift 6(0), red'n 3(0)) on token_identifier
+0: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 0
+	$accept: .file $end 
+	eol_allowed: .    (3)
+
+	token_identifier  shift 6
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	definition  goto 2
+	definition_signature  goto 4
+	file  goto 1
+	eol_allowed  goto 3
+
+1: shift/reduce conflict (shift 8191(0), red'n 3(0)) on $end
+1: shift/reduce conflict (shift 6(0), red'n 3(0)) on token_identifier
+1: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 1
+	$accept:  file.$end 
+	file:  file.eol_allowed 
+	file:  file.definition eol_allowed 
+	eol_allowed: .    (3)
+
+	$end  accept
+	token_identifier  shift 6
+	Eol  shift 5
+	.  error
+
+	definition  goto 8
+	definition_signature  goto 4
+	eol_allowed  goto 7
+
+2: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 2
+	file:  definition.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	eol_allowed  goto 9
+
+3: shift/reduce conflict (shift 10(0), red'n 8(0)) on Eol
+state 3
+	eol_allowed:  eol_allowed.Eol 
+	file:  eol_allowed.    (8)
+
+	Eol  shift 10
+	.  reduce 8 (src line 54)
+
+
+4: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 4
+	definition:  definition_signature.eol_allowed definition_body 
+	eol_allowed: .    (3)
+
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	eol_allowed  goto 11
+
+state 5
+	eol_allowed:  Eol.    (1)
+
+	.  reduce 1 (src line 41)
+
+
+state 6
+	definition_signature:  token_identifier.token_identifier 
+
+	token_identifier  shift 12
+	.  error
+
+
+7: shift/reduce conflict (shift 10(0), red'n 7(0)) on Eol
+state 7
+	eol_allowed:  eol_allowed.Eol 
+	file:  file eol_allowed.    (7)
+
+	Eol  shift 10
+	.  reduce 7 (src line 53)
+
+
+8: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 8
+	file:  file definition.eol_allowed 
+	eol_allowed: .    (3)
+
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	eol_allowed  goto 13
+
+9: shift/reduce conflict (shift 10(0), red'n 6(0)) on Eol
+state 9
+	eol_allowed:  eol_allowed.Eol 
+	file:  definition eol_allowed.    (6)
+
+	Eol  shift 10
+	.  reduce 6 (src line 50)
+
+
+state 10
+	eol_allowed:  eol_allowed Eol.    (2)
+
+	.  reduce 2 (src line 42)
+
+
+state 11
+	eol_allowed:  eol_allowed.Eol 
+	definition:  definition_signature eol_allowed.definition_body 
+
+	BraceOpen  shift 15
+	Eol  shift 10
+	.  error
+
+	definition_body  goto 14
+
+state 12
+	definition_signature:  token_identifier token_identifier.    (11)
+
+	.  reduce 11 (src line 64)
+
+
+13: shift/reduce conflict (shift 10(0), red'n 9(0)) on Eol
+state 13
+	eol_allowed:  eol_allowed.Eol 
+	file:  file definition eol_allowed.    (9)
+
+	Eol  shift 10
+	.  reduce 9 (src line 55)
+
+
+state 14
+	definition:  definition_signature eol_allowed definition_body.    (10)
+
+	.  reduce 10 (src line 59)
+
+
+15: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 15
+	definition_body:  BraceOpen.eol_allowed definition_statements eol_allowed BraceClose 
+	eol_allowed: .    (3)
+
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	eol_allowed  goto 16
+
+state 16
+	eol_allowed:  eol_allowed.Eol 
+	definition_body:  BraceOpen eol_allowed.definition_statements eol_allowed BraceClose 
+
+	token_number  shift 27
+	token_string  shift 26
+	token_identifier  shift 25
+	token_bool  shift 28
+	BracketOpen  shift 29
+	BraceOpen  shift 31
+	ParenOpen  shift 30
+	Eol  shift 10
+	.  error
+
+	definition_statements  goto 17
+	definition_statement  goto 18
+	definition_statement_element  goto 19
+	definition_statement_element_identifier  goto 20
+	definition_statement_element_value  goto 21
+	definition_statement_element_attribute_list  goto 22
+	definition_statement_element_argument_list  goto 23
+	code_block  goto 24
+
+17: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 17
+	definition_body:  BraceOpen eol_allowed definition_statements.eol_allowed BraceClose 
+	definition_statements:  definition_statements.definition_statement eol_required 
+	eol_allowed: .    (3)
+
+	token_number  shift 27
+	token_string  shift 26
+	token_identifier  shift 25
+	token_bool  shift 28
+	BracketOpen  shift 29
+	BraceOpen  shift 31
+	ParenOpen  shift 30
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	definition_statement  goto 33
+	definition_statement_element  goto 19
+	definition_statement_element_identifier  goto 20
+	definition_statement_element_value  goto 21
+	definition_statement_element_attribute_list  goto 22
+	definition_statement_element_argument_list  goto 23
+	code_block  goto 24
+	eol_allowed  goto 32
+
+state 18
+	definition_statements:  definition_statement.eol_required 
+	definition_statement:  definition_statement.definition_statement_element 
+
+	token_number  shift 27
+	token_string  shift 26
+	token_identifier  shift 25
+	token_bool  shift 28
+	BracketOpen  shift 29
+	BraceOpen  shift 31
+	ParenOpen  shift 30
+	Eol  shift 36
+	.  error
+
+	definition_statement_element  goto 35
+	definition_statement_element_identifier  goto 20
+	definition_statement_element_value  goto 21
+	definition_statement_element_attribute_list  goto 22
+	definition_statement_element_argument_list  goto 23
+	code_block  goto 24
+	eol_required  goto 34
+
+state 19
+	definition_statement:  definition_statement_element.    (15)
+
+	.  reduce 15 (src line 85)
+
+
+state 20
+	definition_statement_element:  definition_statement_element_identifier.    (17)
+
+	.  reduce 17 (src line 94)
+
+
+state 21
+	definition_statement_element:  definition_statement_element_value.    (18)
+
+	.  reduce 18 (src line 94)
+
+
+state 22
+	definition_statement_element:  definition_statement_element_attribute_list.    (19)
+
+	.  reduce 19 (src line 94)
+
+
+state 23
+	definition_statement_element:  definition_statement_element_argument_list.    (20)
+
+	.  reduce 20 (src line 94)
+
+
+state 24
+	definition_statement_element:  code_block.    (21)
+
+	.  reduce 21 (src line 94)
+
+
+state 25
+	definition_statement_element_identifier:  token_identifier.    (22)
+
+	.  reduce 22 (src line 96)
+
+
+state 26
+	definition_statement_element_value:  token_string.    (23)
+
+	.  reduce 23 (src line 101)
+
+
+state 27
+	definition_statement_element_value:  token_number.    (24)
+
+	.  reduce 24 (src line 105)
+
+
+state 28
+	definition_statement_element_value:  token_bool.    (25)
+
+	.  reduce 25 (src line 109)
+
+
+state 29
+	definition_statement_element_attribute_list:  BracketOpen.definition_statement_element_attribute_list_content BracketClose 
+
+	token_identifier  shift 39
+	.  error
+
+	definition_statement_element_attribute_list_content  goto 37
+	definition_statement_element_attribute_list_item  goto 38
+
+state 30
+	definition_statement_element_argument_list:  ParenOpen.definition_statement_element_argument_list_content ParenClose 
+
+	token_identifier  shift 42
+	.  error
+
+	definition_statement_element_argument_list_content  goto 40
+	definition_statement_element_argument_list_item  goto 41
+
+31: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 31
+	code_block:  BraceOpen.eol_allowed code_block_statements eol_allowed BraceClose 
+	eol_allowed: .    (3)
+
+	Eol  shift 5
+	.  reduce 3 (src line 43)
+
+	eol_allowed  goto 43
+
+state 32
+	eol_allowed:  eol_allowed.Eol 
+	definition_body:  BraceOpen eol_allowed definition_statements eol_allowed.BraceClose 
+
+	BraceClose  shift 44
+	Eol  shift 10
+	.  error
+
+
+state 33
+	definition_statements:  definition_statements definition_statement.eol_required 
+	definition_statement:  definition_statement.definition_statement_element 
+
+	token_number  shift 27
+	token_string  shift 26
+	token_identifier  shift 25
+	token_bool  shift 28
+	BracketOpen  shift 29
+	BraceOpen  shift 31
+	ParenOpen  shift 30
+	Eol  shift 36
+	.  error
+
+	definition_statement_element  goto 35
+	definition_statement_element_identifier  goto 20
+	definition_statement_element_value  goto 21
+	definition_statement_element_attribute_list  goto 22
+	definition_statement_element_argument_list  goto 23
+	code_block  goto 24
+	eol_required  goto 45
+
+34: shift/reduce conflict (shift 46(0), red'n 13(0)) on Eol
+state 34
+	eol_required:  eol_required.Eol 
+	definition_statements:  definition_statement eol_required.    (13)
+
+	Eol  shift 46
+	.  reduce 13 (src line 76)
+
+
+state 35
+	definition_statement:  definition_statement definition_statement_element.    (16)
+
+	.  reduce 16 (src line 89)
+
+
+state 36
+	eol_required:  Eol.    (4)
+
+	.  reduce 4 (src line 46)
+
+
+state 37
+	definition_statement_element_attribute_list:  BracketOpen definition_statement_element_attribute_list_content.BracketClose 
+	definition_statement_element_attribute_list_content:  definition_statement_element_attribute_list_content.Comma definition_statement_element_attribute_list_item 
+
+	BracketClose  shift 47
+	Comma  shift 48
+	.  error
+
+
+state 38
+	definition_statement_element_attribute_list_content:  definition_statement_element_attribute_list_item.    (27)
+
+	.  reduce 27 (src line 119)
+
+
+state 39
+	definition_statement_element_attribute_list_item:  token_identifier.    (29)
+	definition_statement_element_attribute_list_item:  token_identifier.definition_statement_element_value 
+
+	token_number  shift 27
+	token_string  shift 26
+	token_bool  shift 28
+	.  reduce 29 (src line 128)
+
+	definition_statement_element_value  goto 49
+
+state 40
+	definition_statement_element_argument_list:  ParenOpen definition_statement_element_argument_list_content.ParenClose 
+	definition_statement_element_argument_list_content:  definition_statement_element_argument_list_content.Comma definition_statement_element_argument_list_item 
+
+	Comma  shift 51
+	ParenClose  shift 50
+	.  error
+
+
+state 41
+	definition_statement_element_argument_list_content:  definition_statement_element_argument_list_item.    (32)
+
+	.  reduce 32 (src line 142)
+
+
+state 42
+	definition_statement_element_argument_list_item:  token_identifier.type_definition 
+
+	token_identifier  shift 53
+	.  error
+
+	type_definition  goto 52
+
+43: shift/reduce conflict (shift 71(0), red'n 40(0)) on token_number
+43: shift/reduce conflict (shift 70(0), red'n 40(0)) on token_string
+43: shift/reduce conflict (shift 69(0), red'n 40(0)) on token_identifier
+43: shift/reduce conflict (shift 72(0), red'n 40(0)) on token_bool
+43: shift/reduce conflict (shift 10(0), red'n 40(0)) on Eol
+43: shift/reduce conflict (shift 62(0), red'n 40(0)) on IfKeyword
+43: shift/reduce conflict (shift 63(0), red'n 40(0)) on ReturnKeyword
+43: shift/reduce conflict (shift 64(0), red'n 40(0)) on VarKeyword
+state 43
+	eol_allowed:  eol_allowed.Eol 
+	code_block:  BraceOpen eol_allowed.code_block_statements eol_allowed BraceClose 
+	code_block_statements: .    (40)
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	Eol  shift 10
+	IfKeyword  shift 62
+	ReturnKeyword  shift 63
+	VarKeyword  shift 64
+	.  reduce 40 (src line 182)
+
+	code_block_statements  goto 54
+	code_block_statement  goto 55
+	expression_statement  goto 56
+	assignment_statement  goto 57
+	if_statement  goto 58
+	return_statement  goto 59
+	variable_declaration_statement  goto 60
+	expression  goto 61
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 44
+	definition_body:  BraceOpen eol_allowed definition_statements eol_allowed BraceClose.    (12)
+
+	.  reduce 12 (src line 69)
+
+
+45: shift/reduce conflict (shift 46(0), red'n 14(0)) on Eol
+state 45
+	eol_required:  eol_required.Eol 
+	definition_statements:  definition_statements definition_statement eol_required.    (14)
+
+	Eol  shift 46
+	.  reduce 14 (src line 80)
+
+
+state 46
+	eol_required:  eol_required Eol.    (5)
+
+	.  reduce 5 (src line 47)
+
+
+state 47
+	definition_statement_element_attribute_list:  BracketOpen definition_statement_element_attribute_list_content BracketClose.    (26)
+
+	.  reduce 26 (src line 114)
+
+
+state 48
+	definition_statement_element_attribute_list_content:  definition_statement_element_attribute_list_content Comma.definition_statement_element_attribute_list_item 
+
+	token_identifier  shift 39
+	.  error
+
+	definition_statement_element_attribute_list_item  goto 73
+
+state 49
+	definition_statement_element_attribute_list_item:  token_identifier definition_statement_element_value.    (30)
+
+	.  reduce 30 (src line 132)
+
+
+state 50
+	definition_statement_element_argument_list:  ParenOpen definition_statement_element_argument_list_content ParenClose.    (31)
+
+	.  reduce 31 (src line 137)
+
+
+state 51
+	definition_statement_element_argument_list_content:  definition_statement_element_argument_list_content Comma.definition_statement_element_argument_list_item 
+
+	token_identifier  shift 42
+	.  error
+
+	definition_statement_element_argument_list_item  goto 74
+
+state 52
+	definition_statement_element_argument_list_item:  token_identifier type_definition.    (34)
+
+	.  reduce 34 (src line 151)
+
+
+state 53
+	type_definition:  token_identifier.    (35)
+	type_definition:  token_identifier.LessThan type_definition GreaterThan 
+
+	LessThan  shift 75
+	.  reduce 35 (src line 157)
+
+
+54: shift/reduce conflict (shift 5(0), red'n 3(0)) on Eol
+state 54
+	code_block:  BraceOpen eol_allowed code_block_statements.eol_allowed BraceClose 
+	code_block_statements:  code_block_statements.code_block_statement eol_required 
+	eol_allowed: .    (3)
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	Eol  shift 5
+	IfKeyword  shift 62
+	ReturnKeyword  shift 63
+	VarKeyword  shift 64
+	.  reduce 3 (src line 43)
+
+	code_block_statement  goto 77
+	expression_statement  goto 56
+	assignment_statement  goto 57
+	if_statement  goto 58
+	return_statement  goto 59
+	variable_declaration_statement  goto 60
+	expression  goto 61
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+	eol_allowed  goto 76
+
+state 55
+	code_block_statements:  code_block_statement.eol_required 
+
+	Eol  shift 36
+	.  error
+
+	eol_required  goto 78
+
+state 56
+	code_block_statement:  expression_statement.    (41)
+
+	.  reduce 41 (src line 188)
+
+
+state 57
+	code_block_statement:  assignment_statement.    (42)
+
+	.  reduce 42 (src line 188)
+
+
+state 58
+	code_block_statement:  if_statement.    (43)
+
+	.  reduce 43 (src line 188)
+
+
+state 59
+	code_block_statement:  return_statement.    (44)
+
+	.  reduce 44 (src line 188)
+
+
+state 60
+	code_block_statement:  variable_declaration_statement.    (45)
+
+	.  reduce 45 (src line 188)
+
+
+state 61
+	expression_statement:  expression.    (46)
+	assignment_statement:  expression.Equal expression 
+	binary_expression:  expression.operator expression 
+
+	Equal  shift 79
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 46 (src line 192)
+
+	operator  goto 80
+
+state 62
+	if_statement:  IfKeyword.ParenOpen expression ParenClose code_block 
+	if_statement:  IfKeyword.ParenOpen expression ParenClose code_block ElseKeyword code_block 
+	if_statement:  IfKeyword.expression code_block 
+	if_statement:  IfKeyword.expression code_block ElseKeyword code_block 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	ParenOpen  shift 89
+	.  error
+
+	expression  goto 90
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 63
+	return_statement:  ReturnKeyword.expression 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 91
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 64
+	variable_declaration_statement:  VarKeyword.token_identifier type_definition 
+	variable_declaration_statement:  VarKeyword.token_identifier type_definition Equal expression 
+
+	token_identifier  shift 92
+	.  error
+
+
+state 65
+	expression:  binary_expression.    (55)
+
+	.  reduce 55 (src line 235)
+
+
+state 66
+	expression:  function_call.    (56)
+
+	.  reduce 56 (src line 235)
+
+
+state 67
+	expression:  literal.    (57)
+
+	.  reduce 57 (src line 235)
+
+
+state 68
+	expression:  variable.    (58)
+
+	.  reduce 58 (src line 235)
+
+
+state 69
+	variable:  token_identifier.    (62)
+	function_call:  token_identifier.ParenOpen function_params ParenClose 
+
+	ParenOpen  shift 93
+	.  reduce 62 (src line 250)
+
+
+state 70
+	literal:  token_string.    (59)
+
+	.  reduce 59 (src line 237)
+
+
+state 71
+	literal:  token_number.    (60)
+
+	.  reduce 60 (src line 241)
+
+
+state 72
+	literal:  token_bool.    (61)
+
+	.  reduce 61 (src line 245)
+
+
+state 73
+	definition_statement_element_attribute_list_content:  definition_statement_element_attribute_list_content Comma definition_statement_element_attribute_list_item.    (28)
+
+	.  reduce 28 (src line 123)
+
+
+state 74
+	definition_statement_element_argument_list_content:  definition_statement_element_argument_list_content Comma definition_statement_element_argument_list_item.    (33)
+
+	.  reduce 33 (src line 146)
+
+
+state 75
+	type_definition:  token_identifier LessThan.type_definition GreaterThan 
+
+	token_identifier  shift 53
+	.  error
+
+	type_definition  goto 94
+
+state 76
+	eol_allowed:  eol_allowed.Eol 
+	code_block:  BraceOpen eol_allowed code_block_statements eol_allowed.BraceClose 
+
+	BraceClose  shift 95
+	Eol  shift 10
+	.  error
+
+
+state 77
+	code_block_statements:  code_block_statements code_block_statement.eol_required 
+
+	Eol  shift 36
+	.  error
+
+	eol_required  goto 96
+
+78: shift/reduce conflict (shift 46(0), red'n 38(0)) on Eol
+state 78
+	eol_required:  eol_required.Eol 
+	code_block_statements:  code_block_statement eol_required.    (38)
+
+	Eol  shift 46
+	.  reduce 38 (src line 174)
+
+
+state 79
+	assignment_statement:  expression Equal.expression 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 97
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 80
+	binary_expression:  expression operator.expression 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 98
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 81
+	operator:  Plus.    (63)
+
+	.  reduce 63 (src line 255)
+
+
+state 82
+	operator:  Minus.    (64)
+
+	.  reduce 64 (src line 257)
+
+
+state 83
+	operator:  Star.    (65)
+
+	.  reduce 65 (src line 261)
+
+
+state 84
+	operator:  Slash.    (66)
+
+	.  reduce 66 (src line 265)
+
+
+state 85
+	operator:  Percent.    (67)
+
+	.  reduce 67 (src line 269)
+
+
+state 86
+	operator:  Exclamation.    (68)
+
+	.  reduce 68 (src line 273)
+
+
+state 87
+	operator:  And.    (69)
+
+	.  reduce 69 (src line 277)
+
+
+state 88
+	operator:  LessThan.    (70)
+
+	.  reduce 70 (src line 281)
+
+
+state 89
+	if_statement:  IfKeyword ParenOpen.expression ParenClose code_block 
+	if_statement:  IfKeyword ParenOpen.expression ParenClose code_block ElseKeyword code_block 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 99
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 90
+	if_statement:  IfKeyword expression.code_block 
+	if_statement:  IfKeyword expression.code_block ElseKeyword code_block 
+	binary_expression:  expression.operator expression 
+
+	BraceOpen  shift 31
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  error
+
+	code_block  goto 100
+	operator  goto 80
+
+state 91
+	return_statement:  ReturnKeyword expression.    (52)
+	binary_expression:  expression.operator expression 
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 52 (src line 219)
+
+	operator  goto 80
+
+state 92
+	variable_declaration_statement:  VarKeyword token_identifier.type_definition 
+	variable_declaration_statement:  VarKeyword token_identifier.type_definition Equal expression 
+
+	token_identifier  shift 53
+	.  error
+
+	type_definition  goto 101
+
+state 93
+	function_call:  token_identifier ParenOpen.function_params ParenClose 
+	function_params: .    (75)
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  reduce 75 (src line 305)
+
+	expression  goto 103
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+	function_params  goto 102
+
+state 94
+	type_definition:  token_identifier LessThan type_definition.GreaterThan 
+
+	GreaterThan  shift 104
+	.  error
+
+
+state 95
+	code_block:  BraceOpen eol_allowed code_block_statements eol_allowed BraceClose.    (37)
+
+	.  reduce 37 (src line 169)
+
+
+96: shift/reduce conflict (shift 46(0), red'n 39(0)) on Eol
+state 96
+	eol_required:  eol_required.Eol 
+	code_block_statements:  code_block_statements code_block_statement eol_required.    (39)
+
+	Eol  shift 46
+	.  reduce 39 (src line 178)
+
+
+state 97
+	assignment_statement:  expression Equal expression.    (47)
+	binary_expression:  expression.operator expression 
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 47 (src line 197)
+
+	operator  goto 80
+
+98: shift/reduce conflict (shift 88(0), red'n 71(0)) on LessThan
+98: shift/reduce conflict (shift 81(0), red'n 71(0)) on Plus
+98: shift/reduce conflict (shift 82(0), red'n 71(0)) on Minus
+98: shift/reduce conflict (shift 83(0), red'n 71(0)) on Star
+98: shift/reduce conflict (shift 84(0), red'n 71(0)) on Slash
+98: shift/reduce conflict (shift 85(0), red'n 71(0)) on Percent
+98: shift/reduce conflict (shift 86(0), red'n 71(0)) on Exclamation
+98: shift/reduce conflict (shift 87(0), red'n 71(0)) on And
+state 98
+	binary_expression:  expression.operator expression 
+	binary_expression:  expression operator expression.    (71)
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 71 (src line 287)
+
+	operator  goto 80
+
+state 99
+	if_statement:  IfKeyword ParenOpen expression.ParenClose code_block 
+	if_statement:  IfKeyword ParenOpen expression.ParenClose code_block ElseKeyword code_block 
+	binary_expression:  expression.operator expression 
+
+	LessThan  shift 88
+	ParenClose  shift 105
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  error
+
+	operator  goto 80
+
+state 100
+	if_statement:  IfKeyword expression code_block.    (50)
+	if_statement:  IfKeyword expression code_block.ElseKeyword code_block 
+
+	ElseKeyword  shift 106
+	.  reduce 50 (src line 210)
+
+
+state 101
+	variable_declaration_statement:  VarKeyword token_identifier type_definition.    (53)
+	variable_declaration_statement:  VarKeyword token_identifier type_definition.Equal expression 
+
+	Equal  shift 107
+	.  reduce 53 (src line 224)
+
+
+state 102
+	function_call:  token_identifier ParenOpen function_params.ParenClose 
+	function_params:  function_params.Comma expression 
+
+	Comma  shift 109
+	ParenClose  shift 108
+	.  error
+
+
+state 103
+	binary_expression:  expression.operator expression 
+	function_params:  expression.    (73)
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 73 (src line 297)
+
+	operator  goto 80
+
+state 104
+	type_definition:  token_identifier LessThan type_definition GreaterThan.    (36)
+
+	.  reduce 36 (src line 161)
+
+
+state 105
+	if_statement:  IfKeyword ParenOpen expression ParenClose.code_block 
+	if_statement:  IfKeyword ParenOpen expression ParenClose.code_block ElseKeyword code_block 
+
+	BraceOpen  shift 31
+	.  error
+
+	code_block  goto 110
+
+state 106
+	if_statement:  IfKeyword expression code_block ElseKeyword.code_block 
+
+	BraceOpen  shift 31
+	.  error
+
+	code_block  goto 111
+
+state 107
+	variable_declaration_statement:  VarKeyword token_identifier type_definition Equal.expression 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 112
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 108
+	function_call:  token_identifier ParenOpen function_params ParenClose.    (72)
+
+	.  reduce 72 (src line 292)
+
+
+state 109
+	function_params:  function_params Comma.expression 
+
+	token_number  shift 71
+	token_string  shift 70
+	token_identifier  shift 69
+	token_bool  shift 72
+	.  error
+
+	expression  goto 113
+	literal  goto 67
+	variable  goto 68
+	binary_expression  goto 65
+	function_call  goto 66
+
+state 110
+	if_statement:  IfKeyword ParenOpen expression ParenClose code_block.    (48)
+	if_statement:  IfKeyword ParenOpen expression ParenClose code_block.ElseKeyword code_block 
+
+	ElseKeyword  shift 114
+	.  reduce 48 (src line 202)
+
+
+state 111
+	if_statement:  IfKeyword expression code_block ElseKeyword code_block.    (51)
+
+	.  reduce 51 (src line 214)
+
+
+state 112
+	variable_declaration_statement:  VarKeyword token_identifier type_definition Equal expression.    (54)
+	binary_expression:  expression.operator expression 
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 54 (src line 228)
+
+	operator  goto 80
+
+state 113
+	binary_expression:  expression.operator expression 
+	function_params:  function_params Comma expression.    (74)
+
+	LessThan  shift 88
+	Plus  shift 81
+	Minus  shift 82
+	Star  shift 83
+	Slash  shift 84
+	Percent  shift 85
+	Exclamation  shift 86
+	And  shift 87
+	.  reduce 74 (src line 301)
+
+	operator  goto 80
+
+state 114
+	if_statement:  IfKeyword ParenOpen expression ParenClose code_block ElseKeyword.code_block 
+
+	BraceOpen  shift 31
+	.  error
+
+	code_block  goto 115
+
+state 115
+	if_statement:  IfKeyword ParenOpen expression ParenClose code_block ElseKeyword code_block.    (49)
+
+	.  reduce 49 (src line 206)
+
+
+40 terminals, 34 nonterminals
+76 grammar rules, 116/16000 states
+36 shift/reduce, 0 reduce/reduce conflicts reported
+83 working sets used
+memory: parser 131/240000
+29 extra closures
+208 shift entries, 1 exceptions
+66 goto entries
+67 entries saved by goto default
+Optimizer space used: output 185/240000
+185 table entries, 2 zero
+maximum spread: 38, maximum offset: 114

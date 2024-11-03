@@ -1,5 +1,7 @@
 package macro
 
+import "logi/pkg/ast/common"
+
 type MacroKind string
 
 const (
@@ -89,25 +91,25 @@ type SyntaxStatementElementKeywordDef struct {
 }
 
 type SyntaxStatementElementVariableKeyword struct {
-	Name string         `json:"name,omitempty"`
-	Type TypeDefinition `json:"type,omitempty"`
+	Name string                `json:"name,omitempty"`
+	Type common.TypeDefinition `json:"type,omitempty"`
 }
 
 type SyntaxStatementElementParameter struct {
-	Name string         `json:"name,omitempty"`
-	Type TypeDefinition `json:"type,omitempty"`
+	Name string                `json:"name,omitempty"`
+	Type common.TypeDefinition `json:"type,omitempty"`
 }
 
 type SyntaxStatementElementArgument struct {
-	Name string         `json:"name,omitempty"`
-	Type TypeDefinition `json:"type,omitempty"`
+	Name string                `json:"name,omitempty"`
+	Type common.TypeDefinition `json:"type,omitempty"`
 }
 
 type SyntaxStatementElementCodeBlock struct {
-	ReturnType TypeDefinition `json:"returnType,omitempty"`
+	ReturnType common.TypeDefinition `json:"returnType,omitempty"`
 }
 
 type SyntaxStatementElementAttribute struct {
-	Name string         `json:"name,omitempty"`
-	Type TypeDefinition `json:"type,omitempty"`
+	Name string                `json:"name,omitempty"`
+	Type common.TypeDefinition `json:"type,omitempty"`
 }

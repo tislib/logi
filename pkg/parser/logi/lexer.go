@@ -82,13 +82,24 @@ func (s *logiLexer) lex(lval *yySymType) int {
 			return GreaterThan
 		case '<':
 			return LessThan
+		case '+':
+			return Plus
 		case '-':
-			next := s.read()
-			if next == '>' {
-				return Arrow
-			}
-			s.unread()
-			return Dash
+			return Minus
+		case '*':
+			return Star
+		case '/':
+			return Slash
+		case '%':
+			return Percent
+		case '!':
+			return Exclamation
+		case '&':
+			return And
+		case '|':
+			return Or
+		case '^':
+			return Xor
 		case '.':
 			return Dot
 		default:
@@ -97,6 +108,18 @@ func (s *logiLexer) lex(lval *yySymType) int {
 				var identifier = s.scanIdentifier()
 
 				switch identifier {
+				case "if":
+					return IfKeyword
+				case "var":
+					return VarKeyword
+				//case "for":
+				//	return ForKeyword
+				case "return":
+					return ReturnKeyword
+				case "switch":
+					return SwitchKeyword
+				case "case":
+					return CaseKeyword
 				case "logi":
 					return LogiKeyword
 				case "definition":
