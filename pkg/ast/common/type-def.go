@@ -20,3 +20,7 @@ func (d TypeDefinition) ToDisplayName() string {
 
 	return result + ">"
 }
+
+func (d TypeDefinition) AsValue() Value {
+	return StringValue(d.ToDisplayName())
+}

@@ -21,7 +21,7 @@ func TestParserWithMarker(t *testing.T) {
 					kind Syntax
 
 					syntax {
-						<propertyName name> <propertyType Type> [primary bool, autoincrement bool, required bool, default string]
+						<propertyName Name> <propertyType Type> [primary bool, autoincrement bool, required bool, default string]
 					}
 				}
 `,
@@ -50,6 +50,16 @@ func TestParserWithMarker(t *testing.T) {
 										Name: "autoincrement",
 									},
 								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.PointerValue(common.StringValue("id")),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.PointerValue(common.StringValue("int")),
+									},
+								},
 							},
 							{
 								Name: "name",
@@ -63,6 +73,16 @@ func TestParserWithMarker(t *testing.T) {
 									{
 										Name:  "default",
 										Value: common.PointerValue(common.StringValue("John Doe")),
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.PointerValue(common.StringValue("name")),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.PointerValue(common.StringValue("string")),
 									},
 								},
 							},
@@ -106,6 +126,16 @@ func TestParserWithMarker(t *testing.T) {
 										Name: "autoincrement",
 									},
 								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyType",
+										Value: common.PointerValue(common.StringValue("int")),
+									},
+									{
+										Name:  "propertyName",
+										Value: common.PointerValue(common.StringValue("id")),
+									},
+								},
 							},
 							{
 								Name: "name",
@@ -119,6 +149,16 @@ func TestParserWithMarker(t *testing.T) {
 									{
 										Name:  "default",
 										Value: common.PointerValue(common.StringValue("John Doe")),
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyType",
+										Value: common.PointerValue(common.StringValue("string")),
+									},
+									{
+										Name:  "propertyName",
+										Value: common.PointerValue(common.StringValue("name")),
 									},
 								},
 							},

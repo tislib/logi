@@ -97,8 +97,10 @@ func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macro
 		case macroAst.SyntaxStatementElementKindVariableKeyword:
 			if syntaxStatementElement.VariableKeyword.Type.Name == "Type" {
 				property.Type = common.TypeDefinition{Name: element.Identifier.Identifier}
+				property.Parameters = append(property.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(property.Type.AsValue())})
 			} else {
 				nameParts = append(nameParts, element.Identifier.Identifier)
+				property.Parameters = append(property.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(common.StringValue(element.Identifier.Identifier))})
 			}
 		case macroAst.SyntaxStatementElementKindAttributeList:
 			for _, attribute := range element.AttributeList.Attributes {
@@ -110,7 +112,6 @@ func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macro
 	property.Name = camelCaseFromNameParts(nameParts)
 
 	return property, nil
-
 }
 
 func camelCaseFromNameParts(parts []string) string {
