@@ -264,7 +264,7 @@ macro formula {
     kind Syntax
     
     syntax {
-       args (...[<argName Name> <Type<Number>]>)
+       args (...[<args Type<string>>])
        expr Expression
     }
 }

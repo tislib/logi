@@ -65,8 +65,10 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 			return nil, fmt.Errorf("failed to locate syntax statement: %w", err)
 		}
 
+		asr := analyseStatement(plainStatement, macroSyntaxStatement, syntaxElementMatch)
+
 		// check if the statement is a property
-		if canBeProperty(plainStatement, macroSyntaxStatement, syntaxElementMatch) {
+		if canBeProperty(asr) {
 			property, err := prepareProperty(plainStatement, macroSyntaxStatement, syntaxElementMatch)
 
 			if err != nil {
@@ -75,12 +77,29 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 
 			definition.Properties = append(definition.Properties, *property)
 		}
+		if canBeMethodSignature(asr) {
+			methodSignature, err := prepareMethodSignature(plainStatement, macroSyntaxStatement, syntaxElementMatch)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert method signature: %w", err)
+			}
+
+			definition.MethodSignature = append(definition.MethodSignature, *methodSignature)
+		}
+		if canBeMethod(asr) {
+			method, err := prepareMethod(plainStatement, macroSyntaxStatement, syntaxElementMatch)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert method: %w", err)
+			}
+
+			definition.Methods = append(definition.Methods, *method)
+		}
 
 		definition.PlainStatements = append(definition.PlainStatements, plainStatement)
 	}
 
 	return definition, nil
-
 }
 
 func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.Property, error) {
@@ -114,6 +133,80 @@ func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macro
 	return property, nil
 }
 
+func prepareMethodSignature(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.MethodSignature, error) {
+	methodSignature := new(logi.MethodSignature)
+	methodSignature.Type = common.TypeDefinition{Name: "void"} // default type
+
+	var nameParts []string
+
+	for ei, element := range statement.Elements {
+		syntaxStatementElement := syntaxStatement.Elements[syntaxStatementMatch[ei]]
+
+		switch syntaxStatementElement.Kind {
+		case macroAst.SyntaxStatementElementKindKeyword:
+			nameParts = append(nameParts, element.Identifier.Identifier)
+		case macroAst.SyntaxStatementElementKindVariableKeyword:
+			if syntaxStatementElement.VariableKeyword.Type.Name == "Type" {
+				methodSignature.Type = common.TypeDefinition{Name: element.Identifier.Identifier}
+				methodSignature.Parameters = append(methodSignature.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(methodSignature.Type.AsValue())})
+			} else {
+				nameParts = append(nameParts, element.Identifier.Identifier)
+				methodSignature.Parameters = append(methodSignature.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(common.StringValue(element.Identifier.Identifier))})
+			}
+		case macroAst.SyntaxStatementElementKindAttributeList:
+			for _, attribute := range element.AttributeList.Attributes {
+				methodSignature.Attributes = append(methodSignature.Attributes, logi.Attribute{Name: attribute.Name, Value: attribute.Value})
+			}
+		case macroAst.SyntaxStatementElementKindArgumentList:
+			for _, argument := range element.ArgumentList.Arguments {
+				methodSignature.Arguments = append(methodSignature.Arguments, logi.Argument{Name: argument.Name, Type: argument.Type})
+			}
+		}
+	}
+
+	methodSignature.Name = camelCaseFromNameParts(nameParts)
+
+	return methodSignature, nil
+}
+
+func prepareMethod(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.Method, error) {
+	method := new(logi.Method)
+	method.Type = common.TypeDefinition{Name: "void"} // default type
+
+	var nameParts []string
+
+	for ei, element := range statement.Elements {
+		syntaxStatementElement := syntaxStatement.Elements[syntaxStatementMatch[ei]]
+
+		switch syntaxStatementElement.Kind {
+		case macroAst.SyntaxStatementElementKindKeyword:
+			nameParts = append(nameParts, element.Identifier.Identifier)
+		case macroAst.SyntaxStatementElementKindVariableKeyword:
+			if syntaxStatementElement.VariableKeyword.Type.Name == "Type" {
+				method.Type = common.TypeDefinition{Name: element.Identifier.Identifier}
+				method.Parameters = append(method.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(method.Type.AsValue())})
+			} else {
+				nameParts = append(nameParts, element.Identifier.Identifier)
+				method.Parameters = append(method.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(common.StringValue(element.Identifier.Identifier))})
+			}
+		case macroAst.SyntaxStatementElementKindAttributeList:
+			for _, attribute := range element.AttributeList.Attributes {
+				method.Attributes = append(method.Attributes, logi.Attribute{Name: attribute.Name, Value: attribute.Value})
+			}
+		case macroAst.SyntaxStatementElementKindArgumentList:
+			for _, argument := range element.ArgumentList.Arguments {
+				method.Arguments = append(method.Arguments, logi.Argument{Name: argument.Name, Type: argument.Type})
+			}
+		case macroAst.SyntaxStatementElementKindCodeBlock:
+			method.CodeBlock = &element.CodeBlock.CodeBlock
+		}
+	}
+
+	method.Name = camelCaseFromNameParts(nameParts)
+
+	return method, nil
+}
+
 func camelCaseFromNameParts(parts []string) string {
 	var result string
 
@@ -128,9 +221,14 @@ func camelCaseFromNameParts(parts []string) string {
 	return result
 }
 
-func canBeProperty(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) bool {
-	// check if the statement has a name, has a type and has not any code block or argument list
+type analyseStatementResult struct {
+	hasName         bool
+	hasType         bool
+	hasCodeBlock    bool
+	hasArgumentList bool
+}
 
+func analyseStatement(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) analyseStatementResult {
 	var hasName = false
 	var hasType = false
 	var hasCodeBlock = false
@@ -158,5 +256,23 @@ func canBeProperty(statement plain.DefinitionStatement, syntaxStatement *macroAs
 		}
 	}
 
-	return hasName && hasType && !hasCodeBlock && !hasArgumentList
+	return analyseStatementResult{
+		hasName:         hasName,
+		hasType:         hasType,
+		hasCodeBlock:    hasCodeBlock,
+		hasArgumentList: hasArgumentList,
+	}
+}
+
+func canBeProperty(analyseStatementResult analyseStatementResult) bool {
+	// check if the statement has a name, has a type and has not any code block or argument list
+	return analyseStatementResult.hasName && analyseStatementResult.hasType && !analyseStatementResult.hasCodeBlock && !analyseStatementResult.hasArgumentList
+}
+
+func canBeMethodSignature(asr analyseStatementResult) bool {
+	return asr.hasName && asr.hasArgumentList && !asr.hasCodeBlock
+}
+
+func canBeMethod(asr analyseStatementResult) bool {
+	return asr.hasName && asr.hasArgumentList && asr.hasCodeBlock
 }

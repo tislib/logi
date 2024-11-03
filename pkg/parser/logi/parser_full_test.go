@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestParserWithMarker(t *testing.T) {
+func TestParserFull(t *testing.T) {
 	tests := map[string]struct {
 		macroInput    string
 		input         string
@@ -159,6 +159,137 @@ func TestParserWithMarker(t *testing.T) {
 									{
 										Name:  "propertyName",
 										Value: common.PointerValue(common.StringValue("name")),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"simple signature definition for interface": {
+			macroInput: `
+				macro interface {
+					kind Syntax
+
+					syntax {
+						<methodName Name> (...[<args Type<string>>]) <returnType Type>
+					}
+				}
+`,
+			input: `
+				interface UserService {
+					createUser (name string, age int) User
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "interface",
+						Name:      "UserService",
+						MethodSignature: []logiAst.MethodSignature{
+							{
+								Name: "createUser",
+								Type: common.TypeDefinition{
+									Name: "User",
+								},
+								Arguments: []logiAst.Argument{
+									{
+										Name: "name",
+										Type: common.TypeDefinition{
+											Name: "string",
+										},
+									},
+									{
+										Name: "age",
+										Type: common.TypeDefinition{
+											Name: "int",
+										},
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "methodName",
+										Value: common.PointerValue(common.StringValue("createUser")),
+									},
+									{
+										Name:  "returnType",
+										Value: common.PointerValue(common.StringValue("User")),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"simple method call": {
+			macroInput: `
+				macro implementation {
+					kind Syntax
+
+					syntax {
+						<methodName Name> (...[<args Type<string>>]) <returnType Type> { }
+					}
+				}
+`,
+			input: `
+				implementation UserServiceImpl {
+					createUser (name string, age int) User {
+						return 0
+					}
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "implementation",
+						Name:      "UserServiceImpl",
+						Methods: []logiAst.Method{
+							{
+								Name: "createUser",
+								Type: common.TypeDefinition{
+									Name: "User",
+								},
+								Arguments: []logiAst.Argument{
+									{
+										Name: "name",
+										Type: common.TypeDefinition{
+											Name: "string",
+										},
+									},
+									{
+										Name: "age",
+										Type: common.TypeDefinition{
+											Name: "int",
+										},
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "methodName",
+										Value: common.PointerValue(common.StringValue("createUser")),
+									},
+									{
+										Name:  "returnType",
+										Value: common.PointerValue(common.StringValue("User")),
+									},
+								},
+								CodeBlock: &common.CodeBlock{
+									Statements: []common.Statement{
+										{
+											Kind: common.ReturnStatementKind,
+
+											ReturnStmt: &common.ReturnStatement{
+												Result: &common.Expression{
+													Kind: common.LiteralKind,
+
+													Literal: &common.Literal{
+														Value: common.IntegerValue(0),
+													},
+												},
+											},
+										},
 									},
 								},
 							},

@@ -87,6 +87,21 @@ func locateMacroSyntaxStatement(statement plain.DefinitionStatement, macro *macr
 						match = false
 						break
 					}
+				case macroAst.SyntaxStatementElementKindArgumentList:
+					if currentElement.Kind != plain.DefinitionStatementElementKindArgumentList {
+						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected argument list, got %s", currentElement.Kind))
+						match = false
+						break
+					}
+
+					// check if the argument list is valid
+					err := isValidArgumentList(currentElement.ArgumentList, syntaxStatementElement.ArgumentList)
+
+					if err != nil {
+						reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
+						match = false
+						break
+					}
 				default:
 					reportMismatch(i, syntaxStatement, fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
 				}
@@ -127,6 +142,15 @@ func isValidAttributeList(plainStatementElementAttributes *plain.DefinitionState
 		if !found {
 			return fmt.Errorf("attribute %s is not allowed", plainAttribute.Name)
 		}
+	}
+
+	return nil
+}
+
+func isValidArgumentList(plainStatementElementArguments *plain.DefinitionStatementElementArgumentList, syntaxStatementElementArguments *macroAst.SyntaxStatementElementArgumentList) error {
+	// check if the argument list is valid
+	if syntaxStatementElementArguments.VarArgs {
+		return nil
 	}
 
 	return nil

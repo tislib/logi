@@ -62,8 +62,8 @@ type DefinitionStatementElementArgumentList struct {
 }
 
 type DefinitionStatementElementArgument struct {
-	Name           string                 `json:"name"`
-	TypeDefinition *common.TypeDefinition `json:"typeDefinition"`
+	Name string                `json:"name"`
+	Type common.TypeDefinition `json:"typeDefinition"`
 }
 
 type DefinitionStatementElementCodeBlock struct {

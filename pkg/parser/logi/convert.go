@@ -145,7 +145,7 @@ func convertArgument(element yaccNode) (*plain.DefinitionStatementElementArgumen
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert type def: %w", err)
 		}
-		argument.TypeDefinition = typeDef
+		argument.Type = *typeDef
 	}
 
 	return argument, nil

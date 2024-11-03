@@ -117,13 +117,13 @@ func TestSyntaxLogi(t *testing.T) {
 											Arguments: []plain.DefinitionStatementElementArgument{
 												{
 													Name: "name",
-													TypeDefinition: &common.TypeDefinition{
+													Type: common.TypeDefinition{
 														Name: "string",
 													},
 												},
 												{
 													Name: "age",
-													TypeDefinition: &common.TypeDefinition{
+													Type: common.TypeDefinition{
 														Name: "int",
 													},
 												},
@@ -169,13 +169,13 @@ func TestSyntaxLogi(t *testing.T) {
 											Arguments: []plain.DefinitionStatementElementArgument{
 												{
 													Name: "name",
-													TypeDefinition: &common.TypeDefinition{
+													Type: common.TypeDefinition{
 														Name: "string",
 													},
 												},
 												{
 													Name: "age",
-													TypeDefinition: &common.TypeDefinition{
+													Type: common.TypeDefinition{
 														Name: "int",
 													},
 												},
