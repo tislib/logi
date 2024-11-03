@@ -15,6 +15,9 @@ const (
 	NodeOpIdentifier    = "identifier"
 	NodeOpAttributeList = "attributeList"
 	NodeOpAttribute     = "attribute"
+	NodeOpArgumentList  = "argumentList"
+	NodeOpArgument      = "argument"
+	NodeOpTypeDef       = "type_def"
 )
 
 type yaccNode struct {

@@ -23,8 +23,10 @@ import (
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
+%type<node> type_definition
 %type<node> definition definition_signature definition_body definition_statements definition_statement definition_statement_element
 %type<node> definition_statement_element_identifier definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
+%type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
 %start file
 
 %%
@@ -83,7 +85,7 @@ definition_statement: definition_statement_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_attribute_list;
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_attribute_list | definition_statement_element_argument_list;
 
 definition_statement_element_identifier: token_identifier
 {
@@ -124,6 +126,35 @@ definition_statement_element_attribute_list_item: token_identifier
 | token_identifier definition_statement_element_value
 {
 	$$ = newNode(NodeOpAttribute, $1, $2)
+};
+
+definition_statement_element_argument_list: ParenOpen definition_statement_element_argument_list_content ParenClose
+{
+	$$ = $2
+};
+
+definition_statement_element_argument_list_content: definition_statement_element_argument_list_item
+{
+	$$ = appendNode(NodeOpArgumentList, $1)
+}
+| definition_statement_element_argument_list_content Comma definition_statement_element_argument_list_item
+{
+	$$ = appendNodeTo(&$1, $3)
+};
+
+definition_statement_element_argument_list_item: token_identifier type_definition
+{
+	$$ = newNode(NodeOpArgument, $1, $2)
+};
+
+
+type_definition: token_identifier
+{
+	$$ = newNode(NodeOpTypeDef, $1)
+}
+| token_identifier LessThan type_definition GreaterThan
+{
+	$$ = newNode(NodeOpTypeDef, $1, $3)
 };
 
 %%

@@ -91,6 +91,134 @@ func TestSyntaxLogi(t *testing.T) {
 				},
 			},
 		},
+		"definition with arguments": {
+			input: `
+				service UserService {
+					createUser (name string, age int)
+				}
+			`,
+			expected: &plain.Ast{
+				Definitions: []plain.Definition{
+					{
+						MacroName: "service",
+						Name:      "UserService",
+						Statements: []plain.DefinitionStatement{
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "createUser",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindArgumentList,
+										ArgumentList: &plain.DefinitionStatementElementArgumentList{
+											Arguments: []plain.DefinitionStatementElementArgument{
+												{
+													Name: "name",
+													TypeDefinition: &common.TypeDefinition{
+														Name: "string",
+													},
+												},
+												{
+													Name: "age",
+													TypeDefinition: &common.TypeDefinition{
+														Name: "int",
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"definition with code block and arguments": {
+			input: `
+				service UserService {
+					createUser (name string, age int) int {
+						if age < 18 {
+							return 0
+						}
+
+						return 1
+					}
+				}
+			`,
+			expected: &plain.Ast{
+				Definitions: []plain.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Statements: []plain.DefinitionStatement{
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "id",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "int",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindAttributeList,
+										AttributeList: &plain.DefinitionStatementElementAttributeList{
+											Attributes: []plain.DefinitionStatementElementAttribute{
+												{
+													Name: "primary",
+												},
+												{
+													Name: "autoincrement",
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "name",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "string",
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindAttributeList,
+										AttributeList: &plain.DefinitionStatementElementAttributeList{
+											Attributes: []plain.DefinitionStatementElementAttribute{
+												{
+													Name: "required",
+												},
+												{
+													Name:  "default",
+													Value: common.PointerValue(common.StringValue("John Doe")),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

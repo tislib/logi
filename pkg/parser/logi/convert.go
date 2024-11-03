@@ -91,12 +91,75 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		}
 		statement.Kind = plain.DefinitionStatementElementKindAttributeList
 		statement.AttributeList = attributeList
+	case NodeOpArgumentList:
+		argumentList, err := convertArgumentList(element)
+
+		if err != nil {
+			return nil, err
+		}
+
+		statement.Kind = plain.DefinitionStatementElementKindArgumentList
+		statement.ArgumentList = argumentList
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
 	}
 
 	return statement, nil
 
+}
+
+func convertArgumentList(element yaccNode) (*plain.DefinitionStatementElementArgumentList, error) {
+	argumentList := new(plain.DefinitionStatementElementArgumentList)
+
+	for _, child := range element.children {
+		switch child.op {
+		case NodeOpArgument:
+			argument, err := convertArgument(child)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert argument: %w", err)
+			}
+			argumentList.Arguments = append(argumentList.Arguments, *argument)
+		}
+	}
+
+	return argumentList, nil
+
+}
+
+func convertArgument(element yaccNode) (*plain.DefinitionStatementElementArgument, error) {
+	argument := new(plain.DefinitionStatementElementArgument)
+
+	argument.Name = element.value.(string)
+
+	if len(element.children) > 0 {
+		typeDef, err := convertTypeDefinition(element.children[0])
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert type def: %w", err)
+		}
+		argument.TypeDefinition = typeDef
+	}
+
+	return argument, nil
+
+}
+
+func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
+	var result = new(common.TypeDefinition)
+	result.Name = node.value.(string)
+
+	if len(node.children) > 0 {
+		for _, child := range node.children {
+			subType, err := convertTypeDefinition(child)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert type definition: %w", err)
+			}
+
+			result.SubTypes = append(result.SubTypes, *subType)
+		}
+	}
+
+	return result, nil
 }
 
 func convertIdentifier(element yaccNode) (*plain.DefinitionStatementElementIdentifier, error) {

@@ -1,4 +1,4 @@
-package macro
+package common
 
 type TypeDefinition struct {
 	Name     string           `json:"typeName,omitempty"`
