@@ -28,8 +28,9 @@ import (
 
 %type<node> type_definition
 %type<node> definition definition_signature definition_body definition_statements definition_statement definition_statement_element
-%type<node> definition_statement_element_identifier definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
+%type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
+%type<node> definition_statement_element_parameter_list definition_statement_element_parameter_list_content definition_statement_element_parameter_list_item
 %type<node> code_block code_block_statements code_block_statement assignment_statement if_statement return_statement variable_declaration_statement function_call_statement
 %type<node> expression literal variable binary_expression function_call
 %type<node> function_params
@@ -100,7 +101,7 @@ definition_statement: definition_statement_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_attribute_list | definition_statement_element_argument_list | code_block;
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list | code_block;
 
 definition_statement_element_identifier: token_identifier
 {
@@ -120,9 +121,27 @@ definition_statement_element_value: token_string
 	$$ = newNode(NodeOpValue, $1)
 };
 
-definition_statement_element_attribute_list: BracketOpen definition_statement_element_attribute_list_content BracketClose
+definition_statement_element_array: BracketOpen definition_statement_element_array_content BracketClose
 {
 	$$ = $2
+};
+
+definition_statement_element_array_content: definition_statement
+{
+	$$ = appendNode(NodeOpArray, $1)
+}
+| definition_statement_element_array_content Comma definition_statement
+{
+	$$ = appendNodeTo(&$1, $3)
+}
+| // empty
+{
+	$$ = appendNode(NodeOpArray)
+};
+
+definition_statement_element_attribute_list: LessThan BracketOpen definition_statement_element_attribute_list_content BracketClose GreaterThan
+{
+	$$ = $3
 };
 
 definition_statement_element_attribute_list_content: definition_statement_element_attribute_list_item
@@ -164,6 +183,29 @@ definition_statement_element_argument_list_content: definition_statement_element
 definition_statement_element_argument_list_item: token_identifier type_definition
 {
 	$$ = newNode(NodeOpArgument, $1, $2)
+};
+
+definition_statement_element_parameter_list: ParenOpen definition_statement_element_parameter_list_content ParenClose
+{
+	$$ = $2
+}
+| ParenOpen ParenClose
+{
+	$$ = appendNode(NodeOpParameterList)
+};
+
+definition_statement_element_parameter_list_content: definition_statement_element_parameter_list_item
+{
+	$$ = appendNode(NodeOpParameterList, $1)
+}
+| definition_statement_element_parameter_list_content Comma definition_statement_element_parameter_list_item
+{
+	$$ = appendNodeTo(&$1, $3)
+};
+
+definition_statement_element_parameter_list_item: definition_statement
+{
+	$$ = newNode(NodeOpParameter, $1)
 };
 
 
@@ -293,8 +335,31 @@ operator: Plus {
 | LessThan
 {
 	$$ = "<"
+}
+| GreaterThan
+{
+	$$ = ">"
+}
+| Or
+{
+	$$ = "||"
+}
+| Xor
+{
+	$$ = "^"
+}
+| Equal Equal
+{
+	$$ = "=="
+}
+| GreaterThan Equal
+{
+	$$ = ">="
+}
+| LessThan Equal
+{
+	$$ = "<="
 };
-//| Or | Xor | Equal Equal | GreaterThan | LessThan | GreaterThan Equal | LessThan Equal;
 
 binary_expression: expression operator expression
 {

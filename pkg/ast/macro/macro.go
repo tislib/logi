@@ -1,6 +1,6 @@
 package macro
 
-import "logi/pkg/ast/common"
+import "github.com/tislib/logi/pkg/ast/common"
 
 type MacroKind string
 
@@ -27,15 +27,15 @@ type Macro struct {
 	// For each kind of macro, a different struct will be used
 	Kind MacroKind `json:"kind,omitempty"`
 
-	// The Definition of the macro, used to define subtypes / elements of the macro, it will be used in the syntax section
-	Definition Definition `json:"definition,omitempty"`
+	// The Types of the macro, used to define the types of the macro, it will be used in the syntax section
+	Types Types `json:"definition,omitempty"`
 
 	// The Syntax of the macro, used to define the syntax of the macro, it will be used in the syntax section
 	Syntax Syntax `json:"syntax,omitempty"`
 }
 
-type Definition struct {
-	Statements []SyntaxStatement `json:"statements,omitempty"`
+type Types struct {
+	Types []TypeStatement `json:"types,omitempty"`
 }
 
 type Syntax struct {
@@ -44,6 +44,11 @@ type Syntax struct {
 
 type SyntaxStatement struct {
 	Elements []SyntaxStatementElement
+}
+
+type TypeStatement struct {
+	Name     string                   `json:"name,omitempty"`
+	Elements []SyntaxStatementElement `json:"elements,omitempty"`
 }
 
 type SyntaxStatementElementKind string

@@ -2,8 +2,8 @@ package logi
 
 import (
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast/common"
-	"logi/pkg/ast/plain"
+	"github.com/tislib/logi/pkg/ast/common"
+	"github.com/tislib/logi/pkg/ast/plain"
 	"strings"
 	"testing"
 )
@@ -17,8 +17,8 @@ func TestSyntaxLogi(t *testing.T) {
 		"simple syntax logi": {
 			input: `
 				entity User {
-					id int [primary, autoincrement]
-					name string [required, default "John Doe"]
+					id int <[primary, autoincrement]>
+					name string <[required, default "John Doe"]>
 				}
 			`,
 			expected: &plain.Ast{

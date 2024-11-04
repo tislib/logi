@@ -1,7 +1,8 @@
 package macro
 
 import (
-	astMacro "logi/pkg/ast/macro"
+	"fmt"
+	astMacro "github.com/tislib/logi/pkg/ast/macro"
 	"strings"
 )
 
@@ -15,7 +16,7 @@ func (y *yyMakroLexerProxy) Lex(lval *yySymType) int {
 }
 
 func (y *yyMakroLexerProxy) Error(s string) {
-	y.lexer.Error(s)
+	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.readStr, s))
 }
 
 func ParseMacroContent(d string) (*astMacro.Ast, error) {

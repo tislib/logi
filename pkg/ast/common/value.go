@@ -9,6 +9,8 @@ const (
 	ValueKindBoolean ValueKind = "Boolean"
 	ValueKindFloat   ValueKind = "Float"
 	ValueKindInteger ValueKind = "Integer"
+	ValueKindArray   ValueKind = "Array"
+	ValueKindMap     ValueKind = "Map"
 )
 
 type Value struct {
@@ -18,6 +20,8 @@ type Value struct {
 	Boolean *bool    `json:"boolean,omitempty"`
 	Float   *float64 `json:"float,omitempty"`
 	Integer *int64   `json:"integer,omitempty"`
+	Array   []Value  `json:"array,omitempty"`
+	Map     map[string]Value
 }
 
 func (v Value) ToDisplayName() string {
@@ -65,6 +69,24 @@ func IntegerValue(i int64) Value {
 	}
 }
 
+func NullValue() Value {
+	return Value{}
+}
+
 func PointerValue(value Value) *Value {
 	return &value
+}
+
+func ArrayValue(arr ...Value) Value {
+	return Value{
+		Kind:  ValueKindArray,
+		Array: arr,
+	}
+}
+
+func MapValue(m map[string]Value) Value {
+	return Value{
+		Kind: ValueKindMap,
+		Map:  m,
+	}
 }

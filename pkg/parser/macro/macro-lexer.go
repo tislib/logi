@@ -9,9 +9,10 @@ import (
 )
 
 type macroLexer struct {
-	buf   *bufio.Reader
-	Err   error
-	debug bool
+	buf     *bufio.Reader
+	Err     error
+	debug   bool
+	readStr string
 }
 
 func newMacroLexer(r io.Reader, debug bool) *macroLexer {
@@ -98,8 +99,8 @@ func (s *macroLexer) lex(lval *yySymType) int {
 				switch identifier {
 				case "macro":
 					return MacroKeyword
-				case "definition":
-					return DefinitionKeyword
+				case "types":
+					return TypesKeyword
 				case "syntax":
 					return SyntaxKeyword
 				case "false":
@@ -180,7 +181,11 @@ func (s *macroLexer) scanIdentifier() string {
 
 func (s *macroLexer) read() rune {
 	ch, _, _ := s.buf.ReadRune()
+	s.readStr += string(ch)
 	return ch
 }
 
-func (s *macroLexer) unread() { _ = s.buf.UnreadRune() }
+func (s *macroLexer) unread() {
+	_ = s.buf.UnreadRune()
+	s.readStr = s.readStr[:len(s.readStr)-1]
+}

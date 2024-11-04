@@ -1,1 +1,6 @@
 .idea
+experiments/tengo
+pkg/stdlib
+pkg/registry
+pkg/logi
+y.output

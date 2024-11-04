@@ -2,11 +2,11 @@ package logi
 
 import (
 	"fmt"
-	"logi/pkg/ast/common"
-	"logi/pkg/ast/logi"
-	macroAst "logi/pkg/ast/macro"
-	"logi/pkg/ast/plain"
-	"logi/pkg/parser/macro"
+	"github.com/tislib/logi/pkg/ast/common"
+	"github.com/tislib/logi/pkg/ast/logi"
+	macroAst "github.com/tislib/logi/pkg/ast/macro"
+	"github.com/tislib/logi/pkg/ast/plain"
+	"github.com/tislib/logi/pkg/parser/macro"
 	"strings"
 )
 
@@ -15,6 +15,24 @@ func ParseFullWithMacro(logiInput string, macroInput string) (*logi.Ast, error) 
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse macro: %w", err)
+	}
+
+	plainAst, err := ParsePlainContent(logiInput)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse logi: %w", err)
+	}
+
+	ast, err := prepareAst(*plainAst, *mAst)
+
+	return ast, err
+}
+
+func Parse(logiInput string, macros []macroAst.Ast) (*logi.Ast, error) {
+	var mAst = new(macroAst.Ast)
+
+	for _, m := range macros {
+		mAst.Macros = append(mAst.Macros, m.Macros...)
 	}
 
 	plainAst, err := ParsePlainContent(logiInput)
@@ -105,6 +123,15 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 
 			definition.Methods = append(definition.Methods, *method)
 		}
+		if canBeParameter(asr) {
+			parameter, err := prepareParameter(plainStatement, macroSyntaxStatement, syntaxElementMatch)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert parameter: %w", err)
+			}
+
+			definition.Parameters = append(definition.Parameters, *parameter)
+		}
 
 		definition.PlainStatements = append(definition.PlainStatements, plainStatement)
 	}
@@ -154,6 +181,42 @@ func prepareProperty(statement plain.DefinitionStatement, syntaxStatement *macro
 	property.Name = camelCaseFromNameParts(nameParts)
 
 	return property, nil
+}
+
+func prepareParameter(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.DefinitionParameter, error) {
+	parameter := new(logi.DefinitionParameter)
+
+	var nameParts []string
+
+	for ei, element := range statement.Elements {
+		syntaxStatementElement := syntaxStatement.Elements[syntaxStatementMatch[ei]]
+
+		switch syntaxStatementElement.Kind {
+		case macroAst.SyntaxStatementElementKindKeyword:
+			nameParts = append(nameParts, element.Identifier.Identifier)
+		case macroAst.SyntaxStatementElementKindVariableKeyword:
+			if element.Kind == plain.DefinitionStatementElementKindIdentifier {
+				nameParts = append(nameParts, element.Identifier.Identifier)
+				parameter.Parameters = append(parameter.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(common.StringValue(element.Identifier.Identifier))})
+			} else if element.Kind == plain.DefinitionStatementElementKindArray {
+				arr := element.Array
+
+				parameter.Parameters = append(parameter.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(arr.AsValue())})
+			} else {
+				parameter.Parameters = append(parameter.Parameters, logi.Parameter{Name: syntaxStatementElement.VariableKeyword.Name, Value: common.PointerValue(element.AsValue())})
+			}
+		case macroAst.SyntaxStatementElementKindAttributeList:
+			for _, attribute := range element.AttributeList.Attributes {
+				parameter.Attributes = append(parameter.Attributes, logi.Attribute{Name: attribute.Name, Value: attribute.Value})
+			}
+		default:
+			return nil, fmt.Errorf("unexpected element kind: %v", syntaxStatementElement.Kind)
+		}
+	}
+
+	parameter.Name = camelCaseFromNameParts(nameParts)
+
+	return parameter, nil
 }
 
 func prepareMethodSignature(statement plain.DefinitionStatement, syntaxStatement *macroAst.SyntaxStatement, syntaxStatementMatch []int) (*logi.MethodSignature, error) {
@@ -287,9 +350,9 @@ func analyseStatement(statement plain.DefinitionStatement, syntaxStatement *macr
 	}
 }
 
-func canBeProperty(analyseStatementResult analyseStatementResult) bool {
+func canBeProperty(asr analyseStatementResult) bool {
 	// check if the statement has a name, has a type and has not any code block or argument list
-	return analyseStatementResult.hasName && analyseStatementResult.hasType && !analyseStatementResult.hasCodeBlock && !analyseStatementResult.hasArgumentList
+	return asr.hasName && asr.hasType && !asr.hasCodeBlock && !asr.hasArgumentList
 }
 
 func canBeMethodSignature(asr analyseStatementResult) bool {
@@ -298,4 +361,8 @@ func canBeMethodSignature(asr analyseStatementResult) bool {
 
 func canBeMethod(asr analyseStatementResult) bool {
 	return asr.hasName && asr.hasArgumentList && asr.hasCodeBlock
+}
+
+func canBeParameter(asr analyseStatementResult) bool {
+	return asr.hasName && !asr.hasType && !asr.hasCodeBlock && !asr.hasArgumentList
 }

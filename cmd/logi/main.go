@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/tislib/logi/pkg/parser/logi"
 	"log"
-	"logi/pkg/parser/logi"
 	"os"
 )
 

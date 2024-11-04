@@ -1,7 +1,7 @@
 package logi
 
 import (
-	"logi/pkg/ast/plain"
+	"github.com/tislib/logi/pkg/ast/plain"
 	"strings"
 )
 

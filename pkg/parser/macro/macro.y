@@ -19,11 +19,12 @@ import (
 %token<bool> token_bool
 
 // Keywords
-%token DefinitionKeyword SyntaxKeyword MacroKeyword
+%token TypesKeyword SyntaxKeyword MacroKeyword
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dash Dot Arrow ParenOpen ParenClose Eol
 
-%type<node> macro macro_signature macro_body definition_definition syntax_definition syntax_body syntax_content type_definition
+%type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
+%type<node> types_definition types_definition_body types_definition_content types_definition_statement
 %type<node> syntax_statement syntax_element syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
 %type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item
@@ -68,7 +69,7 @@ macro_signature: MacroKeyword token_identifier
 macro_body: BraceOpen eol_allowed
 	token_identifier token_identifier eol_required
 
-	definition_definition eol_allowed
+	types_definition eol_allowed
 
 	syntax_definition eol_allowed
 
@@ -78,13 +79,37 @@ macro_body: BraceOpen eol_allowed
 	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4), $6, $8)
 };
 
-definition_definition: DefinitionKeyword syntax_body eol_required
+types_definition: TypesKeyword types_definition_body eol_required
 {
-	$$ = appendNode(NodeOpDefinition, $2)
+	$$ = appendNode(NodeOpTypes, $2)
 }
 | // empty
 {
-	$$ = appendNode(NodeOpDefinition)
+	$$ = appendNode(NodeOpTypes)
+};
+
+types_definition_body: BraceOpen eol_allowed types_definition_content eol_allowed BraceClose
+{
+$$ = $3
+};
+
+types_definition_content: types_definition_statement eol_required {
+        $$ = appendNode(NodeOpBody, $1)
+}
+| types_definition_content types_definition_statement eol_required {
+	$$ = appendNodeTo(&$1, $2)
+}
+| {
+	$$ = appendNode(NodeOpBody)
+}
+| // empty
+{
+	$$ = appendNode(NodeOpBody)
+};
+
+types_definition_statement: token_identifier syntax_statement
+{
+	$$ = appendNode(NodeOpTypesStatement, newNode(NodeOpName, $1), $2)
 };
 
 syntax_definition: SyntaxKeyword syntax_body eol_required

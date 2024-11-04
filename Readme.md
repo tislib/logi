@@ -241,17 +241,17 @@ Usage:
 
 ```logi
 entity User {
-    id: int [id, required]
-    name: string [required, default: "John Doe"]
-    email: string [transient]
+    id int [id, required]
+    name string [required, default: "John Doe"]
+    email string [transient]
 }
 
 entity Product {
-    id: int [id, required]
-    name: string [required]
-    price: float [required]
-    owner: User [required]
-    description: string
+    id int [id, required]
+    name string [required]
+    price float [required]
+    owner User [required]
+    description string
 }
 ```
 

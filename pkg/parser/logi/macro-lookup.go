@@ -2,9 +2,9 @@ package logi
 
 import (
 	"fmt"
-	"logi/pkg/ast/common"
-	macroAst "logi/pkg/ast/macro"
-	"logi/pkg/ast/plain"
+	"github.com/tislib/logi/pkg/ast/common"
+	macroAst "github.com/tislib/logi/pkg/ast/macro"
+	"github.com/tislib/logi/pkg/ast/plain"
 )
 
 func locateMacroDefinition(definition plain.Definition, ast macroAst.Ast) (*macroAst.Macro, error) {
@@ -67,11 +67,12 @@ func locateMacroSyntaxStatement(statement plain.DefinitionStatement, macro *macr
 						break
 					}
 				case macroAst.SyntaxStatementElementKindVariableKeyword:
-					if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier {
+					if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier && currentElement.Kind != plain.DefinitionStatementElementKindValue && currentElement.Kind != plain.DefinitionStatementElementKindArray {
 						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected variable keyword (%s %s), got %s (%v)", syntaxStatementElement.VariableKeyword.Name, syntaxStatementElement.VariableKeyword.Type.ToDisplayName(), currentElement.Kind, currentElement))
 						match = false
 						break
 					}
+					// todo type check
 				case macroAst.SyntaxStatementElementKindAttributeList:
 					if currentElement.Kind != plain.DefinitionStatementElementKindAttributeList {
 						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected attribute list, got %s", currentElement.Kind))
@@ -99,6 +100,12 @@ func locateMacroSyntaxStatement(statement plain.DefinitionStatement, macro *macr
 
 					if err != nil {
 						reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
+						match = false
+						break
+					}
+				case macroAst.SyntaxStatementElementKindCodeBlock:
+					if currentElement.Kind != plain.DefinitionStatementElementKindCodeBlock {
+						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected code block, got %s", currentElement.Kind))
 						match = false
 						break
 					}

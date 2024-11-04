@@ -12,11 +12,11 @@ const (
 	NodeOpKind                         = "kind"
 	NodeOpSyntax                       = "syntax"
 	NodeOpTypeDef                      = "type_def"
-	NodeOpDefinition                   = "definition"
+	NodeOpTypes                        = "types"
 	NodeOpSyntaxStatement              = "syntax_statement"
 	NodeOpSyntaxKeywordElement         = "syntax_keyword_element"
 	NodeOpSyntaxVariableKeywordElement = "syntax_variable_keyword_element"
-	NodeOpSyntaxDefinitionElement      = "syntax_definition_element"
+	NodeOpTypesStatement               = "types_statement"
 	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
 	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
 	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
@@ -55,4 +55,5 @@ func assertEqual(parser yyLexer, a, b interface{}, msg string) {
 
 func init() {
 	yyErrorVerbose = true
+	yyDebug = 5
 }

@@ -1,9 +1,11 @@
 package logi
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast/common"
-	logiAst "logi/pkg/ast/logi"
+	"github.com/tislib/logi/pkg/ast/common"
+	logiAst "github.com/tislib/logi/pkg/ast/logi"
+	"log"
 	"strings"
 	"testing"
 )
@@ -27,8 +29,8 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				entity User {
-					id int [primary, autoincrement]
-					name string [required, default "John Doe"]
+					id int <[primary, autoincrement]>
+					name string <[required, default "John Doe"]>
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -103,8 +105,8 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				entity User {
-					int id [primary, autoincrement]
-					string name [required, default "John Doe"]
+					int id <[primary, autoincrement]>
+					string name <[required, default "John Doe"]>
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -298,10 +300,90 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"test arrays with definition": {
+			macroInput: `
+				macro backtest {
+					kind Syntax
+				
+					types {
+						ParamValue <value string>
+					}
+				
+					syntax {
+						Param <name string> <value ParamValue>
+					}
+				}`,
+			input: `
+				backtest VariableHoldUntil4 {
+					InitialCapital  10000
+					StartTime       "2010-01-01"
+					EndTime         "2010-12-31"
+					Indicators       [sma(20) as sma20, sma(50) as sma50, sma(200) as sma200]
+				
+					Strategy {
+						if (sma20 < sma50) {
+							Buy("SPY", 100)
+						}
+					}
+				}
+				`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "backtest",
+						Name:      "VariableHoldUntil4",
+					},
+				},
+			},
+		},
+		"test backtest macro": {
+			macroInput: `
+				macro backtest {
+					kind Syntax
+				
+					definition {
+						Indicator <indicatorName string> (<period int>) as <alias string>
+					}
+				
+					syntax {
+						InitialCapital <initialCapital int>
+						StartTime <startTime string>
+						EndTime <endTime string>
+						Indicators <indicators array<Indicator>>
+						Strategy { }
+					}
+				}`,
+			input: `
+				backtest VariableHoldUntil4 {
+					InitialCapital  10000
+					StartTime       "2010-01-01"
+					EndTime         "2010-12-31"
+					Indicators       [sma(20) as sma20, sma(50) as sma50, sma(200) as sma200]
+				
+					Strategy {
+						if (sma20 < sma50) {
+							Buy("SPY", 100)
+						}
+					}
+				}
+				`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "backtest",
+						Name:      "VariableHoldUntil4",
+					},
+				},
+			},
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			got, err := ParseFullWithMacro(tt.input, tt.macroInput)
+
+			data, _ := json.MarshalIndent(got, "", "  ")
+
+			log.Print(string(data))
 
 			if got != nil && tt.expected != nil {
 				if len(got.Definitions) == len(tt.expected.Definitions) {
@@ -309,7 +391,8 @@ func TestParserFull(t *testing.T) {
 						tt.expected.Definitions[i].PlainStatements = def.PlainStatements
 					}
 				} else {
-					assert.Fail(t, "expected %d definitions, got %d", len(tt.expected.Definitions), len(got.Definitions))
+					a, b := len(tt.expected.Definitions), len(got.Definitions)
+					assert.Failf(t, "expected %d definitions, got %d", "", a, b)
 				}
 			}
 
@@ -339,4 +422,8 @@ func TestParserFull(t *testing.T) {
 			}
 		})
 	}
+}
+
+func init() {
+	yyDebug = 5
 }

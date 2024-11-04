@@ -2,8 +2,8 @@ package macro
 
 import (
 	"fmt"
-	"logi/pkg/ast/common"
-	astMacro "logi/pkg/ast/macro"
+	"github.com/tislib/logi/pkg/ast/common"
+	astMacro "github.com/tislib/logi/pkg/ast/macro"
 )
 
 func convertNodeToMacroAst(node yaccNode) (*astMacro.Ast, error) {
@@ -60,18 +60,18 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 
 				result.Syntax = astMacro.Syntax{Statements: syntaxBody}
 			}
-		case NodeOpDefinition:
+		case NodeOpTypes:
 			if result.Kind != astMacro.KindSyntax {
-				return nil, fmt.Errorf("definition defined for macro of kind %s; but expected Syntax", result.Kind)
+				return nil, fmt.Errorf("types defined for macro of kind %s; but expected Syntax", result.Kind)
 			}
 			if len(child.children) != 0 {
-				syntaxBody, err := convertSyntaxBody(child.children[0])
+				types, err := convertTypes(child.children[0])
 
 				if err != nil {
 					return nil, fmt.Errorf("failed to convert definition: %w", err)
 				}
 
-				result.Definition = astMacro.Definition{Statements: syntaxBody}
+				result.Types = *types
 			}
 		}
 	}
@@ -94,6 +94,46 @@ func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) 
 		}
 
 		result = append(result, *statement)
+	}
+
+	return result, nil
+}
+
+func convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
+	if typesNode.children == nil {
+		return nil, nil
+	}
+
+	var result []astMacro.TypeStatement
+
+	for _, child := range typesNode.children {
+		statement, err := convertTypeStatement(child)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert type statement: %w", err)
+		}
+
+		result = append(result, *statement)
+	}
+
+	return &astMacro.Types{Types: result}, nil
+}
+
+func convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
+	var result = new(astMacro.TypeStatement)
+	var name = node.children[0].value.(string)
+	var items = node.children[1].children
+
+	result.Name = name
+
+	for _, child := range items {
+		element, err := convertSyntaxStatementElement(child)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+		}
+
+		result.Elements = append(result.Elements, *element)
 	}
 
 	return result, nil

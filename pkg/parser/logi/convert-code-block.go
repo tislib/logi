@@ -2,7 +2,7 @@ package logi
 
 import (
 	"fmt"
-	"logi/pkg/ast/common"
+	"github.com/tislib/logi/pkg/ast/common"
 )
 
 func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {

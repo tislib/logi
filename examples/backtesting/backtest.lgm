@@ -1,0 +1,14 @@
+macro backtest {
+    kind Syntax
+
+    definition {
+        Indicator <indicatorName string> (period int) as <alias string>
+    }
+
+    syntax {
+        InitialCapital <initialCapital int>
+        StartTime <startTime string>
+        EndTime <endTime string>
+        Indicators <indicators array<Indicator>>
+    }
+}

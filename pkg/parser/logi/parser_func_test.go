@@ -2,8 +2,8 @@ package logi
 
 import (
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast/common"
-	logiAst "logi/pkg/ast/logi"
+	"github.com/tislib/logi/pkg/ast/common"
+	logiAst "github.com/tislib/logi/pkg/ast/logi"
 	"strings"
 	"testing"
 )

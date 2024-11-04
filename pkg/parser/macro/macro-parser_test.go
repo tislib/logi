@@ -2,8 +2,8 @@ package macro
 
 import (
 	"github.com/stretchr/testify/assert"
-	"logi/pkg/ast/common"
-	astMacro "logi/pkg/ast/macro"
+	"github.com/tislib/logi/pkg/ast/common"
+	astMacro "github.com/tislib/logi/pkg/ast/macro"
 	"strings"
 	"testing"
 )
@@ -68,79 +68,6 @@ func TestSyntaxMacro(t *testing.T) {
 					{
 						Name: "simple",
 						Kind: astMacro.KindSyntax,
-						Syntax: astMacro.Syntax{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Hello",
-											},
-										},
-									},
-								}, {
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Hello2",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Hello3",
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		"syntax macro with simple syntax and definition": {
-			input: `
-				macro simple {
-					kind Syntax
-					
-					definition {
-						Hello2 Hello3
-					}
-					
-					syntax {
-						Hello
-						Hello2 Hello3
-					}
-				}
-			`,
-			expected: &astMacro.Ast{
-				Macros: []astMacro.Macro{
-					{
-						Name: "simple",
-						Kind: astMacro.KindSyntax,
-						Definition: astMacro.Definition{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Hello2",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Hello3",
-											},
-										},
-									},
-								},
-							},
-						},
 						Syntax: astMacro.Syntax{
 							Statements: []astMacro.SyntaxStatement{
 								{
@@ -504,6 +431,80 @@ func TestSyntaxMacro(t *testing.T) {
 														Name: "number",
 														Type: common.TypeDefinition{Name: "float"},
 													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"syntax macro with types definition": {
+			input: `
+				macro simple {
+					kind Syntax
+
+					types {
+						LatLong <lat float> <long float> 
+					}
+
+					syntax {
+						Location <value LatLong>
+					}
+				}
+`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+
+						Types: astMacro.Types{
+							Types: []astMacro.TypeStatement{
+								{
+									Name: "LatLong",
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "lat",
+												Type: common.TypeDefinition{
+													Name: "float",
+												},
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "long",
+												Type: common.TypeDefinition{
+													Name: "float",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "Location",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "value",
+												Type: common.TypeDefinition{
+													Name: "LatLong",
 												},
 											},
 										},

@@ -1,8 +1,8 @@
 package logi
 
 import (
-	"logi/pkg/ast/common"
-	"logi/pkg/ast/plain"
+	"github.com/tislib/logi/pkg/ast/common"
+	"github.com/tislib/logi/pkg/ast/plain"
 )
 
 type Ast struct {
@@ -17,6 +17,7 @@ type Definition struct {
 	Properties      []Property                  `json:"properties"`
 	MethodSignature []MethodSignature           `json:"methodSignature"`
 	Methods         []Method                    `json:"methods"`
+	Parameters      []DefinitionParameter       `json:"parameters"`
 }
 
 type Function struct {
@@ -30,6 +31,12 @@ type Property struct {
 	Type       common.TypeDefinition `json:"type"`
 	Attributes []Attribute           `json:"attributes"`
 	Parameters []Parameter           `json:"parameters"`
+}
+
+type DefinitionParameter struct {
+	Name       string      `json:"name"`
+	Attributes []Attribute `json:"attributes"`
+	Parameters []Parameter `json:"parameters"`
 }
 
 type MethodSignature struct {
