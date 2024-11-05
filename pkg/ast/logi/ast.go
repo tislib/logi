@@ -37,6 +37,7 @@ type DefinitionParameter struct {
 	Name       string      `json:"name"`
 	Attributes []Attribute `json:"attributes"`
 	Parameters []Parameter `json:"parameters"`
+	CodeBlock  common.CodeBlock
 }
 
 type MethodSignature struct {
@@ -62,8 +63,8 @@ type Attribute struct {
 }
 
 type Parameter struct {
-	Name  string        `json:"name"`
-	Value *common.Value `json:"value"`
+	Name  string       `json:"name"`
+	Value common.Value `json:"value"`
 }
 
 type Argument struct {

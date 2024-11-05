@@ -1,8 +1,8 @@
 macro backtest {
     kind Syntax
 
-    definition {
-        Indicator <indicatorName string> (period int) as <alias string>
+    types {
+        Indicator <indicatorName Name> (<period int>) as <alias Name>
     }
 
     syntax {
@@ -10,5 +10,6 @@ macro backtest {
         StartTime <startTime string>
         EndTime <endTime string>
         Indicators <indicators array<Indicator>>
+        Strategy { }
     }
 }

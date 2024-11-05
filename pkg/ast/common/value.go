@@ -1,6 +1,9 @@
 package common
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type ValueKind string
 
@@ -37,6 +40,20 @@ func (v Value) ToDisplayName() string {
 		return fmt.Sprintf("%f", *v.Float)
 	case ValueKindInteger:
 		return fmt.Sprintf("%d", *v.Integer)
+	case ValueKindArray:
+		var result []string
+		for _, value := range v.Array {
+			result = append(result, value.ToDisplayName())
+		}
+		return strings.Join(result, ", ")
+	case ValueKindMap:
+		var result []string
+		for key, value := range v.Map {
+			result = append(result, fmt.Sprintf("%s: %s", key, value.ToDisplayName()))
+		}
+		return strings.Join(result, ", ")
+	default:
+		panic("unknown value kind")
 	}
 	return ""
 }

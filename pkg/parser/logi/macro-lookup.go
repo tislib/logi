@@ -5,6 +5,7 @@ import (
 	"github.com/tislib/logi/pkg/ast/common"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/ast/plain"
+	"log"
 )
 
 func locateMacroDefinition(definition plain.Definition, ast macroAst.Ast) (*macroAst.Macro, error) {
@@ -18,114 +19,102 @@ func locateMacroDefinition(definition plain.Definition, ast macroAst.Ast) (*macr
 
 }
 
-func locateMacroSyntaxStatement(statement plain.DefinitionStatement, macro *macroAst.Macro) (*macroAst.SyntaxStatement, []int, error) {
-	maxMatch := 0
-	var bestMatch *macroAst.SyntaxStatement
-	var mismatchCause string
-	var syntaxElementMatch []int
+func matchSyntaxStatement(statement plain.DefinitionStatement, syntaxStatement macroAst.SyntaxStatement, reportMismatch func(matchedUntil int, syntaxStatement macroAst.SyntaxStatement, reason string), macro *macroAst.Macro) []int {
+	ei := 0
+	syntaxElementMatch := make([]int, len(statement.Elements))
 
-	var reportMismatch = func(matchedUntil int, syntaxStatement macroAst.SyntaxStatement, reason string) {
-		if matchedUntil > maxMatch {
-			maxMatch = matchedUntil
-			bestMatch = &syntaxStatement
-			mismatchCause = reason
+	var mtvi = 0
+
+	for i, syntaxStatementElement := range syntaxStatement.Elements {
+		// check if the statement is always required
+		alwaysRequired := isSyntaxElementAlwaysRequired(syntaxStatementElement)
+		currentElementExists := len(statement.Elements) > ei
+
+		var currentElement *plain.DefinitionStatementElement
+
+		if alwaysRequired && !currentElementExists {
+			reportMismatch(i, syntaxStatement, "statement is shorter than syntax")
+
+			break
 		}
-	}
+		if currentElementExists {
+			currentElement = &statement.Elements[ei]
+		}
 
-	for _, syntaxStatement := range macro.Syntax.Statements {
-		ei := 0
-		match := len(syntaxStatement.Elements) > 0
-		syntaxElementMatch = make([]int, len(statement.Elements))
-
-		for i, syntaxStatementElement := range syntaxStatement.Elements {
-			// check if the statement is always required
-			alwaysRequired := isSyntaxElementAlwaysRequired(syntaxStatementElement)
-			currentElementExists := len(statement.Elements) > ei
-
-			var currentElement *plain.DefinitionStatementElement
-
-			if alwaysRequired && !currentElementExists {
-				reportMismatch(i, syntaxStatement, "statement is shorter than syntax")
-
-				match = false
-				break
-			}
-			if currentElementExists {
-				currentElement = &statement.Elements[ei]
-			}
-
-			if currentElement != nil {
-				switch syntaxStatementElement.Kind {
-				case macroAst.SyntaxStatementElementKindKeyword:
-					if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected keyword (%s), got %s (%v)", syntaxStatementElement.KeywordDef.Name, currentElement.Kind, currentElement))
-						match = false
-						break
-					} else if currentElement.Identifier.Identifier != syntaxStatementElement.KeywordDef.Name {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected keyword (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))
-						match = false
+		if currentElement != nil {
+			switch syntaxStatementElement.Kind {
+			case macroAst.SyntaxStatementElementKindKeyword:
+				if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf("expected keyword (%s), got %s (%v)", syntaxStatementElement.KeywordDef.Name, currentElement.Kind, currentElement))
+					break
+				} else if currentElement.Identifier.Identifier != syntaxStatementElement.KeywordDef.Name {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf("expected keyword (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))
+					break
+				}
+			case macroAst.SyntaxStatementElementKindVariableKeyword:
+				switch currentElement.Kind {
+				case plain.DefinitionStatementElementKindIdentifier:
+					if currentElement.Identifier.Identifier != syntaxStatementElement.VariableKeyword.Name {
+						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected variable keyword (%s), got %s", syntaxStatementElement.VariableKeyword.Name, currentElement.Identifier.Identifier))
 						break
 					}
-				case macroAst.SyntaxStatementElementKindVariableKeyword:
-					if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier && currentElement.Kind != plain.DefinitionStatementElementKindValue && currentElement.Kind != plain.DefinitionStatementElementKindArray {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected variable keyword (%s %s), got %s (%v)", syntaxStatementElement.VariableKeyword.Name, syntaxStatementElement.VariableKeyword.Type.ToDisplayName(), currentElement.Kind, currentElement))
-						match = false
-						break
+				case plain.DefinitionStatementElementKindValue:
+					for _, typeStatement := range macro.Types.Types {
+						if typeStatement.Name == syntaxStatementElement.VariableKeyword.Type.Name {
+							// start matching the value
+						}
 					}
-					// todo type check
-				case macroAst.SyntaxStatementElementKindAttributeList:
-					if currentElement.Kind != plain.DefinitionStatementElementKindAttributeList {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected attribute list, got %s", currentElement.Kind))
-						match = false
-						break
-					}
+				}
+				// todo type check
+				log.Print("todo type check")
+			case macroAst.SyntaxStatementElementKindAttributeList:
+				if currentElement.Kind != plain.DefinitionStatementElementKindAttributeList {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf("expected attribute list, got %s", currentElement.Kind))
 
-					// check if the attribute list is valid
-					err := isValidAttributeList(currentElement.AttributeList, syntaxStatementElement.AttributeList)
-
-					if err != nil {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
-						match = false
-						break
-					}
-				case macroAst.SyntaxStatementElementKindArgumentList:
-					if currentElement.Kind != plain.DefinitionStatementElementKindArgumentList {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected argument list, got %s", currentElement.Kind))
-						match = false
-						break
-					}
-
-					// check if the argument list is valid
-					err := isValidArgumentList(currentElement.ArgumentList, syntaxStatementElement.ArgumentList)
-
-					if err != nil {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
-						match = false
-						break
-					}
-				case macroAst.SyntaxStatementElementKindCodeBlock:
-					if currentElement.Kind != plain.DefinitionStatementElementKindCodeBlock {
-						reportMismatch(i, syntaxStatement, fmt.Sprintf("expected code block, got %s", currentElement.Kind))
-						match = false
-						break
-					}
-				default:
-					reportMismatch(i, syntaxStatement, fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
+					break
 				}
 
-				syntaxElementMatch[ei] = i
-			}
+				// check if the attribute list is valid
+				err := isValidAttributeList(currentElement.AttributeList, syntaxStatementElement.AttributeList)
 
-			ei++
+				if err != nil {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
+
+					break
+				}
+			case macroAst.SyntaxStatementElementKindArgumentList:
+				if currentElement.Kind != plain.DefinitionStatementElementKindArgumentList {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf("expected argument list, got %s", currentElement.Kind))
+
+					break
+				}
+
+				// check if the argument list is valid
+				err := isValidArgumentList(currentElement.ArgumentList, syntaxStatementElement.ArgumentList)
+
+				if err != nil {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf(err.Error()))
+
+					break
+				}
+			case macroAst.SyntaxStatementElementKindCodeBlock:
+				if currentElement.Kind != plain.DefinitionStatementElementKindCodeBlock {
+					reportMismatch(i, syntaxStatement, fmt.Sprintf("expected code block, got %s", currentElement.Kind))
+
+					break
+				}
+			default:
+				reportMismatch(i, syntaxStatement, fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
+			}
 		}
 
-		if match {
-			return &syntaxStatement, syntaxElementMatch, nil
+		ei++
+		if mtvi > 0 {
+			ei += mtvi
+			mtvi = 0
 		}
 	}
-
-	return nil, nil, fmt.Errorf("no matching syntax found, best match: %v, cause: %s", bestMatch, mismatchCause)
-
+	return syntaxElementMatch
 }
 
 func isValidAttributeList(plainStatementElementAttributes *plain.DefinitionStatementElementAttributeList, syntaxStatementElementAttributes *macroAst.SyntaxStatementElementAttributeList) error {
@@ -165,13 +154,4 @@ func isValidArgumentList(plainStatementElementArguments *plain.DefinitionStateme
 
 func isValidValueType(value *common.Value, typeDefinition common.TypeDefinition) bool {
 	return true // TODO: implement type validation for values
-}
-
-func isSyntaxElementAlwaysRequired(element macroAst.SyntaxStatementElement) bool {
-	switch element.Kind {
-	case macroAst.SyntaxStatementElementKindAttributeList:
-		return false
-	}
-
-	return true
 }

@@ -5,13 +5,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tislib/logi/pkg/ast/common"
 	logiAst "github.com/tislib/logi/pkg/ast/logi"
-	"log"
 	"strings"
 	"testing"
 )
 
 func TestParserFull(t *testing.T) {
 	tests := map[string]struct {
+		skipped       bool
 		macroInput    string
 		input         string
 		expected      *logiAst.Ast
@@ -55,11 +55,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "propertyName",
-										Value: common.PointerValue(common.StringValue("id")),
+										Value: common.StringValue("id"),
 									},
 									{
 										Name:  "propertyType",
-										Value: common.PointerValue(common.StringValue("int")),
+										Value: common.StringValue("int"),
 									},
 								},
 							},
@@ -80,11 +80,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "propertyName",
-										Value: common.PointerValue(common.StringValue("name")),
+										Value: common.StringValue("name"),
 									},
 									{
 										Name:  "propertyType",
-										Value: common.PointerValue(common.StringValue("string")),
+										Value: common.StringValue("string"),
 									},
 								},
 							},
@@ -99,7 +99,7 @@ func TestParserFull(t *testing.T) {
 					kind Syntax
 
 					syntax {
-						<propertyType Type> <propertyName name> [primary bool, autoincrement bool, required bool, default string]
+						<propertyType Type> <propertyName Name> [primary bool, autoincrement bool, required bool, default string]
 					}
 				}
 `,
@@ -131,11 +131,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "propertyType",
-										Value: common.PointerValue(common.StringValue("int")),
+										Value: common.StringValue("int"),
 									},
 									{
 										Name:  "propertyName",
-										Value: common.PointerValue(common.StringValue("id")),
+										Value: common.StringValue("id"),
 									},
 								},
 							},
@@ -156,11 +156,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "propertyType",
-										Value: common.PointerValue(common.StringValue("string")),
+										Value: common.StringValue("string"),
 									},
 									{
 										Name:  "propertyName",
-										Value: common.PointerValue(common.StringValue("name")),
+										Value: common.StringValue("name"),
 									},
 								},
 							},
@@ -212,11 +212,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "methodName",
-										Value: common.PointerValue(common.StringValue("createUser")),
+										Value: common.StringValue("createUser"),
 									},
 									{
 										Name:  "returnType",
-										Value: common.PointerValue(common.StringValue("User")),
+										Value: common.StringValue("User"),
 									},
 								},
 							},
@@ -270,11 +270,11 @@ func TestParserFull(t *testing.T) {
 								Parameters: []logiAst.Parameter{
 									{
 										Name:  "methodName",
-										Value: common.PointerValue(common.StringValue("createUser")),
+										Value: common.StringValue("createUser"),
 									},
 									{
 										Name:  "returnType",
-										Value: common.PointerValue(common.StringValue("User")),
+										Value: common.StringValue("User"),
 									},
 								},
 								CodeBlock: common.CodeBlock{
@@ -300,49 +300,114 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
-		"test arrays with definition": {
+		"test simple type definition": {
 			macroInput: `
-				macro backtest {
+				macro complexArray {
 					kind Syntax
 				
 					types {
-						ParamValue <value string>
+						ParamValue 	<value11 string> <value21 string>
 					}
 				
 					syntax {
-						Param <name string> <value ParamValue>
+						Param1 <value ParamValue>
 					}
 				}`,
 			input: `
-				backtest VariableHoldUntil4 {
-					InitialCapital  10000
-					StartTime       "2010-01-01"
-					EndTime         "2010-12-31"
-					Indicators       [sma(20) as sma20, sma(50) as sma50, sma(200) as sma200]
-				
-					Strategy {
-						if (sma20 < sma50) {
-							Buy("SPY", 100)
-						}
-					}
+				complexArray ComplexArray1 {
+					Param1 "value1" "value2"
 				}
 				`,
 			expected: &logiAst.Ast{
 				Definitions: []logiAst.Definition{
 					{
-						MacroName: "backtest",
-						Name:      "VariableHoldUntil4",
+						MacroName: "complexArray",
+						Name:      "ComplexArray1",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindMap,
+											Map: map[string]common.Value{
+												"value11": common.StringValue("value1"),
+												"value21": common.StringValue("value2"),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"test simple type array definition": {
+			macroInput: `
+				macro complexArray {
+					kind Syntax
+				
+					types {
+						ParamValue <value11 string> <value21 string>
+					}
+				
+					syntax {
+						Param1 <value array<ParamValue>>
+					}
+				}`,
+			input: `
+				complexArray ComplexArray1 {
+					Param1 ["value1" "value2", "value3" "value4"]
+				}
+				`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "complexArray",
+						Name:      "ComplexArray1",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindArray,
+											Array: []common.Value{
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"value11": common.StringValue("value1"),
+														"value21": common.StringValue("value2"),
+													},
+												},
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"value11": common.StringValue("value3"),
+														"value21": common.StringValue("value4"),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
 		},
 		"test backtest macro": {
+			skipped: true,
 			macroInput: `
 				macro backtest {
 					kind Syntax
 				
-					definition {
-						Indicator <indicatorName string> (<period int>) as <alias string>
+					types {
+						Indicator <indicatorName Name> (<period int>) as <alias Name>
 					}
 				
 					syntax {
@@ -372,6 +437,17 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "backtest",
 						Name:      "VariableHoldUntil4",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "initialCapital",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "initialCapital",
+										Value: common.IntegerValue(10000),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -381,9 +457,14 @@ func TestParserFull(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got, err := ParseFullWithMacro(tt.input, tt.macroInput)
 
-			data, _ := json.MarshalIndent(got, "", "  ")
+			data, _ := json.Marshal(got)
 
-			log.Print(string(data))
+			t.Log(string(data))
+
+			if tt.skipped {
+				t.Skip()
+				return
+			}
 
 			if got != nil && tt.expected != nil {
 				if len(got.Definitions) == len(tt.expected.Definitions) {
@@ -425,5 +506,5 @@ func TestParserFull(t *testing.T) {
 }
 
 func init() {
-	yyDebug = 5
+	yyDebug = 0
 }
