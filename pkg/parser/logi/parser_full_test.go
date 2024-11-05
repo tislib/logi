@@ -401,7 +401,6 @@ func TestParserFull(t *testing.T) {
 			},
 		},
 		"test backtest macro": {
-			skipped: true,
 			macroInput: `
 				macro backtest {
 					kind Syntax
@@ -447,6 +446,117 @@ func TestParserFull(t *testing.T) {
 									},
 								},
 							},
+							{
+								Name: "startTime",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "startTime",
+										Value: common.StringValue("2010-01-01"),
+									},
+								},
+							},
+							{
+								Name: "endTime",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "endTime",
+										Value: common.StringValue("2010-12-31"),
+									},
+								},
+							},
+							{
+								Name: "indicators",
+								Parameters: []logiAst.Parameter{
+									{
+										Name: "indicators",
+										Value: common.Value{
+											Kind: common.ValueKindArray,
+											Array: []common.Value{
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"alias":         common.StringValue("sma20"),
+														"indicatorName": common.StringValue("sma"),
+														"period":        common.IntegerValue(20),
+													},
+												},
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"alias":         common.StringValue("sma50"),
+														"indicatorName": common.StringValue("sma"),
+														"period":        common.IntegerValue(50),
+													},
+												},
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"alias":         common.StringValue("sma200"),
+														"indicatorName": common.StringValue("sma"),
+														"period":        common.IntegerValue(200),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Name: "strategy",
+								CodeBlock: common.CodeBlock{
+									Statements: []common.Statement{
+										{
+											Kind: common.IfStatementKind,
+											IfStmt: &common.IfStatement{
+												Condition: &common.Expression{
+													Kind: common.BinaryExprKind,
+													BinaryExpr: &common.BinaryExpression{
+														Operator: "<",
+														Left: &common.Expression{
+															Kind: common.VariableKind,
+															Variable: &common.Variable{
+																Name: "sma20",
+															},
+														},
+														Right: &common.Expression{
+															Kind: common.VariableKind,
+															Variable: &common.Variable{
+																Name: "sma50",
+															},
+														},
+													},
+												},
+												ThenBlock: &common.CodeBlock{
+													Statements: []common.Statement{
+														{
+															Kind: common.FuncCallStatementKind,
+															FuncCall: &common.FunctionCallStatement{
+																Call: &common.FunctionCall{
+																	Name: "Buy",
+																	Arguments: []*common.Expression{
+																		{
+																			Kind: common.LiteralKind,
+																			Literal: &common.Literal{
+																				Value: common.StringValue("SPY"),
+																			},
+																		},
+																		{
+																			Kind: common.LiteralKind,
+																			Literal: &common.Literal{
+																				Value: common.IntegerValue(100),
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -456,10 +566,6 @@ func TestParserFull(t *testing.T) {
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			got, err := ParseFullWithMacro(tt.input, tt.macroInput)
-
-			data, _ := json.Marshal(got)
-
-			t.Log(string(data))
 
 			if tt.skipped {
 				t.Skip()
@@ -499,12 +605,11 @@ func TestParserFull(t *testing.T) {
 					assert.Fail(t, "expected non-nil, got nil")
 				}
 
-				assert.Equal(t, tt.expected, got)
+				expectedJson, _ := json.MarshalIndent(tt.expected, "", "  ")
+				gotJson, _ := json.MarshalIndent(got, "", "  ")
+
+				assert.Equal(t, string(expectedJson), string(gotJson))
 			}
 		})
 	}
-}
-
-func init() {
-	yyDebug = 0
 }
