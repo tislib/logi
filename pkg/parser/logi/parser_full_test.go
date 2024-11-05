@@ -93,6 +93,85 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"simple parse comments": {
+			macroInput: `
+				macro entity {
+					kind Syntax // this is a comment
+					// this is another comment
+					syntax {
+						/* this is a block comment */ <propertyName Name> <propertyType Type> [primary bool, autoincrement bool, required bool, default string]
+					}
+					/* this is 
+						a block 
+						comment */
+				}
+`,
+			input: `
+				entity User {
+					id int <[primary, autoincrement]>
+					name string <[required, default "John Doe"]>
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Properties: []logiAst.Property{
+							{
+								Name: "id",
+								Type: common.TypeDefinition{
+									Name: "int",
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "primary",
+									},
+									{
+										Name: "autoincrement",
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("id"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
+									},
+								},
+							},
+							{
+								Name: "name",
+								Type: common.TypeDefinition{
+									Name: "string",
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "required",
+									},
+									{
+										Name:  "default",
+										Value: common.PointerValue(common.StringValue("John Doe")),
+									},
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("name"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"simple type first parse": {
 			macroInput: `
 				macro entity {

@@ -46,6 +46,12 @@ func (s *logiLexer) lex(lval *yySymType) int {
 			continue
 		}
 
+		// handle comments
+		if r == '/' {
+			s.handleComments(r)
+			continue
+		}
+
 		if isDigit(r) {
 			s.unread()
 			lval.number = s.scanNumber()
@@ -207,3 +213,33 @@ func (s *logiLexer) read() rune {
 }
 
 func (s *logiLexer) unread() { _ = s.buf.UnreadRune() }
+
+func (sc *logiLexer) handleComments(r rune) {
+	// single line comments
+	if sc.read() == '/' {
+		for {
+			r = sc.read()
+			if isEol(r) || r == 0 {
+				sc.unread()
+				return
+			}
+		}
+	} else {
+		sc.unread()
+	}
+
+	// multi line comments
+	if sc.read() == '*' {
+		for {
+			r = sc.read()
+			if r == '*' {
+				if sc.read() == '/' {
+					sc.unread()
+					return
+				}
+			}
+		}
+	} else {
+		sc.unread()
+	}
+}

@@ -47,6 +47,12 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			continue
 		}
 
+		// handle comments
+		if r == '/' {
+			s.handleComments(r)
+			continue
+		}
+
 		if isDigit(r) {
 			s.unread()
 			lval.number = s.scanNumber()
@@ -188,4 +194,34 @@ func (s *macroLexer) read() rune {
 func (s *macroLexer) unread() {
 	_ = s.buf.UnreadRune()
 	s.readStr = s.readStr[:len(s.readStr)-1]
+}
+
+func (sc *macroLexer) handleComments(r rune) {
+	// single line comments
+	if sc.read() == '/' {
+		for {
+			r = sc.read()
+			if isEol(r) || r == 0 {
+				sc.unread()
+				return
+			}
+		}
+	} else {
+		sc.unread()
+	}
+
+	// multi line comments
+	if sc.read() == '*' {
+		for {
+			r = sc.read()
+			if r == '*' {
+				if sc.read() == '/' {
+					sc.unread()
+					return
+				}
+			}
+		}
+	} else {
+		sc.unread()
+	}
 }
