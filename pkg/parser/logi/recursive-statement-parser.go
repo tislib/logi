@@ -6,6 +6,7 @@ import (
 	logiAst "github.com/tislib/logi/pkg/ast/logi"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/ast/plain"
+	"sort"
 )
 
 type recursiveStatementParser struct {
@@ -68,10 +69,17 @@ func (p *recursiveStatementParser) apply() error {
 	var attributes []logiAst.Attribute
 	var arguments []logiAst.Argument
 
-	for key, value := range asr.parameters {
+	var keys []string
+	for key := range asr.parameters {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		parameters = append(parameters, logiAst.Parameter{
 			Name:  key,
-			Value: value,
+			Value: asr.parameters[key],
 		})
 	}
 

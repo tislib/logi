@@ -130,12 +130,12 @@ func TestParserFull(t *testing.T) {
 								},
 								Parameters: []logiAst.Parameter{
 									{
-										Name:  "propertyType",
-										Value: common.StringValue("int"),
-									},
-									{
 										Name:  "propertyName",
 										Value: common.StringValue("id"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
 									},
 								},
 							},
@@ -155,12 +155,12 @@ func TestParserFull(t *testing.T) {
 								},
 								Parameters: []logiAst.Parameter{
 									{
-										Name:  "propertyType",
-										Value: common.StringValue("string"),
-									},
-									{
 										Name:  "propertyName",
 										Value: common.StringValue("name"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
 									},
 								},
 							},
