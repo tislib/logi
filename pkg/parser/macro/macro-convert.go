@@ -172,6 +172,21 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		}
 
 		result.VariableKeyword = &astMacro.SyntaxStatementElementVariableKeyword{Name: varName, Type: *typeDef}
+	case NodeOpSyntaxCombinationElement:
+		result.Kind = astMacro.SyntaxStatementElementKindCombination
+
+		var elements []astMacro.SyntaxStatementElement
+		for _, elementNode := range node.children {
+			element, err := convertSyntaxStatementElement(elementNode)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+			}
+
+			elements = append(elements, *element)
+		}
+
+		result.Combination = &astMacro.SyntaxStatementElementCombination{Elements: elements}
 	case NodeOpSyntaxParameterListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindParameterList
 

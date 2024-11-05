@@ -172,6 +172,134 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"simple parse combination": {
+			macroInput: `
+				macro entity {
+					kind Syntax
+					syntax {
+						(Hello | World) <propertyName Name> <propertyType Type>
+					}
+				}
+`,
+			input: `
+				entity User {
+					Hello id int
+					World name string
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Properties: []logiAst.Property{
+							{
+								Name: "helloId",
+								Type: common.TypeDefinition{
+									Name: "int",
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("id"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
+									},
+								},
+							},
+							{
+								Name: "worldName",
+								Type: common.TypeDefinition{
+									Name: "string",
+								},
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("name"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"complex parse combination": {
+			macroInput: `
+				macro entity {
+					kind Syntax
+					
+					types {
+						ParamType1 <value1 string> <value2 string>
+						ParamType2 <value3 int> <value4 int>
+					}
+
+					syntax {
+						<propertyName Name> (<value ParamType1> | <value ParamType2>)
+					}
+				}
+`,
+			input: `
+				entity User {
+					param1 "11" "22"
+					param2 1 2
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param1"),
+									},
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindMap,
+											Map: map[string]common.Value{
+												"value1": common.StringValue("11"),
+												"value2": common.StringValue("22"),
+											},
+										},
+									},
+								},
+							},
+							{
+								Name: "param2",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param2"),
+									},
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindMap,
+											Map: map[string]common.Value{
+												"value3": common.IntegerValue(1),
+												"value4": common.IntegerValue(2),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"simple type first parse": {
 			macroInput: `
 				macro entity {
@@ -688,6 +816,11 @@ func TestParserFull(t *testing.T) {
 				gotJson, _ := json.MarshalIndent(got, "", "  ")
 
 				assert.Equal(t, string(expectedJson), string(gotJson))
+
+				if t.Failed() {
+					t.Logf("expected: %s", string(expectedJson))
+					t.Logf("got: %s", string(gotJson))
+				}
 			}
 		})
 	}

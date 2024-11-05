@@ -21,6 +21,7 @@ const (
 	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
 	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
 	NodeOpSyntaxAttributeListElement   = "syntax_attribute_list_element"
+	NodeOpSyntaxCombinationElement     = "syntax_combination_element"
 )
 
 type yaccNode struct {

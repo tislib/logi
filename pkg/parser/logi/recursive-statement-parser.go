@@ -201,10 +201,11 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 					Name: currentElement.Identifier.Identifier,
 				}
 				return
-			}
-			if syntaxStatementElement.VariableKeyword.Type.Name != "Name" {
+			} else if syntaxStatementElement.VariableKeyword.Type.Name != "Name" {
 				p.reportMismatch(fmt.Sprintf("expected variable keyword %s in type %s, got %s in type Name", syntaxStatementElement.VariableKeyword.Name, syntaxStatementElement.VariableKeyword.Type, currentElement.Identifier.Identifier))
 				break
+			} else {
+				p.matchIdentifierType(syntaxStatementElement, currentElement)
 			}
 			p.asr.hasName = true
 			p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
@@ -271,7 +272,8 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		for idx, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
 			p.asr.parameters[syntaxStatementElementParameter.Name] = currentElement.ParameterList.Parameters[idx].Value
 		}
-
+	case macroAst.SyntaxStatementElementKindCombination:
+		p.matchCombination(syntaxStatementElement)
 	default:
 		p.reportMismatch(fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
 	}
@@ -396,6 +398,33 @@ func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionState
 		Array: valueArr,
 	}
 	return
+}
+
+func (p *recursiveStatementParser) matchCombination(element macroAst.SyntaxStatementElement) {
+	var currentElement = p.plainStatement.Elements[p.pei]
+
+	var recordedPei = p.pei
+	var recordedAsr = p.asr
+
+	if p.mismatchCause != "" {
+		panic("mismatch cause is not empty")
+	}
+
+	for _, syntaxElement := range element.Combination.Elements {
+		p.pei = recordedPei
+		p.asr = recordedAsr
+		p.matchNextElement(syntaxElement, currentElement)
+
+		if p.mismatchCause == "" { // If it matches return
+			return // stop matching, we found a match
+		} else {
+			p.mismatchCause = "" // reset the mismatch cause
+		}
+	}
+}
+
+func (p *recursiveStatementParser) matchIdentifierType(element macroAst.SyntaxStatementElement, element2 plain.DefinitionStatementElement) {
+
 }
 
 func isSyntaxElementAlwaysRequired(element macroAst.SyntaxStatementElement) bool {

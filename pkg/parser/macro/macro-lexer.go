@@ -84,6 +84,8 @@ func (s *macroLexer) lex(lval *yySymType) int {
 			return Colon
 		case '=':
 			return Equal
+		case '|':
+			return Or
 		case '>':
 			return GreaterThan
 		case '<':

@@ -1,6 +1,7 @@
 package macro
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/tislib/logi/pkg/ast/common"
 	astMacro "github.com/tislib/logi/pkg/ast/macro"
@@ -516,6 +517,61 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"simple syntax with Or symbol": {
+			input: `
+				macro simple {
+					kind Syntax
+
+					syntax {
+						(Hello | World) <name string>
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindCombination,
+											Combination: &astMacro.SyntaxStatementElementCombination{
+												Elements: []astMacro.SyntaxStatementElement{
+													{
+														Kind: astMacro.SyntaxStatementElementKindKeyword,
+														KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+															Name: "Hello",
+														},
+													},
+													{
+														Kind: astMacro.SyntaxStatementElementKindKeyword,
+														KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+															Name: "World",
+														},
+													},
+												},
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "name",
+												Type: common.TypeDefinition{
+													Name: "string",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {
@@ -582,7 +638,10 @@ func TestSyntaxMacro(t *testing.T) {
 					assert.Fail(t, "expected non-nil, got nil")
 				}
 
-				assert.Equal(t, tt.expected, got)
+				expectedJson, _ := json.MarshalIndent(tt.expected, "", "  ")
+				gotJson, _ := json.MarshalIndent(got, "", "  ")
+
+				assert.Equal(t, string(expectedJson), string(gotJson))
 			}
 		})
 	}

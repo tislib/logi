@@ -56,6 +56,7 @@ type SyntaxStatementElementKind string
 const (
 	SyntaxStatementElementKindKeyword         SyntaxStatementElementKind = "Keyword"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
+	SyntaxStatementElementKindCombination     SyntaxStatementElementKind = "Combination"
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
 	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"
@@ -65,17 +66,17 @@ const (
 type SyntaxStatementElement struct {
 	Kind SyntaxStatementElementKind `json:"kind,omitempty"`
 
-	DefinitionRef   *SyntaxStatementElementDefinitionRef   `json:"definitionRef,omitempty"`
-	ParameterList   *SyntaxStatementElementParameterList   `json:"parameterList,omitempty"`
-	ArgumentList    *SyntaxStatementElementArgumentList    `json:"argumentList,omitempty"`
 	KeywordDef      *SyntaxStatementElementKeywordDef      `json:"keywordDef,omitempty"`
 	VariableKeyword *SyntaxStatementElementVariableKeyword `json:"variableKeyword,omitempty"`
+	Combination     *SyntaxStatementElementCombination     `json:"combination,omitempty"`
+	ParameterList   *SyntaxStatementElementParameterList   `json:"parameterList,omitempty"`
+	ArgumentList    *SyntaxStatementElementArgumentList    `json:"argumentList,omitempty"`
 	CodeBlock       *SyntaxStatementElementCodeBlock       `json:"codeBlock,omitempty"`
 	AttributeList   *SyntaxStatementElementAttributeList   `json:"attributeList,omitempty"`
 }
 
-type SyntaxStatementElementDefinitionRef struct {
-	Name string `json:"name,omitempty"`
+type SyntaxStatementElementCombination struct {
+	Elements []SyntaxStatementElement `json:"elements,omitempty"`
 }
 
 type SyntaxStatementElementParameterList struct {
