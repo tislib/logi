@@ -191,6 +191,8 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		}
 		p.asr.hasName = true
 		p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
+	case macroAst.SyntaxStatementElementKindTypeReference:
+		p.matchTypeReference(syntaxStatementElement, currentElement)
 	case macroAst.SyntaxStatementElementKindVariableKeyword:
 		switch currentElement.Kind {
 		case plain.DefinitionStatementElementKindIdentifier:
@@ -421,6 +423,36 @@ func (p *recursiveStatementParser) matchCombination(element macroAst.SyntaxState
 			p.mismatchCause = "" // reset the mismatch cause
 		}
 	}
+}
+
+func (p *recursiveStatementParser) matchTypeReference(syntaxElement macroAst.SyntaxStatementElement, currentElement plain.DefinitionStatementElement) {
+	// locate type
+
+	for _, typeStatement := range p.macroDefinition.Types.Types {
+		if typeStatement.Name == syntaxElement.TypeReference.Name {
+
+			for _, syntaxElement := range typeStatement.Elements {
+				if p.pei >= len(p.plainStatement.Elements) {
+					p.reportMismatch("statement is shorter than syntax")
+					return
+				}
+
+				var currentElement = p.plainStatement.Elements[p.pei]
+
+				p.matchNextElement(syntaxElement, currentElement)
+
+				if p.mismatchCause != "" {
+					return // stop matching if a mismatch is found
+				}
+
+				p.pei++
+			}
+
+			return
+		}
+	}
+
+	p.pei--
 }
 
 func (p *recursiveStatementParser) matchIdentifierType(element macroAst.SyntaxStatementElement, element2 plain.DefinitionStatementElement) {

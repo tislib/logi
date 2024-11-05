@@ -300,6 +300,52 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"simple type reference": {
+			macroInput: `
+				macro entity {
+					kind Syntax
+
+					types {
+						World <value1 string> <value2 string> <value3 string>
+					}
+
+					syntax {
+						Hello <World>
+					}
+				}`,
+			input: `
+				entity User {
+					Hello "from the other side" "hello" "world"
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "hello",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "value1",
+										Value: common.StringValue("from the other side"),
+									},
+									{
+										Name:  "value2",
+										Value: common.StringValue("hello"),
+									},
+									{
+										Name:  "value3",
+										Value: common.StringValue("world"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"simple type first parse": {
 			macroInput: `
 				macro entity {

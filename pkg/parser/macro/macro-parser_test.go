@@ -572,6 +572,67 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"simple syntax with type reference": {
+			input: `
+				macro simple {
+					kind Syntax
+
+					types {
+						World <value string>
+					}
+
+					syntax {
+						Hello <World>
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Types: astMacro.Types{
+							Types: []astMacro.TypeStatement{
+								{
+									Name: "World",
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "value",
+												Type: common.TypeDefinition{
+													Name: "string",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "Hello",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindTypeReference,
+											TypeReference: &astMacro.SyntaxStatementElementTypeReference{
+												Name: "World",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"fail macro if kind is missing": {
 			input: `
 				macro simple {

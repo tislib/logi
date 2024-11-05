@@ -162,6 +162,9 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 	case NodeOpSyntaxKeywordElement:
 		result.Kind = astMacro.SyntaxStatementElementKindKeyword
 		result.KeywordDef = &astMacro.SyntaxStatementElementKeywordDef{Name: node.value.(string)}
+	case NodeOpSyntaxTypeReferenceElement:
+		result.Kind = astMacro.SyntaxStatementElementKindTypeReference
+		result.TypeReference = &astMacro.SyntaxStatementElementTypeReference{Name: node.value.(string)}
 	case NodeOpSyntaxVariableKeywordElement:
 		result.Kind = astMacro.SyntaxStatementElementKindVariableKeyword
 		var varName = node.children[0].value.(string)

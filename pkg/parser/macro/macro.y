@@ -29,7 +29,7 @@ import (
 
 %type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
 %type<node> types_definition types_definition_body types_definition_content types_definition_statement
-%type<node> syntax_statement syntax_element syntax_element_combination syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
+%type<node> syntax_statement syntax_element syntax_element_combination syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
 %type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item
 
@@ -150,7 +150,12 @@ syntax_statement: syntax_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element:syntax_element_code_block | syntax_element_combination | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+syntax_element:syntax_element_code_block | syntax_element_combination | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+
+syntax_element_type_reference: LessThan token_identifier GreaterThan
+{
+	$$ = newNode(NodeOpSyntaxTypeReferenceElement, $2)
+};
 
 syntax_element_combination: ParenOpen syntax_element_combination_content ParenClose
 {
