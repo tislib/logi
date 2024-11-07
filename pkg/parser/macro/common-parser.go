@@ -20,9 +20,11 @@ const (
 	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
 	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
 	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
+	NodeOpSyntaxExpressionBlockElement = "syntax_expression_block_element"
 	NodeOpSyntaxAttributeListElement   = "syntax_attribute_list_element"
 	NodeOpSyntaxCombinationElement     = "syntax_combination_element"
 	NodeOpSyntaxTypeReferenceElement   = "syntax_type_reference_element"
+	NodeOpSyntaxStructureElement       = "syntax_structure_element"
 )
 
 type yaccNode struct {
@@ -53,9 +55,4 @@ func assertEqual(parser yyLexer, a, b interface{}, msg string) {
 	if a != b {
 		parser.Error(msg)
 	}
-}
-
-func init() {
-	yyErrorVerbose = true
-	yyDebug = 5
 }

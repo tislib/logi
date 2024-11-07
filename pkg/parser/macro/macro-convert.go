@@ -190,6 +190,21 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		}
 
 		result.Combination = &astMacro.SyntaxStatementElementCombination{Elements: elements}
+	case NodeOpSyntaxStructureElement:
+		result.Kind = astMacro.SyntaxStatementElementKindStructure
+
+		var statements []astMacro.SyntaxStatement
+		for _, elementNode := range node.children {
+			statement, err := convertSyntaxStatement(elementNode)
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+			}
+
+			statements = append(statements, *statement)
+		}
+
+		result.Structure = &astMacro.SyntaxStatementElementStructure{Statements: statements}
 	case NodeOpSyntaxParameterListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindParameterList
 
@@ -225,16 +240,9 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 	case NodeOpSyntaxCodeBlockElement:
 		result.Kind = astMacro.SyntaxStatementElementKindCodeBlock
 		result.CodeBlock = &astMacro.SyntaxStatementElementCodeBlock{}
-
-		if len(node.children) > 0 {
-			returnType, err := convertTypeDefinition(node.children[0])
-
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert type definition: %w", err)
-			}
-
-			result.CodeBlock.ReturnType = *returnType
-		}
+	case NodeOpSyntaxExpressionBlockElement:
+		result.Kind = astMacro.SyntaxStatementElementKindExpressionBlock
+		result.ExpressionBlock = &astMacro.SyntaxStatementElementExpressionBlock{}
 	case NodeOpSyntaxAttributeListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindAttributeList
 

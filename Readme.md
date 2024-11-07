@@ -1,4 +1,4 @@
-Logi - A Language for Building Extensible Systems
+Logi -A language for abstraction
 =================================================
 
 # Overview
@@ -201,6 +201,7 @@ For definition of code block
 ### Full definition
 
 #### Rules
+
 1. Each Statement should be on a single line. This is for both logi and logi-macro files.
 
 ```
@@ -320,6 +321,7 @@ model MyModel {
 ```
 
 ##### Html macro
+
 You can define html elements with help of macros in Logi.
 
 ```logi

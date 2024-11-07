@@ -121,18 +121,18 @@ definition_statement_element_value: token_string
 	$$ = newNode(NodeOpValue, $1)
 };
 
-definition_statement_element_array: BracketOpen definition_statement_element_array_content BracketClose
+definition_statement_element_array: BracketOpen eol_allowed definition_statement_element_array_content eol_allowed BracketClose
 {
-	$$ = $2
+	$$ = $3
 };
 
 definition_statement_element_array_content: definition_statement
 {
 	$$ = appendNode(NodeOpArray, $1)
 }
-| definition_statement_element_array_content Comma definition_statement
+| definition_statement_element_array_content Comma eol_allowed definition_statement
 {
-	$$ = appendNodeTo(&$1, $3)
+	$$ = appendNodeTo(&$1, $4)
 }
 | // empty
 {
@@ -175,9 +175,9 @@ definition_statement_element_argument_list_content: definition_statement_element
 {
 	$$ = appendNode(NodeOpArgumentList, $1)
 }
-| definition_statement_element_argument_list_content Comma definition_statement_element_argument_list_item
+| definition_statement_element_argument_list_content Comma eol_allowed definition_statement_element_argument_list_item
 {
-	$$ = appendNodeTo(&$1, $3)
+	$$ = appendNodeTo(&$1, $4)
 };
 
 definition_statement_element_argument_list_item: token_identifier type_definition
@@ -198,9 +198,9 @@ definition_statement_element_parameter_list_content: definition_statement_elemen
 {
 	$$ = appendNode(NodeOpParameterList, $1)
 }
-| definition_statement_element_parameter_list_content Comma definition_statement_element_parameter_list_item
+| definition_statement_element_parameter_list_content Comma eol_allowed definition_statement_element_parameter_list_item
 {
-	$$ = appendNodeTo(&$1, $3)
+	$$ = appendNodeTo(&$1, $4)
 };
 
 definition_statement_element_parameter_list_item: definition_statement

@@ -60,13 +60,3 @@ func appendNodeTo(node *yaccNode, child yaccNode) yaccNode {
 func registerRootNode(parser yyLexer, n yaccNode) {
 	parser.(*yyLogiLexerProxy).Node.children = append(parser.(*yyLogiLexerProxy).Node.children, n)
 }
-
-func assertEqual(parser yyLexer, a, b interface{}, msg string) {
-	if a != b {
-		parser.Error(msg)
-	}
-}
-
-func init() {
-	yyErrorVerbose = true
-}

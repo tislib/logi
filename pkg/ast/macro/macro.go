@@ -58,9 +58,11 @@ const (
 	SyntaxStatementElementKindTypeReference   SyntaxStatementElementKind = "TypeReference"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
 	SyntaxStatementElementKindCombination     SyntaxStatementElementKind = "Combination"
+	SyntaxStatementElementKindStructure       SyntaxStatementElementKind = "Combination"
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
 	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"
+	SyntaxStatementElementKindExpressionBlock SyntaxStatementElementKind = "ExpressionBlock"
 	SyntaxStatementElementKindAttributeList   SyntaxStatementElementKind = "AttributeList"
 )
 
@@ -71,14 +73,20 @@ type SyntaxStatementElement struct {
 	TypeReference   *SyntaxStatementElementTypeReference   `json:"typeReference,omitempty"`
 	VariableKeyword *SyntaxStatementElementVariableKeyword `json:"variableKeyword,omitempty"`
 	Combination     *SyntaxStatementElementCombination     `json:"combination,omitempty"`
+	Structure       *SyntaxStatementElementStructure       `json:"structure,omitempty"`
 	ParameterList   *SyntaxStatementElementParameterList   `json:"parameterList,omitempty"`
 	ArgumentList    *SyntaxStatementElementArgumentList    `json:"argumentList,omitempty"`
 	CodeBlock       *SyntaxStatementElementCodeBlock       `json:"codeBlock,omitempty"`
+	ExpressionBlock *SyntaxStatementElementExpressionBlock `json:"expressionBlock,omitempty"`
 	AttributeList   *SyntaxStatementElementAttributeList   `json:"attributeList,omitempty"`
 }
 
 type SyntaxStatementElementCombination struct {
 	Elements []SyntaxStatementElement `json:"elements,omitempty"`
+}
+
+type SyntaxStatementElementStructure struct {
+	Statements []SyntaxStatement `json:"statements,omitempty"`
 }
 
 type SyntaxStatementElementParameterList struct {
@@ -118,7 +126,9 @@ type SyntaxStatementElementArgument struct {
 }
 
 type SyntaxStatementElementCodeBlock struct {
-	ReturnType common.TypeDefinition `json:"returnType,omitempty"`
+}
+
+type SyntaxStatementElementExpressionBlock struct {
 }
 
 type SyntaxStatementElementAttribute struct {

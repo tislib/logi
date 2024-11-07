@@ -484,7 +484,7 @@ func TestParserFull(t *testing.T) {
 					kind Syntax
 
 					syntax {
-						<methodName Name> (...[<args Type<string>>]) <returnType Type> { }
+						<methodName Name> (...[<args Type<string>>]) <returnType Type> { code }
 					}
 				}
 `,
@@ -653,6 +653,65 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"test simple type array definition with EOL inside": {
+			macroInput: `
+				macro complexArray {
+					kind Syntax
+				
+					types {
+						ParamValue <value11 string> <value21 string>
+					}
+				
+					syntax {
+						Param1 <value array<ParamValue>>
+					}
+				}`,
+			input: `
+				complexArray ComplexArray1 {
+					Param1 [
+						"value1" "value2", 
+						"value3" "value4"
+					]
+				}
+				`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "complexArray",
+						Name:      "ComplexArray1",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindArray,
+											Array: []common.Value{
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"value11": common.StringValue("value1"),
+														"value21": common.StringValue("value2"),
+													},
+												},
+												{
+													Kind: common.ValueKindMap,
+													Map: map[string]common.Value{
+														"value11": common.StringValue("value3"),
+														"value21": common.StringValue("value4"),
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"test backtest macro": {
 			macroInput: `
 				macro backtest {
@@ -667,7 +726,7 @@ func TestParserFull(t *testing.T) {
 						StartTime <startTime string>
 						EndTime <endTime string>
 						Indicators <indicators array<Indicator>>
-						Strategy { }
+						Strategy { code }
 					}
 				}`,
 			input: `

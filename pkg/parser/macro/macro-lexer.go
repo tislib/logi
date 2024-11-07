@@ -9,10 +9,11 @@ import (
 )
 
 type macroLexer struct {
-	buf     *bufio.Reader
-	Err     error
-	debug   bool
-	readStr string
+	buf      *bufio.Reader
+	Err      error
+	debug    bool
+	readStr  string
+	lastRead rune
 }
 
 func newMacroLexer(r io.Reader, debug bool) *macroLexer {
@@ -67,6 +68,11 @@ func (s *macroLexer) lex(lval *yySymType) int {
 
 		switch r {
 		case '{':
+			if s.matchIf(" code }") {
+				return CodeBlock
+			} else if s.matchIf(" expr }") {
+				return ExpressionBlock
+			}
 			return BraceOpen
 		case '}':
 			return BraceClose
@@ -123,7 +129,6 @@ func (s *macroLexer) lex(lval *yySymType) int {
 				}
 			}
 
-			log.Println("Error: Unrecognized character ", r)
 			s.Err = errors.New("error: unrecognized character")
 			return 0
 		}
@@ -189,6 +194,7 @@ func (s *macroLexer) scanIdentifier() string {
 
 func (s *macroLexer) read() rune {
 	ch, _, _ := s.buf.ReadRune()
+	s.lastRead = ch
 	s.readStr += string(ch)
 	return ch
 }
@@ -226,4 +232,22 @@ func (sc *macroLexer) handleComments(r rune) {
 	} else {
 		sc.unread()
 	}
+}
+
+func (sc *macroLexer) matchIf(s string) bool {
+	data, err := sc.buf.Peek(len(s))
+
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	var readStr = string(data)
+
+	if readStr == s {
+		sc.buf.Discard(len(s))
+		return true
+	}
+
+	return false
 }

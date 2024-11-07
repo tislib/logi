@@ -32,3 +32,7 @@ func ParseMacroContent(d string) (*astMacro.Ast, error) {
 
 	return convertNodeToMacroAst(proxy.Node)
 }
+
+func init() {
+	yyErrorVerbose = true
+}

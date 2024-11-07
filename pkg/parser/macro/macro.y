@@ -22,16 +22,16 @@ import (
 %token TypesKeyword SyntaxKeyword MacroKeyword
 
 // Braces
-%token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon ParenOpen ParenClose Eol
+%token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon ParenOpen ParenClose Eol CodeBlock ExpressionBlock
 
 // Opeartors
 %token Equal GreaterThan LessThan Dash Dot Arrow Or
 
 %type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
 %type<node> types_definition types_definition_body types_definition_content types_definition_statement
-%type<node> syntax_statement syntax_element syntax_element_combination syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
+%type<node> syntax_statement syntax_element syntax_element_combination syntax_element_structure syntax_element_structure_content syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
-%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item
+%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item syntax_element_expression_block
 
 %start file
 
@@ -150,7 +150,7 @@ syntax_statement: syntax_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element:syntax_element_code_block | syntax_element_combination | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+syntax_element:syntax_element_code_block | syntax_element_expression_block | syntax_element_combination | syntax_element_structure | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
 
 syntax_element_type_reference: LessThan token_identifier GreaterThan
 {
@@ -169,6 +169,20 @@ syntax_element_combination_content: syntax_element Or syntax_element
 | syntax_element_combination_content Or syntax_element
 {
 	$$ = appendNodeTo(&$1, $3)
+};
+
+syntax_element_structure: BraceOpen eol_required syntax_element_structure_content BraceClose
+{
+	$$ = $3
+};
+
+syntax_element_structure_content: syntax_statement eol_required
+{
+	$$ = appendNode(NodeOpSyntaxStructureElement, $1)
+}
+| syntax_element_structure_content syntax_statement eol_required
+{
+	$$ = appendNodeTo(&$1, $2)
 };
 
 syntax_element_keyword: token_identifier
@@ -190,23 +204,23 @@ syntax_element_parameter_list_content: syntax_element_variable_keyword
 {
 	$$ = appendNode(NodeOpSyntaxParameterListElement, $1)
 }
-| syntax_element_parameter_list_content Comma syntax_element_variable_keyword
+| syntax_element_parameter_list_content Comma eol_allowed syntax_element_variable_keyword
 {
-	$$ = appendNodeTo(&$1, $3);
+	$$ = appendNodeTo(&$1, $4);
 };
 
-syntax_element_attribute_list: BracketOpen syntax_element_attribute_list_content BracketClose
+syntax_element_attribute_list: BracketOpen eol_allowed syntax_element_attribute_list_content eol_allowed BracketClose
 {
-	$$ = $2
+	$$ = $3
 };
 
 syntax_element_attribute_list_content: syntax_element_attribute_list_item
 {
 	$$ = appendNode(NodeOpSyntaxAttributeListElement, $1)
 }
-| syntax_element_attribute_list_content Comma syntax_element_attribute_list_item
+| syntax_element_attribute_list_content Comma eol_allowed syntax_element_attribute_list_item
 {
-	$$ = appendNodeTo(&$1, $3);
+	$$ = appendNodeTo(&$1, $4);
 };
 
 syntax_element_attribute_list_item: token_identifier
@@ -218,27 +232,28 @@ syntax_element_attribute_list_item: token_identifier
 	$$ = newNode(NodeOpValue, $1, $2)
 };
 
-syntax_element_argument_list: ParenOpen three_dots BracketOpen syntax_element_argument_list_content BracketClose ParenClose
+syntax_element_argument_list: ParenOpen three_dots BracketOpen eol_allowed syntax_element_argument_list_content eol_allowed BracketClose ParenClose
 {
-	$$ = $4
+	$$ = $5
 };
 
 syntax_element_argument_list_content: syntax_element_variable_keyword
 {
 	$$ = appendNode(NodeOpSyntaxArgumentListElement, $1)
 }
-| syntax_element_argument_list_content Comma syntax_element_variable_keyword
+| syntax_element_argument_list_content Comma eol_allowed syntax_element_variable_keyword
 {
-	$$ = appendNodeTo(&$1, $3);
+	$$ = appendNodeTo(&$1, $4);
 };
 
-syntax_element_code_block: BraceOpen BraceClose
+syntax_element_code_block: CodeBlock
 {
 	$$ = newNode(NodeOpSyntaxCodeBlockElement, nil)
-}
-| BraceOpen type_definition BraceClose
+};
+
+syntax_element_expression_block: ExpressionBlock
 {
-	$$ = newNode(NodeOpSyntaxCodeBlockElement, nil, $2)
+	$$ = newNode(NodeOpSyntaxExpressionBlockElement, nil)
 };
 
 type_definition: token_identifier

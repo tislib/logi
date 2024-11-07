@@ -143,7 +143,6 @@ func (s *logiLexer) lex(lval *yySymType) int {
 				}
 			}
 
-			log.Println("Error: Unrecognized character ", r)
 			s.Err = errors.New("error: unrecognized character")
 			return 0
 		}

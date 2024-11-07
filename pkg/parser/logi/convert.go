@@ -1,7 +1,6 @@
 package logi
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/tislib/logi/pkg/ast/common"
 	"github.com/tislib/logi/pkg/ast/plain"
@@ -9,10 +8,6 @@ import (
 
 func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 	var res = new(plain.Ast)
-
-	str, _ := json.MarshalIndent(node, "", "  ")
-
-	fmt.Println(string(str))
 
 	for _, child := range node.children {
 		switch child.op {
