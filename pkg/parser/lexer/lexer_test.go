@@ -144,6 +144,51 @@ func TestLexer(t *testing.T) {
 				},
 			},
 		},
+		"string and number": {
+			input: `"hello" 123 "world"`,
+			config: LexerConfig{
+				Tokens: []TokenConfig{
+					{
+						Id:      1,
+						IsDigit: true,
+					},
+					{
+						Id:      2,
+						IsAlpha: true,
+					},
+					{
+						Id:         3,
+						IsAlphaNum: true,
+					},
+					{
+						Id:     4,
+						Equals: "(",
+					},
+					{
+						Id:     5,
+						Equals: ")",
+					},
+					{
+						Id:       6,
+						IsString: true,
+					},
+				},
+			},
+			expectedTokens: []Token{
+				{
+					Id:    6,
+					Value: "hello",
+				},
+				{
+					Id:    1,
+					Value: "123",
+				},
+				{
+					Id:    6,
+					Value: "world",
+				},
+			},
+		},
 	}
 
 	for name, tt := range test {

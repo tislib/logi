@@ -16,7 +16,7 @@ func (y *yyLogiLexerProxy) Lex(lval *yySymType) int {
 }
 
 func (y *yyLogiLexerProxy) Error(s string) {
-	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.readStr, s))
+	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.GetReadString(), s))
 }
 
 func ParsePlainContent(d string) (*plain.Ast, error) {

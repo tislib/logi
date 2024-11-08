@@ -174,8 +174,6 @@ func (s *macroLexer) lex(lval *yySymType) int {
 
 			lval.number = number
 		}
-
-		lval.number = token.Value
 	case token_string:
 		lval.string = token.Value
 	case token_bool:
