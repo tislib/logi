@@ -16,7 +16,7 @@ func (y *yyMakroLexerProxy) Lex(lval *yySymType) int {
 }
 
 func (y *yyMakroLexerProxy) Error(s string) {
-	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.readStr, s))
+	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.GetReadString(), s))
 }
 
 func ParseMacroContent(d string) (*astMacro.Ast, error) {

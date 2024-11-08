@@ -1,25 +1,132 @@
 package macro
 
 import (
-	"bufio"
 	"errors"
+	"github.com/tislib/logi/pkg/parser/lexer"
 	"io"
 	"log"
 	"strconv"
+	"strings"
 )
 
 type macroLexer struct {
-	buf      *bufio.Reader
-	Err      error
-	debug    bool
-	readStr  string
-	lastRead rune
+	lexer lexer.Lexer
+	Err   error
+	debug bool
 }
 
 func newMacroLexer(r io.Reader, debug bool) *macroLexer {
 	return &macroLexer{
-		buf:   bufio.NewReader(r),
+		lexer: lexer.NewLexer(lexer.LexerConfig{
+			HandleComments: true,
+			Tokens:         tokens(),
+		}, r, debug),
 		debug: debug,
+	}
+}
+
+func tokens() []lexer.TokenConfig {
+	return []lexer.TokenConfig{
+		{
+			Id:      token_number,
+			IsDigit: true,
+		},
+		{
+			Id:         token_bool,
+			EqualOneOf: []string{"true", "false"},
+		},
+		{
+			Id:     CodeBlock,
+			Equals: "{ code }",
+		},
+		{
+			Id:     ExpressionBlock,
+			Equals: "{ expr }",
+		},
+		{
+			Id:     TypesKeyword,
+			Equals: "types",
+		},
+		{
+			Id:     SyntaxKeyword,
+			Equals: "syntax",
+		},
+		{
+			Id:     MacroKeyword,
+			Equals: "macro",
+		},
+		{
+			Id:     BracketOpen,
+			Equals: "[",
+		},
+		{
+			Id:     BracketClose,
+			Equals: "]",
+		},
+		{
+			Id:     BraceOpen,
+			Equals: "{",
+		},
+		{
+			Id:     BraceClose,
+			Equals: "}",
+		},
+		{
+			Id:     Comma,
+			Equals: ",",
+		},
+		{
+			Id:     Colon,
+			Equals: ":",
+		},
+		{
+			Id:     ParenOpen,
+			Equals: "(",
+		},
+		{
+			Id:     ParenClose,
+			Equals: ")",
+		},
+		{
+			Id:    Eol,
+			IsEol: true,
+		},
+		{
+			Id:     Equal,
+			Equals: "=",
+		},
+		{
+			Id:     GreaterThan,
+			Equals: ">",
+		},
+		{
+			Id:     LessThan,
+			Equals: "<",
+		},
+		{
+			Id:     Dash,
+			Equals: "-",
+		},
+		{
+			Id:     Dot,
+			Equals: ".",
+		},
+		{
+			Id:     Arrow,
+			Equals: "->",
+		},
+		{
+			Id:     Or,
+			Equals: "|",
+		},
+		{
+			Id:       token_string,
+			IsString: true,
+		},
+		{
+			Id:           token_identifier,
+			IsIdentifier: true,
+		},
 	}
 }
 
@@ -36,218 +143,50 @@ func (sc *macroLexer) Lex(lval *yySymType) int {
 }
 
 func (s *macroLexer) lex(lval *yySymType) int {
-	for {
-		r := s.read()
-		if r == 0 { // EOF
-			return 0
-		}
-		if isEol(r) {
-			return Eol
-		}
-		if isWhitespace(r) {
-			continue
-		}
+	token, err := s.lexer.Next()
 
-		// handle comments
-		if r == '/' {
-			s.handleComments(r)
-			continue
-		}
-
-		if isDigit(r) {
-			s.unread()
-			lval.number = s.scanNumber()
-			return token_number
-		}
-
-		if r == '"' {
-			s.unread()
-			lval.string = s.scanStr()
-			return token_string
-		}
-
-		switch r {
-		case '{':
-			if s.matchIf(" code }") {
-				return CodeBlock
-			} else if s.matchIf(" expr }") {
-				return ExpressionBlock
-			}
-			return BraceOpen
-		case '}':
-			return BraceClose
-		case '[':
-			return BracketOpen
-		case ']':
-			return BracketClose
-		case '(':
-			return ParenOpen
-		case ')':
-			return ParenClose
-		case ',':
-			return Comma
-		case ':':
-			return Colon
-		case '=':
-			return Equal
-		case '|':
-			return Or
-		case '>':
-			return GreaterThan
-		case '<':
-			return LessThan
-		case '-':
-			next := s.read()
-			if next == '>' {
-				return Arrow
-			}
-			s.unread()
-			return Dash
-		case '.':
-			return Dot
-		default:
-			if isAlpha(r) {
-				s.unread()
-				var identifier = s.scanIdentifier()
-
-				switch identifier {
-				case "macro":
-					return MacroKeyword
-				case "types":
-					return TypesKeyword
-				case "syntax":
-					return SyntaxKeyword
-				case "false":
-					lval.bool = false
-					return token_bool
-				case "true":
-					lval.bool = true
-					return token_bool
-				default:
-					lval.string = identifier
-					return token_identifier
-				}
-			}
-
-			s.Err = errors.New("error: unrecognized character")
-			return 0
-		}
-	}
-}
-
-func (s *macroLexer) scanStr() string {
-	var str []rune
-	if s.read() != '"' {
-		return ""
-	}
-	for {
-		r := s.read()
-		if r == '"' || r == 0 {
-			break
-		}
-		str = append(str, r)
-	}
-	return string(str)
-}
-
-func (s *macroLexer) scanNumber() interface{} {
-	var number []rune
-	var isFloat bool
-	for {
-		r := s.read()
-		if r == '.' && len(number) > 0 && !isFloat {
-			isFloat = true
-			number = append(number, r)
-			continue
-		}
-
-		if isWhitespace(r) || r == ',' || r == '}' || r == ']' {
-			s.unread()
-			break
-		}
-		if r == 0 || !isDigit(r) {
-			s.unread()
-			break
-		}
-		number = append(number, r)
-	}
-	if isFloat {
-		f, _ := strconv.ParseFloat(string(number), 64)
-		return f
-	}
-	i, _ := strconv.Atoi(string(number))
-	return i
-}
-
-func (s *macroLexer) scanIdentifier() string {
-	var identifier []rune
-	for {
-		r := s.read()
-		if !isAlphaNum(r) {
-			s.unread()
-			break
-		}
-		identifier = append(identifier, r)
-	}
-	return string(identifier)
-}
-
-func (s *macroLexer) read() rune {
-	ch, _, _ := s.buf.ReadRune()
-	s.lastRead = ch
-	s.readStr += string(ch)
-	return ch
-}
-
-func (s *macroLexer) unread() {
-	_ = s.buf.UnreadRune()
-	s.readStr = s.readStr[:len(s.readStr)-1]
-}
-
-func (sc *macroLexer) handleComments(r rune) {
-	// single line comments
-	if sc.read() == '/' {
-		for {
-			r = sc.read()
-			if isEol(r) || r == 0 {
-				sc.unread()
-				return
-			}
-		}
-	} else {
-		sc.unread()
-	}
-
-	// multi line comments
-	if sc.read() == '*' {
-		for {
-			r = sc.read()
-			if r == '*' {
-				if sc.read() == '/' {
-					sc.unread()
-					return
-				}
-			}
-		}
-	} else {
-		sc.unread()
-	}
-}
-
-func (sc *macroLexer) matchIf(s string) bool {
-	data, err := sc.buf.Peek(len(s))
+	log.Printf("token: %v", token)
 
 	if err != nil {
-		log.Fatal(err)
-		return false
+		if errors.Is(err, lexer.ErrEOF) {
+			return 0
+		}
+		s.Err = err
+		return 0
 	}
 
-	var readStr = string(data)
+	switch token.Id {
+	case token_number:
+		if strings.Contains(token.Value, ".") {
+			number, err := strconv.ParseFloat(token.Value, 64)
 
-	if readStr == s {
-		sc.buf.Discard(len(s))
-		return true
+			if err != nil {
+				panic(err)
+			}
+
+			lval.number = number
+		} else {
+			number, err := strconv.Atoi(token.Value)
+
+			if err != nil {
+				panic(err)
+			}
+
+			lval.number = number
+		}
+
+		lval.number = token.Value
+	case token_string:
+		lval.string = token.Value
+	case token_bool:
+		lval.bool = token.Value == "true"
+	case token_identifier:
+		lval.string = token.Value
 	}
 
-	return false
+	return token.Id
+}
+
+func (sc *macroLexer) GetReadString() any {
+	return sc.lexer.GetReadString()
 }

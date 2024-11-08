@@ -9,9 +9,10 @@ import (
 )
 
 type logiLexer struct {
-	buf   *bufio.Reader
-	Err   error
-	debug bool
+	buf     *bufio.Reader
+	Err     error
+	debug   bool
+	readStr string
 }
 
 func newLogiLexer(r io.Reader, debug bool) *logiLexer {
@@ -208,10 +209,14 @@ func (s *logiLexer) scanIdentifier() string {
 
 func (s *logiLexer) read() rune {
 	ch, _, _ := s.buf.ReadRune()
+	s.readStr += string(ch)
 	return ch
 }
 
-func (s *logiLexer) unread() { _ = s.buf.UnreadRune() }
+func (s *logiLexer) unread() {
+	_ = s.buf.UnreadRune()
+	s.readStr = s.readStr[:len(s.readStr)-1]
+}
 
 func (sc *logiLexer) handleComments(r rune) {
 	// single line comments

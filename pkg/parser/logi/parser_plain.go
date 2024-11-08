@@ -1,6 +1,7 @@
 package logi
 
 import (
+	"fmt"
 	"github.com/tislib/logi/pkg/ast/plain"
 	"strings"
 )
@@ -15,7 +16,7 @@ func (y *yyLogiLexerProxy) Lex(lval *yySymType) int {
 }
 
 func (y *yyLogiLexerProxy) Error(s string) {
-	y.lexer.Error(s)
+	y.lexer.Error(fmt.Sprintf("at %s[%s]", y.lexer.readStr, s))
 }
 
 func ParsePlainContent(d string) (*plain.Ast, error) {
@@ -30,4 +31,8 @@ func ParsePlainContent(d string) (*plain.Ast, error) {
 	}
 
 	return convertNodeToLogiAst(proxy.Node)
+}
+
+func init() {
+	yyErrorVerbose = true
 }

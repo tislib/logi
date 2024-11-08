@@ -300,6 +300,77 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"parse nested structure": {
+			skipped: true,
+			macroInput: `
+				macro simple {
+					kind Syntax
+
+					syntax {
+						Auth {
+							Username <username string>
+							Password <password string>
+						}
+					}
+				}
+`,
+			input: `
+				simple User1 {
+					Auth {
+						Username "user1"
+						Password "password1"
+					}
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						Parameters: []logiAst.DefinitionParameter{
+							{
+								Name: "param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param1"),
+									},
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindMap,
+											Map: map[string]common.Value{
+												"value1": common.StringValue("11"),
+												"value2": common.StringValue("22"),
+											},
+										},
+									},
+								},
+							},
+							{
+								Name: "param2",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param2"),
+									},
+									{
+										Name: "value",
+										Value: common.Value{
+											Kind: common.ValueKindMap,
+											Map: map[string]common.Value{
+												"value3": common.IntegerValue(1),
+												"value4": common.IntegerValue(2),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"simple type reference": {
 			macroInput: `
 				macro entity {
