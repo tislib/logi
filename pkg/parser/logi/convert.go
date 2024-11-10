@@ -135,6 +135,15 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 
 		statement.Kind = plain.DefinitionStatementElementKindCodeBlock
 		statement.CodeBlock = &plain.DefinitionStatementElementCodeBlock{CodeBlock: *codeBlock}
+	case NodeOpStruct:
+		structure, err := convertStruct(element)
+
+		if err != nil {
+			return nil, err
+		}
+
+		statement.Kind = plain.DefinitionStatementElementKindStruct
+		statement.Struct = structure
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
 	}
@@ -311,6 +320,22 @@ func convertArray(element yaccNode) (*plain.DefinitionStatementElementArray, err
 	}
 
 	return array, nil
+}
+
+func convertStruct(element yaccNode) (*plain.DefinitionStatementElementStruct, error) {
+	result := new(plain.DefinitionStatementElementStruct)
+
+	for _, child := range element.children[0].children[0].children {
+		st, err := convertDefinitionStatementElement(child)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result.Statements = append(result.Statements, *st)
+	}
+
+	return result, nil
 }
 
 func convertFunctionDefinition(node yaccNode) (*plain.Function, error) {

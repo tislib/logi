@@ -28,7 +28,7 @@ import (
 
 %type<node> type_definition
 %type<node> definition definition_signature definition_body definition_statements definition_statement definition_statement_element
-%type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
+%type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_struct definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
 %type<node> definition_statement_element_parameter_list definition_statement_element_parameter_list_content definition_statement_element_parameter_list_item
 %type<node> code_block code_block_statements code_block_statement assignment_statement if_statement return_statement variable_declaration_statement function_call_statement
@@ -101,7 +101,7 @@ definition_statement: definition_statement_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list | code_block;
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_struct | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list | code_block;
 
 definition_statement_element_identifier: token_identifier
 {
@@ -137,6 +137,11 @@ definition_statement_element_array_content: definition_statement
 | // empty
 {
 	$$ = appendNode(NodeOpArray)
+};
+
+definition_statement_element_struct: definition_body
+{
+	$$ = appendNode(NodeOpStruct, $1)
 };
 
 definition_statement_element_attribute_list: LessThan BracketOpen definition_statement_element_attribute_list_content BracketClose GreaterThan

@@ -276,6 +276,8 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		}
 	case macroAst.SyntaxStatementElementKindCombination:
 		p.matchCombination(syntaxStatementElement)
+	case macroAst.SyntaxStatementElementKindStructure:
+		p.matchStructure(syntaxStatementElement, currentElement)
 	default:
 		p.reportMismatch(fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
 	}
@@ -423,6 +425,61 @@ func (p *recursiveStatementParser) matchCombination(element macroAst.SyntaxState
 			p.mismatchCause = "" // reset the mismatch cause
 		}
 	}
+}
+
+func (p *recursiveStatementParser) matchStructure(rootSyntaxElement macroAst.SyntaxStatementElement, plainElement plain.DefinitionStatementElement) {
+	if plainElement.Kind != plain.DefinitionStatementElementKindStruct {
+		p.reportMismatch(fmt.Sprintf("expected structure, got %s", plainElement.Kind))
+		return
+	}
+
+	sp := recursiveStatementParser{
+		macroDefinition: &macroAst.Macro{
+			Types: p.macroDefinition.Types,
+			Syntax: macroAst.Syntax{
+				Statements: rootSyntaxElement.Structure.Statements,
+			},
+		},
+		definition: &logiAst.Definition{
+			PlainStatements: plainElement.Struct.Statements,
+		},
+		asr: analyseStatementResult{
+			parameters: make(map[string]common.Value),
+		},
+	}
+
+	var parameters map[string]common.Value
+	for _, item := range plainElement.Struct.Statements {
+		sp.plainStatement = item
+
+		err := sp.parse()
+
+		if err != nil {
+			p.reportMismatch(err.Error())
+			return // stop matching if a mismatch is found
+		}
+
+		if len(sp.asr.parameters) > 0 {
+			if parameters == nil {
+				parameters = make(map[string]common.Value)
+			}
+
+			for key, value := range sp.asr.parameters {
+				parameters[key] = value
+			}
+		}
+	}
+
+	// migrate values
+	if len(parameters) > 0 {
+		var name = camelCaseFromNameParts(p.asr.nameParts)
+		p.asr.parameters[name] = common.Value{
+			Kind: common.ValueKindMap,
+			Map:  parameters,
+		}
+	}
+
+	return
 }
 
 func (p *recursiveStatementParser) matchTypeReference(syntaxElement macroAst.SyntaxStatementElement, currentElement plain.DefinitionStatementElement) {

@@ -145,8 +145,6 @@ func (sc *macroLexer) Lex(lval *yySymType) int {
 func (s *macroLexer) lex(lval *yySymType) int {
 	token, err := s.lexer.Next()
 
-	log.Printf("token: %v", token)
-
 	if err != nil {
 		if errors.Is(err, lexer.ErrEOF) {
 			return 0

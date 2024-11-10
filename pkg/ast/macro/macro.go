@@ -58,7 +58,7 @@ const (
 	SyntaxStatementElementKindTypeReference   SyntaxStatementElementKind = "TypeReference"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
 	SyntaxStatementElementKindCombination     SyntaxStatementElementKind = "Combination"
-	SyntaxStatementElementKindStructure       SyntaxStatementElementKind = "Combination"
+	SyntaxStatementElementKindStructure       SyntaxStatementElementKind = "Structure"
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
 	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"

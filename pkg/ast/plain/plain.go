@@ -51,6 +51,7 @@ const (
 	DefinitionStatementElementKindIdentifier    DefinitionStatementElementKind = "Identifier"
 	DefinitionStatementElementKindValue         DefinitionStatementElementKind = "Value"
 	DefinitionStatementElementKindArray         DefinitionStatementElementKind = "Array"
+	DefinitionStatementElementKindStruct        DefinitionStatementElementKind = "Struct"
 	DefinitionStatementElementKindAttributeList DefinitionStatementElementKind = "AttributeList"
 	DefinitionStatementElementKindArgumentList  DefinitionStatementElementKind = "ArgumentList"
 	DefinitionStatementElementKindParameterList DefinitionStatementElementKind = "ParameterList"
@@ -63,6 +64,7 @@ type DefinitionStatementElement struct {
 	Identifier    *DefinitionStatementElementIdentifier    `json:"identifier,omitempty"`
 	Value         *DefinitionStatementElementValue         `json:"value,omitempty"`
 	Array         *DefinitionStatementElementArray         `json:"array,omitempty"`
+	Struct        *DefinitionStatementElementStruct        `json:"struct,omitempty"`
 	AttributeList *DefinitionStatementElementAttributeList `json:"attributeList,omitempty"`
 	ArgumentList  *DefinitionStatementElementArgumentList  `json:"argumentList,omitempty"`
 	ParameterList *DefinitionStatementElementParameterList `json:"parameterList,omitempty"`
@@ -102,6 +104,10 @@ type DefinitionStatementElementValue struct {
 
 type DefinitionStatementElementArray struct {
 	Items []DefinitionStatement `json:"items"`
+}
+
+type DefinitionStatementElementStruct struct {
+	Statements []DefinitionStatement `json:"statements"`
 }
 
 func (l DefinitionStatementElementArray) AsValue() common.Value {

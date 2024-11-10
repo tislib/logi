@@ -301,12 +301,12 @@ func TestParserFull(t *testing.T) {
 			},
 		},
 		"parse nested structure": {
-			skipped: true,
 			macroInput: `
 				macro simple {
 					kind Syntax
 
 					syntax {
+						Main { code }
 						Auth {
 							Username <username string>
 							Password <password string>
@@ -316,6 +316,9 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				simple User1 {
+					Main {
+						return 123
+					}
 					Auth {
 						Username "user1"
 						Password "password1"
@@ -325,44 +328,36 @@ func TestParserFull(t *testing.T) {
 			expected: &logiAst.Ast{
 				Definitions: []logiAst.Definition{
 					{
-						MacroName: "entity",
-						Name:      "User",
+						MacroName: "simple",
+						Name:      "User1",
 						Parameters: []logiAst.DefinitionParameter{
 							{
-								Name: "param1",
-								Parameters: []logiAst.Parameter{
-									{
-										Name:  "propertyName",
-										Value: common.StringValue("param1"),
-									},
-									{
-										Name: "value",
-										Value: common.Value{
-											Kind: common.ValueKindMap,
-											Map: map[string]common.Value{
-												"value1": common.StringValue("11"),
-												"value2": common.StringValue("22"),
+								Name: "main",
+								CodeBlock: common.CodeBlock{
+									Statements: []common.Statement{
+										{
+											Kind: common.ReturnStatementKind,
+											ReturnStmt: &common.ReturnStatement{
+												Result: &common.Expression{
+													Kind: common.LiteralKind,
+													Literal: &common.Literal{
+														Value: common.IntegerValue(123),
+													},
+												},
 											},
 										},
 									},
 								},
 							},
 							{
-								Name: "param2",
+								Name: "auth",
 								Parameters: []logiAst.Parameter{
 									{
-										Name:  "propertyName",
-										Value: common.StringValue("param2"),
-									},
-									{
-										Name: "value",
-										Value: common.Value{
-											Kind: common.ValueKindMap,
-											Map: map[string]common.Value{
-												"value3": common.IntegerValue(1),
-												"value4": common.IntegerValue(2),
-											},
-										},
+										Name: "auth",
+										Value: common.MapValue(map[string]common.Value{
+											"username": common.StringValue("user1"),
+											"password": common.StringValue("password1"),
+										}),
 									},
 								},
 							},

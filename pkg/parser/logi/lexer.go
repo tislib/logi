@@ -37,10 +37,12 @@ func (sc *logiLexer) Lex(lval *yySymType) int {
 	return res
 }
 
+func (s *logiLexer) Next() (lexer.Token, error) {
+	return s.lexer.Next()
+}
+
 func (s *logiLexer) lex(lval *yySymType) int {
 	token, err := s.lexer.Next()
-
-	log.Printf("token: %v", token)
 
 	if err != nil {
 		if errors.Is(err, lexer.ErrEOF) {

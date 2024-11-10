@@ -35,6 +35,7 @@ const (
 	NodeOpArray               = "array"
 	NodeOpParameterList       = "parameter_list"
 	NodeOpParameter           = "parameter"
+	NodeOpStruct              = "struct"
 )
 
 type yaccNode struct {
@@ -59,4 +60,8 @@ func appendNodeTo(node *yaccNode, child yaccNode) yaccNode {
 
 func registerRootNode(parser yyLexer, n yaccNode) {
 	parser.(*yyLogiLexerProxy).Node.children = append(parser.(*yyLogiLexerProxy).Node.children, n)
+}
+
+func init() {
+	yyErrorVerbose = true
 }
