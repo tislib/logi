@@ -1,7 +1,6 @@
 package logi
 
 import (
-	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/parser/macro"
 	"testing"
 )
@@ -33,7 +32,7 @@ func BenchmarkSimpleParse(b *testing.B) {
 	// parallel benchmark
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			_, err := Parse(logiInput, []macroAst.Ast{*mAst})
+			_, err := Parse(logiInput, mAst.Macros)
 
 			if err != nil {
 				b.Error(err)

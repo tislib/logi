@@ -333,7 +333,7 @@ func TestParserFull(t *testing.T) {
 						Parameters: []logiAst.DefinitionParameter{
 							{
 								Name: "main",
-								CodeBlock: common.CodeBlock{
+								CodeBlock: &common.CodeBlock{
 									Statements: []common.Statement{
 										{
 											Kind: common.ReturnStatementKind,
@@ -881,7 +881,7 @@ func TestParserFull(t *testing.T) {
 							},
 							{
 								Name: "strategy",
-								CodeBlock: common.CodeBlock{
+								CodeBlock: &common.CodeBlock{
 									Statements: []common.Statement{
 										{
 											Kind: common.IfStatementKind,

@@ -126,12 +126,15 @@ func (p *recursiveStatementParser) apply() error {
 					Parameters: parameters,
 				})
 			} else { // parameter
-				p.definition.Parameters = append(p.definition.Parameters, logiAst.DefinitionParameter{
+				var parameter = logiAst.DefinitionParameter{
 					Name:       name,
 					Attributes: attributes,
 					Parameters: parameters,
-					CodeBlock:  asr.codeBlock,
-				})
+				}
+				if asr.hasCodeBlock {
+					parameter.CodeBlock = &asr.codeBlock
+				}
+				p.definition.Parameters = append(p.definition.Parameters, parameter)
 			}
 		}
 	}

@@ -58,6 +58,33 @@ func (v Value) ToDisplayName() string {
 	return ""
 }
 
+func (v Value) AsInterface() interface{} {
+	switch v.Kind {
+	case ValueKindString:
+		return *v.String
+	case ValueKindBoolean:
+		return *v.Boolean
+	case ValueKindFloat:
+		return *v.Float
+	case ValueKindInteger:
+		return *v.Integer
+	case ValueKindArray:
+		var result []interface{}
+		for _, value := range v.Array {
+			result = append(result, value.AsInterface())
+		}
+		return result
+	case ValueKindMap:
+		var result = make(map[string]interface{})
+		for key, value := range v.Map {
+			result[key] = value.AsInterface()
+		}
+		return result
+	default:
+		panic("unknown value kind")
+	}
+}
+
 func StringValue(s string) Value {
 	return Value{
 		Kind:   ValueKindString,

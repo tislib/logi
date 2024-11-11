@@ -27,12 +27,10 @@ func ParseFullWithMacro(logiInput string, macroInput string) (*logi.Ast, error) 
 	return ast, err
 }
 
-func Parse(logiInput string, macros []macroAst.Ast) (*logi.Ast, error) {
+func Parse(logiInput string, macros []macroAst.Macro) (*logi.Ast, error) {
 	var mAst = new(macroAst.Ast)
 
-	for _, m := range macros {
-		mAst.Macros = append(mAst.Macros, m.Macros...)
-	}
+	mAst.Macros = macros
 
 	plainAst, err := ParsePlainContent(logiInput)
 

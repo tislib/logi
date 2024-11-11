@@ -3,11 +3,16 @@ macro creditLineRule {
     kind Syntax
     
     types {
-        
+        Condition { expr }
     }
     
     syntax {
-        Rule <RuleConfig>
+        Name <name string>
+        Description <description string>
+        CreditLimit <creditLimit number>
+        InterestRate <interestRate number>
+        
+        Conditions [<condition Condition>]
     }
 }
 ```

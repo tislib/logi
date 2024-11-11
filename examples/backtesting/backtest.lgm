@@ -10,6 +10,6 @@ macro backtest {
         StartTime <startTime string>
         EndTime <endTime string>
         Indicators <indicators array<Indicator>>
-        Strategy { }
+        Strategy { code }
     }
 }
