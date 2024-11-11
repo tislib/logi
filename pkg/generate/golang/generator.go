@@ -87,7 +87,7 @@ func (g generator) getGoTypeForAsr(asr common.AnalyseStatementResult) string {
 			return g.getGoType(asr.TypeDef)
 		}
 	} else if asr.HasCodeBlock {
-		return "func(vm *vm.VM, args ...interface{}) (interface{}, error)"
+		return "func(args ...interface{}) (interface{}, error)"
 	} else if len(asr.Parameters) > 0 {
 		var code = "struct {\n"
 		for name, def := range asr.Parameters {
