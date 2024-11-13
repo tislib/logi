@@ -1,391 +1,527 @@
-Logi -A language for abstraction
+Logi — A language for abstraction
 =================================================
 
 # Overview
 
-Logi is a purpose-built language designed to facilitate the creation of modular, adaptable, and extensible systems. The
-focus is on providing flexibility for developers to expand and customize systems with minimal effort, ensuring
-scalability, and encouraging code reusability.
+Logi is a language for abstraction that allows developers to define systems declaratively.
+It is designed to be simple, flexible, and extensible, making it easy to create complex systems with minimal effort.
 
 # Motivation
 
-With help of Logi, you can simply define a declarative system that can be easily written and read by devs and AI.
+With the help of Logi, you can create a custom language for your specific system.
 
-## Examples
+Logi is designed to be a language for abstraction that allows developers to define systems declaratively.
 
-### Example 1: Simple API definition
-
-```logi
-api MyAPI {
-    endpoint /hello {
-        method GET {
-            response {
-                message: "Hello, World!"
-            }
-        }
-    }
-    
-    endpoint /add-two-numbers {
-        method POST {
-            response (param1 int4, param2 int8) int8 {
-                    return param1 + param2
-            }
-        }
-    }
-    
-    endpoint /users {
-        inject(UserService) as userService
-
-        method POST {
-            response (user User) User {
-                return userService.createUser(user)
-            }
-        }
-    }
-}
-```
-
-### Example 2: Repository definition
+## Example 1. Define a DSL for a credit rules
 
 ```logi
-entity User {
-    id: int [id, required]
-    name: string [required, default: "John Doe"]
-    email: string [transient]
-}
-
-repository UserRepository User {
-    query getUserById(id int) `SELECT * FROM users WHERE id = $1`
-    query getUsers() `SELECT * FROM users`
-    query getUsersByName(name string) queryBuilder(User).where('name', name).get()
-}
-```
-
-### Example 3: Service definition
-
-```logi
-service UserService {
-    inject UserRepository as userRepository
-
-    method getUserById(id int) User {
-        return userRepository.getUserById(id)
-    }
+macro creditRule {
+    kind Syntax
     
-    method getUsers() []User {
-        return userRepository.getUsers()
-    }
-    
-    method getUsersByName(name string) []User {
-        return userRepository.getUsersByName(name)
-    }
-}
-```
-
-### Example 4: Macro definition
-
-Create a macro to handle events(which does not exists in language)
-
-```logi-macro
-macro eventHandler {
-    kind: Syntax
-    args (name Name)
- 
     syntax {
-       on <eventName Name>() { }
-       before <eventName Name>() <returnType Type> { }
-       before <eventName Name>() { }
+        creditScore <minCreditScore int> <maxCreditScore int>
+        income <minIncome int> <maxIncome int>
+        age <minAge int> <maxAge int>
     }
 }
 ```
 
-Define user creation event handler
+Now let's define a credit rule using the macro:
 
 ```logi
-eventHandler UserCreated {
-    inject(EmailService) as emailService
+creditRule Rule1 {
+    creditScore 500 600
+    income 20000 30000
+    age 18 65
+}
 
-    on userCreated (user User) {
-        emailService.sendEmail(user.email, "Welcome to our platform!")
+creditRule Rule2 {
+    creditScore 600 700
+    income 30000 40000
+    age 18 65
+}
+```
+
+Now in golang, you can read the rules and apply them to the user data.
+
+```go
+var g, err = New(tt.options...)
+if err != nil {
+log.Fatal(err)
+}
+
+g.LoadMacroFile("creditRule.lgm")
+definitions,err := g.LoadLogiFile("creditRules.logi")
+if err != nil {
+log.Fatal(err)
+}
+
+// definitions is a list of credit rules, which can be used by your app to apply the rules to the user data.
+```
+
+## Example 2. Define a DSL for a chatbot
+
+```logi
+macro chatbot {
+    kind Syntax
+    
+    syntax {
+        intent <name string> {
+            pattern <pattern string>
+            response <response string>
+        }
     }
 }
 ```
 
-# Key Features
+Now let's define a chatbot using the macro:
 
-## 1. Declarative Syntax
-
-• Logi uses a declarative approach to define system behaviors, making it more readable and maintainable.
-• The syntax is optimized for configuration-based programming, enabling rapid changes without complex coding.
-
-Idea: Allow for “self-documenting code” through declarative structures that describe the functionality directly within
-the syntax.
-
-## 2. Adaptive Design with Macros
-
-In Logi, macros are used to adjust language to be flexible and adaptable to different use cases.
-Macros can be used to define custom elements, properties, and behaviors, allowing developers to create systems that are
-tailored to their specific needs.
-
-## 3. Modular Architecture
-
-Logi promotes a modular architecture that allows developers to build systems in a structured and organized way.
-
-## 4. Ready for Data representation
-
-Logi is designed to work with data structures, making it easy to represent and manipulate data in a variety of formats.
-It supports to easily define data values also to replace json, xml, yaml, etc.
-
-## 5. AI Ready
-
-Logi language is supposed to be ready to be used by AI to integrate it to other systems.
-WIth help of Logi,
-you can define a specific declarative language for specific system where logi can be used as communication interface.
-
-## 6. Highly extensible
-
-With help of macros and modular architecture, Logi is highly extensible and can be used to build complex systems.
-
-## 7. Functional Programming
-
-Logi is designed to support functional programming paradigms, making it easier to write clean, concise, and efficient
-code.
-
-# Declaration
-
-In Logi language, there are different type of elements.
-
-## Common syntax
-
-The common syntax for declaring an element is:
-
-For definition of data
-
-```
-<elementType> <elementName> {
-    <property1> <value1>
-    <property2> <value2>
-    <property3> {
-        <nestedProperty1> <nestedValue1>
-        <nestedProperty2> <nestedValue2>
+```logi
+chatbot MyChatbot {
+    intent Greeting {
+        pattern "Hello"
+        response "Hi there!"
+    }
+    
+    intent Farewell {
+        pattern "Goodbye"
+        response "See you later!"
     }
 }
+```
 
-struct User {
-    id int
-    name string
-    email string
-    tags string[]
+Now in golang, you can read the chatbot definition and use it to create a chatbot.
+
+```go
+var g, err = New(tt.options...)
+if err != nil {
+log.Fatal(err)
+}
+
+g.LoadMacroFile("chatbot.lgm")
+definitions,err := g.LoadLogiFile("chatbot.logi")
+if err != nil {
+log.Fatal(err)
+}
+
+// definitions is a list of chatbot intents, which can be used by your app to create a chatbot.
+```
+
+# Syntax
+
+In Logi, there are two main elements: macros and definitions. They are defined in separate files, and separately loaded.
+
+## Overview
+
+There are different kind of macros in Logi:
+
+1. Syntax: Defines the syntax of a new language element.
+2. Rule: Defines a rule that can be applied to a language element.
+3. Transform: Defines a transformation that can be applied to a language element.
+
+## Syntax Macros
+
+### Macro Definition
+
+#### A Macro
+
+```logi
+macro {MacroName} {
+    kind Syntax
+    
+    types {
+        {TypeName1} {SyntaxStatement1}
+        {TypeName2} {SyntaxStatement2}
+    }
+    
+    syntax {
+        {SyntaxStatement1}
+        {SyntaxStatement2}
+    }
 }
 ```
 
-For definition of a data type
+#### A Definition
 
-```
-User user1 {
-    id  33
-    name "John Doe"
-    email "AbcX"
-    tags ["tag1", "tag2"]
+```logi
+{MacroName} {DefinitionName} {
+   {SyntaxStatement1}
+   {SyntaxStatement2}
 }
 ```
 
-For definition of code block
+In Macro definition, dynamic parts are enclosed in curly braces. For example, {MacroName} is the name of the macro,
+{TypeName1} is the name of the type, and {SyntaxStatement1} is the syntax statement.
 
-```
-<codeType> <codeName> (param1 type1, param2 type2) returnType {
-    ...code...
-    return <value>
+The main thing in macro definition is syntax, which defines how its definitions will be.
+
+Types are optional, it is used to define complex types which can be used in syntax or types
+
+**Simple Macro definition**
+
+Let's define a simple macro that defines a person with a name and age.
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+    }
 }
 ```
 
-### Full definition
+Now, let's define a person definition using the macro:
 
-#### Rules
-
-1. Each Statement should be on a single line. This is for both logi and logi-macro files.
-
+```logi
+person John {
+    name "John"
+    age 30
+}
 ```
-<macroName> <definitionName> 
+
+It will be matched by **_Logi engine_** and will be translated into a definition like this:
+
+```json
+{
+  "name": "John",
+  "age": 30
+}
 ```
 
-## Macros
+### Syntax Statements
 
-Macros are the heart of Logi language. They are used to define custom elements, properties, and behaviors.
+Syntax statements are the building blocks of a macro. They define the structure of the macro definition.
 
-There are different types of macros:
+Each **_syntax statement_** is white space separated **_syntax element_**(s).
 
-1. Syntax macros
-2. Helper macros
-3. Marker macros
+```logi
+macro {MacroName} {
+    kind Syntax
+    
+    syntax {
+        {SyntaxElement1} {SyntaxElement2} {SyntaxElement3}
+        {SyntaxElement4} {SyntaxElement5}
+    }
+}
+```
 
-### Syntax macros
+When Logi engine reads a definition, it matches each statement of definition to the macro statement.
+Statements are unordered, it means that first statement of macro can match with any statement of definition.
+Statements are also optional, it means that if a statement is not present in definition, it will be ignored.
 
-Syntax macros are top level macros that define new syntax elements in the language.
+In other hand, syntax elements are by default required and ordered. It means that first element of macro statement will
+match with first element of definition statement.
 
-#### Examples:
+Each statement itself must be written in a single line.
 
-##### Entity macro
+Person Macro:
 
-Macro definition:
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        firstName <firstName string> lastName <lastName string>
+        age <age int>
+    }
+}
+```
 
+Person Definitions:
+
+Correct:
+
+```logi
+person JohnDoe {
+    firstName "John" lastName "Doe"
+    age 30
+}
+```
+
+Correct, but unordered:
+
+```logi
+person JohnDoe {
+    lastName "Doe" firstName "John"
+    age 30
+}
+```
+
+Incorrect, wrong order of elements:
+
+```logi
+person JohnDoe {
+    firstName "John" lastName "Doe"
+    age 30
+}
+```
+
+Incorrect, missing element:
+
+```logi
+person JohnDoe {
+    firstName "John"
+    age 30
+}
+```
+
+Correct, missing statement:
+
+```logi
+person JohnDoe {
+    firstName "John" lastName "Doe"
+}
+```
+
+Incorrect, line separated statement:
+
+```logi
+person JohnDoe {
+    firstName "John"
+    lastName "Doe"
+    age 30
+}
+```
+
+### Syntax Elements
+
+There are different type of syntax elements in Logi:
+
+1. **Keyword**: A keyword is an identifier that is used to define a syntax element.
+2. **VariableKeyword**: A variable keyword is a keyword that can be used as a variable in the syntax. It is for matching
+   dynamic information in definition
+3. **ParameterList**: A parameter list is a list of parameters. It is used to define a list of parameters in a syntax
+   element.
+4. **ArgumentList**: An argument list is a list of arguments. It is used to define a list of arguments in a syntax
+   element.
+5. **CodeBlock**: A code block is a block of code. It is used to define a block of code in a syntax element.
+6. **ExpressionBlock**: An expression block is a block of expression. It is used to define a block of expression in a
+   syntax element.
+7. **AttributeList**: An attribute list is a list of attributes. It is used to define a list of attributes in a syntax
+   element.
+8. **TypeReference**: A type reference is to include a statement from *types* section into syntax.
+9. **Combination**: A combination is a combination of multiple syntax elements. It is like Or statement
+10. **Structure**: A structure is a combination of multiple syntax elements. It is for making nested definition
+    statements.
+
+#### Keyword
+
+Keywords are used to define syntax structure. They are just plain identifiers and play roles in matching definition
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string> as known as <knownAs string>
+        age <age int> years old
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John" as known as "Johnny"
+    age 30 years old
+}
+```
+
+As you see, `name`, `as`, `known`, `age`, `years`, `old` are keywords. They are used to form the syntax structure.
+
+#### VariableKeyword
+
+Variable keywords are used to match dynamic information in definition.
+
+Variable keywords are defined as `<variableName type>`. It is a matching variable in the definition based on a type.
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John"
+    age 30
+}
+```
+
+In this example, `name` and `age` are variable keywords. They are used to match dynamic information in the definition.
+Based on their types, string is matching "John" and int is matching 30.
+
+List of Variable Keywords types:
+
+##### Primitive types
+
+1. `string`: It is used to match a string value. Example: `name <name string>` will match with `name "John"`
+2. `int`: It is used to match an integer value. Example: `age <age int>` will match with `age 30`
+3. `float`: It is used to match a float value. Example: `weight <weight float>` will match with `weight 70.5`
+4. `bool`: It is used to match a boolean value. Example: `isMarried <isMarried bool>` will match with `isMarried true`
+5. `date`: It is used to match a date value. Example: `birthDate <birthDate date>` will match with
+   `birthDate "1990-01-01"`
+6. `time`: It is used to match a time value. Example: `birthTime <birthTime time>` will match with
+   `birthTime "12:00:00"`
+7. `datetime`: It is used to match a datetime value. Example: `birthDateTime <birthDateTime datetime>` will match with
+   `birthDateTime "1990-01-01T12:00:00"`
+8. `duration`: It is used to match a duration value. Example: `workDuration <workDuration duration>` will match with
+   `workDuration "1h30m"`
+9. `money`: It is used to match a money value. Example: `salary <salary money>` will match with `salary "1000.50 USD"`
+10. `unit`: It is used to match a unit value. Example: `weight <weight unit>` will match with `weight "70.5 kg"`
+
+##### Special Types
+
+###### Name type
+`Name`: It is used to match a name value.
+Example: `name <name Name>` will match with `name John`, It is used to
+match a single keyword (without double quotes)
+
+Example:
+```logi
+macro config {
+    kind Syntax
+    
+    syntax {
+        Param <paramName Name> <paramValue string>
+    }
+}
+```
+
+```logi
+config EngineConfig {
+    Param LogLevel "info"
+    Param Port "8080"
+}
+```
+
+It will be matched by **_Logi engine_** and will be translated into a definition like this:
+
+```json
+{
+  "LogLevel": "info",
+  "Port": "8080"
+}
+```
+
+###### Type type
+
+`Type`: It is used to match a type value.
+Example: `type <typeName Type>` will match with `type int`, It is used to match type as value.
+
+Example:
 ```logi
 macro entity {
     kind Syntax
     
     syntax {
-       <property Name> <type Type> [id, required, default: <defaultValue>, unique]
+        property <fieldName string> <fieldType Type>
     }
 }
 ```
-
-Usage:
 
 ```logi
 entity User {
-    id int [id, required]
-    name string [required, default: "John Doe"]
-    email string [transient]
-}
-
-entity Product {
-    id int [id, required]
-    name string [required]
-    price float [required]
-    owner User [required]
-    description string
+    property name string
+    property age int
 }
 ```
 
-##### Formula macro
+It will be matched by **_Logi engine_** and will be translated into a definition like this:
 
-Let's imagine, we want to store formulas in our system, later we can use them in different places.
+```json
+{
+  "name": "string",
+  "age": "int"
+}
+```
 
+###### Types defined in types section
+
+Types can be used in variable keywords. It is used to define complex types which can be used in syntax or types.
+
+Example:
 ```logi
-macro formula {
+macro entity {
     kind Syntax
     
-    syntax {
-       args (...[<args Type<string>>])
-       expr Expression
-    }
-}
-```
-
-Usage:
-
-```logi
-formula AddTwoNumbers {
-    args (a int, b int)
-    expr a + b
-}
-```
-
-##### AI model macro
-
-Let's imagine, we want to store AI models in our system, later we can use them in different places.
-
-```logi
-macro model {
-    kind Syntax
-    
-    defintion {
-       ModelKind <enum[Sequential, Recurrent]>
-       Activation <enum[Relu, Sigmoid, Softmax]>
-       
-       Dense (<length int>, <inputShape int[]>, <activation Activation>)
-       Conv2D (<filters int>, <kernelSize int[]>, <activation Activation>)
-       MaxPooling2D (<poolSize int[]>)
-       
-       Layer <oneOf[Dense, Conv2D, MaxPooling2D]>
+    types {
+        FieldType Name
     }
     
     syntax {
-       kind ModelKind
-       layers Layer[]
-       output Layer
+        field <fieldName FieldType> <fieldValue string>
     }
 }
 ```
 
-Usage:
-
 ```logi
-model MyModel {
-    kind Sequential
-    layers [
-        Dense(128, [784], RELU),
-        Dense(10, [128], SOFTMAX)
-    ]
-    output Dense(10, [128], SOFTMAX)
+entity User {
+    field name "John"
+    field age "30"
 }
 ```
 
-##### Html macro
+It will be matched by **_Logi engine_** and will be translated into a definition like this:
 
-You can define html elements with help of macros in Logi.
+```json
+{
+   "fieldName": "John",
+   "fieldAge": "30"
+}
+```
 
+Another example:
 ```logi
-macro html {
+macro entity {
     kind Syntax
     
-    defintion {
-        Head {
-            Title <string>
-            Meta {
-                Charset <string>
-                Name <string>
-                Content <string>
-            }
-        }
-
-        Body {
-          ...Element
-        }
-        
-        H1 {
-            ...Element
-        }
-        
-        H1 <string>
-        
-        // Elements
-        RootElement <oneOf[Head, Body]>
-        Element <oneOf[H1, P]>
+    types {
+        Property <name Name> <type Type> <size int>
     }
     
     syntax {
-       Head [required]
-       Body [required]
+        Prop <prop Property>
     }
 }
 ```
-
-Usage:
 
 ```logi
-html MyPage {
-    Head {
-        Title "My Page"
-        Meta {
-            Charset "UTF-8"
-            Name "description"
-            Content "This is my page"
-        }
-    }
-    Body {
-        H1 "Hello, World!"
-        P "This is a paragraph."
-        
-        P {
-            "This is another paragraph."
-            Div {
-                "This is a div."
-            }
-        }
-    }
+entity User {
+    Prop name string 50
+    Prop age int 4
 }
 ```
 
-#### General Principles for Syntax Macros
-                                                                                                                                       
+It will be matched by **_Logi engine_** and will be translated into a definition like this:
 
+```json
+{
+  "propName": {
+    "name": "name",
+    "type": "string",
+    "size": 50
+  },
+  "propAge": {
+    "name": "age",
+    "type": "int",
+    "size": 4
+  }
+}
+```
+
+#### ParameterList

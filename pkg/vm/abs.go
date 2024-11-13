@@ -15,12 +15,12 @@ type ExecutableFunc func(args ...interface{}) (interface{}, error)
 
 type VirtualMachine interface {
 	// loads macro files from the given paths
-	LoadMacroFiles(path ...string) error
+	LoadMacroFile(path ...string) error
 	LoadMacroContent(content ...string) error
 	LoadMacroAst(ast ...macroAst.Ast) error
 
 	// loads logi files from the given paths
-	LoadLogiFiles(path ...string) ([]Definition, error)
+	LoadLogiFile(path ...string) ([]Definition, error)
 	LoadLogiContent(content ...string) ([]Definition, error)
 	LoadLogiAst(ast ...logiAst.Ast) ([]Definition, error)
 

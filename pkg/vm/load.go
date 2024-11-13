@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func (v *vm) LoadMacroFiles(path ...string) error {
+func (v *vm) LoadMacroFile(path ...string) error {
 	for _, p := range path {
 		data, err := os.ReadFile(p)
 
@@ -51,7 +51,7 @@ func (v *vm) LoadMacroAst(ast ...macroAst.Ast) error {
 	return nil
 }
 
-func (v *vm) LoadLogiFiles(path ...string) ([]Definition, error) {
+func (v *vm) LoadLogiFile(path ...string) ([]Definition, error) {
 	var result []Definition
 
 	for _, p := range path {
