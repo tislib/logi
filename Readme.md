@@ -387,11 +387,13 @@ List of Variable Keywords types:
 ##### Special Types
 
 ###### Name type
+
 `Name`: It is used to match a name value.
 Example: `name <name Name>` will match with `name John`, It is used to
 match a single keyword (without double quotes)
 
 Example:
+
 ```logi
 macro config {
     kind Syntax
@@ -424,6 +426,7 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 Example: `type <typeName Type>` will match with `type int`, It is used to match type as value.
 
 Example:
+
 ```logi
 macro entity {
     kind Syntax
@@ -455,6 +458,7 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 Types can be used in variable keywords. It is used to define complex types which can be used in syntax or types.
 
 Example:
+
 ```logi
 macro entity {
     kind Syntax
@@ -480,12 +484,13 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-   "fieldName": "John",
-   "fieldAge": "30"
+  "fieldName": "John",
+  "fieldAge": "30"
 }
 ```
 
 Another example:
+
 ```logi
 macro entity {
     kind Syntax
@@ -525,3 +530,426 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 ```
 
 #### ParameterList
+
+Parameter list is used to define a list of parameters inside parentheses.
+
+Example: `Personal (<name String>, <age int>)` will match with `Personal ("John", 30)`,
+It is like variable keyword, but working in a list and required to have parenthesis.
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+        Personal (<address string>, <phone string>)
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John"
+    age 30
+    Personal ("New York", "1234567890")
+}
+```
+
+This will be translated as:
+
+```json
+{
+  "name": "John",
+  "age": 30,
+  "Personal": {
+    "address": "New York",
+    "phone": "1234567890"
+  }
+}
+```
+
+Parameter list can also be used in types section.
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    types {
+        Address (<city string>, <country string>) at (<street string>, <zip int>)
+    }
+    
+    syntax {
+        name <name string>
+        age <age int>
+        Personal <address Address>
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John"
+    age 30
+    Personal Address ("New York", "USA") at ("Wall Street", 10005)
+}
+```
+
+This will be translated as:
+
+```json
+{
+  "name": "John",
+  "age": 30,
+  "Personal": {
+    "city": "New York",
+    "country": "USA",
+    "street": "Wall Street",
+    "zip": 10005
+  }
+}
+```
+
+#### ArgumentList
+
+Argument list is used to define a list of arguments inside parentheses.
+The difference between parameters and arguments are,
+parameters are used to define values, arguments are used to define properties.
+
+Example: `(...[<args Type<string>>])` will match with `(name string, age int)`
+
+Macro
+
+```logi
+macro simpleInterface {
+     kind Syntax
+
+     syntax {
+         <methodName Name> (...[<args Type<string>>]) <returnType Type>
+     }
+ }
+```
+
+Definition
+
+```logi
+ simpleInterface UserService {
+     createUser (name string, age int) User
+ }
+```
+
+This will be translated as:
+
+```json
+{
+  "methodName": "createUser",
+  "args": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    }
+  ],
+  "returnType": "User"
+}
+```
+
+#### AttributeList
+
+Attribute list is used to define a list of attributes inside square brackets.
+
+Example: `[required boolean]` will match with `[required]`
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        <property Name> <type Type> [required boolean, default string]
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name string [required]
+    age int [required, default "30"]
+}
+```
+
+This will be translated as:
+
+```json
+{
+  "name": {
+    "type": "string",
+    "required": true
+  },
+  "age": {
+    "type": "int",
+    "required": true,
+    "default": "30"
+  }
+}
+```
+
+#### CodeBlock
+
+Code block is used to define a block of code inside curly braces.
+
+Example: `{ code }` will match with `{return "Hello"}`
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+        greet { code }
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John"
+    age 30
+    greet {
+      return "Hello"
+    }
+}
+```
+
+This will be translated as:
+
+code block will not be translated to definition immediately, but you can execute them inside VM.
+
+#### ExpressionBlock
+
+Expression block is used to define a block of expression inside curly braces.
+
+Example: `{ expression }` will match with `{1 + 2}`
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+        greet { expr }
+    }
+}
+```
+
+Definition
+
+```logi
+person John {
+    name "John"
+    age 30
+    greet {1 + 2}
+}
+```
+
+The difference between code block and expression is, inside expression no need to write `return` keyword.
+
+#### TypeReference
+
+Type reference is used to include a statement from *types* section into syntax.
+
+Example: `<TypeName1>` will match TypeName1 from types section
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    types {
+        Name <firstName string> <lastName string>
+    }
+    
+    syntax {
+        name <Name>
+        age <age int>
+    }
+}
+```
+
+Definition
+
+```logi
+person JohnDoe {
+    name "John" "Doe"
+    age 30
+}
+```
+
+This will be translated as:
+
+```json
+{
+  "name": {
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "age": 30
+}
+```
+
+TypeReference can be used to simplify complex structures.
+
+#### Combination
+
+Combination is a combination of multiple syntax elements. It is like Or statement.
+
+Example: `(<stringValue string> | <numberValue int>)` will match with `"Hello"` or `123` but not `true`
+
+Macro
+
+```logi
+macro person {
+    kind Syntax
+    
+    syntax {
+        name (<firstName string> | <firstName Name>) (<lastName string> | <lastName Name>)
+        age <age int>
+    }
+}
+```
+
+Definition
+
+```logi
+person JohnDoe {
+    name "John" "Doe"
+    age 30
+}
+```
+
+Another Definition
+
+```logi
+person JohnDoe {
+    name John Doe
+    age 30
+}
+```
+
+Both will be translated as:
+
+```json
+{
+  "name": {
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "age": 30
+}
+```
+
+#### Structure
+
+Structure is used to define nested statements.
+
+Example: `{<name string> <age int> Nested2 { <nestedName string> <nestedAge int> }}` will match with
+`{"John" 30 { "Jane" 25 }}`
+
+Macro
+
+```logi
+macro user {
+    kind Syntax
+    
+    syntax {
+        name <name string>
+        age <age int>
+        Auth {
+            username <username string>
+            password <password string>
+            Token {
+                accessToken <accessToken string>
+                refreshToken <refreshToken string>
+            }
+        }
+    }
+}
+```
+
+Definition
+
+```logi
+user JohnDoe {
+    name "John"
+    age 30
+    Auth {
+        username "john.doe"
+        password "password"
+        Token {
+            accessToken "access token"
+            refreshToken "refresh token"
+        }
+    }
+}
+```
+
+This will be translated as:
+
+```json
+{
+  "name": "John",
+  "age": 30,
+  "Auth": {
+    "username": "john.doe",
+    "password": "password",
+    "Token": {
+      "accessToken": "access token",
+      "refreshToken": "refresh token"
+    }
+ }
+}
+```
+
+### Comments
+
+Comments are used to write notes in the code. They are not executed by the engine.
+
+There are two types of comments in Logi:
+1. Single line comment: It starts with `//` and ends with the end of the line.
+2. Multi-line comment: It starts with `/*` and ends with `*/`.
+
+Example:
+
+```logi
+// This is a single line comment
+
+/* This is a multi-line comment
+   It can be used to write multiple lines of comments
+*/
+```
+
+Comments can be used in both macros and logi files.
+

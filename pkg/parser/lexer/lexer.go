@@ -76,7 +76,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 			var value = string(startingChar) + string(data)
 
 			if value == config.Equals {
-				s.buf.Discard(len(data))
+				s.discard(len(data))
 				return &Token{Id: config.Id, Value: value}, true
 			}
 		}
@@ -86,7 +86,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 			var value = string(startingChar) + string(data)
 
 			if strings.ToLower(value) == strings.ToLower(config.EqualsCaseInsensitive) {
-				s.buf.Discard(len(data))
+				s.discard(len(data))
 				return &Token{Id: config.Id, Value: value}, true
 			}
 		}
@@ -97,7 +97,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 				var value = string(startingChar) + string(data)
 
 				if value == equal {
-					s.buf.Discard(len(data))
+					s.discard(len(data))
 					return &Token{Id: config.Id, Value: value}, true
 				}
 			}
@@ -155,7 +155,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 				if endConditionMatched {
 					data, _ := s.buf.Peek(length - 1)
 					var value = string(startingChar) + string(data)
-					s.buf.Discard(len(data))
+					s.discard(len(data))
 					return &Token{Id: config.Id, Value: value}, true
 				}
 			}
@@ -224,7 +224,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 			_, err := strconv.ParseFloat(value, 64)
 
 			if err == nil {
-				s.buf.Discard(len(value) - 1)
+				s.discard(len(value) - 1)
 
 				return &Token{Id: config.Id, Value: value}, true
 			}
@@ -296,6 +296,11 @@ func (s *lexer) peekUntil(endFunc func(ch rune) bool) string {
 			return string(data)
 		}
 	}
+}
 
-	return ""
+func (s *lexer) discard(i int) {
+	var buf = make([]byte, i)
+	_, _ = s.buf.Read(buf)
+
+	s.readStr += string(buf)
 }

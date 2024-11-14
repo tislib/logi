@@ -2,6 +2,7 @@ package logi
 
 import (
 	"errors"
+	"fmt"
 	"github.com/tislib/logi/pkg/parser/lexer"
 	"io"
 	"log"
@@ -48,7 +49,7 @@ func (s *logiLexer) lex(lval *yySymType) int {
 		if errors.Is(err, lexer.ErrEOF) {
 			return 0
 		}
-		s.Err = err
+		s.Err = fmt.Errorf("lexer error: %w at [%s]", err, s.lexer.GetReadString())
 		return 0
 	}
 
