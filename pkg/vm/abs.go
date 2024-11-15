@@ -6,9 +6,9 @@ import (
 )
 
 type Definition struct {
-	Macro string
-	Name  string
-	Data  map[string]interface{}
+	Macro string                            `json:"macro"`
+	Name  string                            `json:"name"`
+	Data  map[string]map[string]interface{} `json:"data"`
 }
 
 type ExecutableFunc func(args ...interface{}) (interface{}, error)

@@ -1,21 +1,21 @@
 package vm
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestVmDynamic(t *testing.T) {
-	tests := []struct {
-		name               string
-		macro              string
-		input              string
-		calls              []func(vm VirtualMachine) error
-		expectedDefinition *Definition
-		options            []Option
+	tests := map[string]struct {
+		macro                     string
+		input                     string
+		calls                     []func(vm VirtualMachine) error
+		expectedDefinitions       []Definition
+		expectedDefinitionsAsJson string
+		options                   []Option
 	}{
-		{
-			name: "simple macro",
+		"simple macro": {
 			macro: `
 				macro test {
 					kind Syntax
@@ -29,17 +29,22 @@ func TestVmDynamic(t *testing.T) {
 					Hello "hello"
 					World 42
 				}`,
-			expectedDefinition: &Definition{
-				Macro: "test",
-				Name:  "test1",
-				Data: map[string]interface{}{
-					"hello": "hello",
-					"world": int64(42),
+			expectedDefinitions: []Definition{
+				{
+					Macro: "test",
+					Name:  "test1",
+					Data: map[string]map[string]interface{}{
+						"hello": {
+							"hello": "hello",
+						},
+						"world": {
+							"world": int64(42),
+						},
+					},
 				},
 			},
 		},
-		{
-			name: "complex macro execution",
+		"complex macro execution": {
 			macro: `
 				macro backtest {
 					kind Syntax
@@ -89,7 +94,7 @@ func TestVmDynamic(t *testing.T) {
 
 					newLocals := map[string]interface{}{}
 
-					for _, indicator := range definition.Data["indicators"].([]interface{}) {
+					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
 						indicatorMap := indicator.(map[string]interface{})
 						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
 					}
@@ -114,8 +119,7 @@ func TestVmDynamic(t *testing.T) {
 				},
 			},
 		},
-		{
-			name: "complex macro execution with call chain",
+		"complex macro execution with call chain": {
 			macro: `
 				macro backtest {
 					kind Syntax
@@ -164,7 +168,7 @@ func TestVmDynamic(t *testing.T) {
 
 					newLocals := map[string]interface{}{}
 
-					for _, indicator := range definition.Data["indicators"].([]interface{}) {
+					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
 						indicatorMap := indicator.(map[string]interface{})
 						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
 					}
@@ -189,10 +193,160 @@ func TestVmDynamic(t *testing.T) {
 				},
 			},
 		},
+		"creditRule": {
+			macro: `
+				macro creditRule {
+					kind Syntax
+					
+					syntax {
+					  	creditScore <min int> <max int>
+						income <min int> <max int>
+						age <min int> <max int>
+					}
+				}`,
+			input: `
+				creditRule Rule1 {
+					creditScore 500 600
+					income 20000 30000
+					age 18 65
+				}
+				
+				creditRule Rule2 {
+					creditScore 600 700
+					income 30000 40000
+					age 18 65
+				}`,
+			expectedDefinitions: []Definition{
+				{
+					Macro: "creditRule",
+					Name:  "Rule1",
+					Data: map[string]map[string]interface{}{
+						"creditScore": {
+							"min": int64(500),
+							"max": int64(600),
+						},
+						"income": {
+							"min": int64(20000),
+							"max": int64(30000),
+						},
+						"age": {
+							"min": int64(18),
+							"max": int64(65),
+						},
+					},
+				},
+				{
+					Macro: "creditRule",
+					Name:  "Rule2",
+					Data: map[string]map[string]interface{}{
+						"creditScore": {
+							"min": int64(600),
+							"max": int64(700),
+						},
+						"income": {
+							"min": int64(30000),
+							"max": int64(40000),
+						},
+						"age": {
+							"min": int64(18),
+							"max": int64(65),
+						},
+					},
+				},
+			},
+		},
+		"chatbot": {
+			macro: `
+				macro chatbot {
+					kind Syntax
+					
+					syntax {
+						intent <name Name> {
+							pattern <pattern string>
+							response <response string>
+						}
+					}
+				}`,
+			input: `
+				chatbot MyChatbot {
+					intent Greeting {
+						pattern "Hello"
+						response "Hi there!"
+					}
+					
+					intent Farewell {
+						pattern "Goodbye"
+						response "See you later!"
+					}
+				}`,
+			expectedDefinitions: []Definition{
+				{
+					Macro: "chatbot",
+					Name:  "MyChatbot",
+					Data: map[string]map[string]interface{}{
+						"intentGreeting": {
+							"name": "Greeting",
+							"intentGreeting": map[string]interface{}{
+								"pattern": map[string]interface{}{
+									"pattern": "Hello",
+								},
+								"response": map[string]interface{}{
+									"response": "Hi there!",
+								},
+							},
+						},
+						"intentFarewell": {
+							"name": "Farewell",
+							"intentFarewell": map[string]interface{}{
+								"pattern": map[string]interface{}{
+									"pattern": "Goodbye",
+								},
+								"response": map[string]interface{}{
+									"response": "See you later!",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"person1": {
+			macro: `
+				macro person {
+					kind Syntax
+					
+					syntax {
+						name <name string> as known as <knownAs string>
+						age <age int> years old
+					}
+				}`,
+			input: `
+				person John {
+					name "John" as known as "Johnny"
+					age 30 years old
+				}`,
+			expectedDefinitionsAsJson: `
+				[
+					{
+						"macro": "person",
+						"name": "John",
+						"data": {
+							"name": {
+								"name": "John",
+								"knownAs": "Johnny"
+							},
+							"age": {
+								"age": 30
+							}
+						}
+					}
+				]
+`,
+		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
 			var g, err = New(tt.options...)
 
 			if err != nil {
@@ -214,11 +368,23 @@ func TestVmDynamic(t *testing.T) {
 				return
 			}
 
-			if tt.expectedDefinition != nil {
-				assert.Len(t, definitions, 1)
-				if len(definitions) == 1 {
-					assert.Equal(t, *tt.expectedDefinition, definitions[0])
+			if tt.expectedDefinitionsAsJson != "" {
+				var defs []Definition
+				err = json.Unmarshal([]byte(tt.expectedDefinitionsAsJson), &defs)
+
+				if err != nil {
+					t.Errorf("error: %v", err)
+					return
 				}
+
+				expected, _ := json.MarshalIndent(defs, "", "  ")
+				actual, _ := json.MarshalIndent(definitions, "", "  ")
+
+				assert.Equal(t, string(expected), string(actual))
+			}
+
+			if tt.expectedDefinitions != nil {
+				assert.Equal(t, tt.expectedDefinitions, definitions)
 			}
 
 			for _, call := range tt.calls {

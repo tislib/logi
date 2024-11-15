@@ -26,61 +26,26 @@ func (v *vm) GetLocals() map[string]interface{} {
 	return v.locals
 }
 
-func (v *vm) prepareDefinition(plainAst logiAst.Definition) (Definition, error) {
-	var result = Definition{}
+func (v *vm) prepareDefinition(ast logiAst.Definition) (Definition, error) {
+	var definition = Definition{}
 
-	result.Name = plainAst.Name
-	result.Macro = plainAst.MacroName
-	result.Data = make(map[string]interface{})
+	definition.Name = ast.Name
+	definition.Macro = ast.MacroName
+	definition.Data = make(map[string]map[string]interface{})
 
-	for _, param := range plainAst.Parameters {
-		v.mapParameters(param, &result)
-		for _, attribute := range param.Attributes {
-			result.Data[param.Name+"/"+attribute.Name] = attribute.Value.AsInterface()
-		}
+	for key, value := range ast.Dynamic {
+		definition.Data[key] = make(map[string]interface{})
 
-		if param.CodeBlock != nil {
-			result.Data[param.Name] = v.executableFunc(*param.CodeBlock)
+		for dk, dv := range value {
+			definition.Data[key][dk] = dv
+
+			if dk == "code" {
+				definition.Data[key]["exec"] = v.executableFunc(definition.Data[key][dk].(common.CodeBlock))
+			}
 		}
 	}
 
-	for _, method := range plainAst.Methods {
-		result.Data[method.Name] = v.executableFunc(method.CodeBlock)
-		for _, parameter := range method.Parameters {
-			result.Data[method.Name+"/"+parameter.Name] = parameter.Value.AsInterface()
-		}
-		for _, attribute := range method.Attributes {
-			result.Data[method.Name+"/"+attribute.Name] = attribute.Value.AsInterface()
-		}
-		for _, argument := range method.Arguments {
-			result.Data[method.Name+"/"+argument.Name] = argument.Type.AsValue().AsInterface()
-		}
-	}
-
-	for _, methodSignature := range plainAst.MethodSignature {
-		result.Data[methodSignature.Name] = nil
-		for _, parameter := range methodSignature.Parameters {
-			result.Data[methodSignature.Name+"/"+parameter.Name] = parameter.Value.AsInterface()
-		}
-		for _, attribute := range methodSignature.Attributes {
-			result.Data[methodSignature.Name+"/"+attribute.Name] = attribute.Value.AsInterface()
-		}
-		for _, argument := range methodSignature.Arguments {
-			result.Data[methodSignature.Name+"/"+argument.Name] = argument.Type.AsValue().AsInterface()
-		}
-	}
-
-	return result, nil
-}
-
-func (v *vm) mapParameters(param logiAst.DefinitionParameter, result *Definition) {
-	for _, parameter := range param.Parameters {
-		if param.Name == parameter.Name {
-			result.Data[parameter.Name] = parameter.Value.AsInterface()
-		} else {
-			result.Data[param.Name+"/"+parameter.Name] = parameter.Value.AsInterface()
-		}
-	}
+	return definition, nil
 }
 
 func (v *vm) MapToStruct(definition Definition) (string, error) {
@@ -89,11 +54,11 @@ func (v *vm) MapToStruct(definition Definition) (string, error) {
 }
 
 func (v *vm) LocateCodeBlock(definition Definition, codeBlockPath string) (ExecutableFunc, error) {
-	if definition.Data[codeBlockPath] == nil {
+	if definition.Data[codeBlockPath] == nil || definition.Data[codeBlockPath]["exec"] == nil {
 		return nil, fmt.Errorf("code block %s not found in definition %s", codeBlockPath, definition.Name)
 	}
 
-	fn, ok := definition.Data[codeBlockPath].(ExecutableFunc)
+	fn, ok := definition.Data[codeBlockPath]["exec"].(ExecutableFunc)
 
 	if !ok {
 		return nil, fmt.Errorf("code block %s is not a function in definition %s", codeBlockPath, definition.Name)

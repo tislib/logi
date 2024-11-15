@@ -11,13 +11,14 @@ type Ast struct {
 }
 
 type Definition struct {
-	MacroName       string                      `json:"macroName"`
-	Name            string                      `json:"name"`
-	PlainStatements []plain.DefinitionStatement `json:"plainStatements"`
-	Properties      []Property                  `json:"properties"`
-	MethodSignature []MethodSignature           `json:"methodSignature"`
-	Methods         []Method                    `json:"methods"`
-	Parameters      []DefinitionParameter       `json:"parameters"`
+	MacroName       string                            `json:"macroName"`
+	Name            string                            `json:"name"`
+	PlainStatements []plain.DefinitionStatement       `json:"plainStatements"`
+	Properties      []Property                        `json:"properties"`
+	MethodSignature []MethodSignature                 `json:"methodSignature"`
+	Methods         []Method                          `json:"methods"`
+	Parameters      []DefinitionParameter             `json:"parameters"`
+	Dynamic         map[string]map[string]interface{} `json:"dynamic"`
 }
 
 type Function struct {

@@ -194,7 +194,7 @@ func TestParserFull(t *testing.T) {
 						Name:      "User",
 						Properties: []logiAst.Property{
 							{
-								Name: "helloId",
+								Name: "hello",
 								Type: common.TypeDefinition{
 									Name: "int",
 								},
@@ -210,7 +210,7 @@ func TestParserFull(t *testing.T) {
 								},
 							},
 							{
-								Name: "worldName",
+								Name: "world",
 								Type: common.TypeDefinition{
 									Name: "string",
 								},
@@ -355,8 +355,12 @@ func TestParserFull(t *testing.T) {
 									{
 										Name: "auth",
 										Value: common.MapValue(map[string]common.Value{
-											"username": common.StringValue("user1"),
-											"password": common.StringValue("password1"),
+											"username": common.MapValue(map[string]common.Value{
+												"username": common.StringValue("user1"),
+											}),
+											"password": common.MapValue(map[string]common.Value{
+												"password": common.StringValue("password1"),
+											}),
 										}),
 									},
 								},
@@ -953,7 +957,12 @@ func TestParserFull(t *testing.T) {
 			if got != nil && tt.expected != nil {
 				if len(got.Definitions) == len(tt.expected.Definitions) {
 					for i, def := range got.Definitions {
-						tt.expected.Definitions[i].PlainStatements = def.PlainStatements
+						if tt.expected.Definitions[i].PlainStatements == nil {
+							tt.expected.Definitions[i].PlainStatements = def.PlainStatements
+						}
+						if tt.expected.Definitions[i].Dynamic == nil {
+							tt.expected.Definitions[i].Dynamic = def.Dynamic
+						}
 					}
 				} else {
 					a, b := len(tt.expected.Definitions), len(got.Definitions)

@@ -32,9 +32,13 @@ func BenchmarkVmDynamic(t *testing.B) {
 			expectedDefinition: &Definition{
 				Macro: "test",
 				Name:  "test1",
-				Data: map[string]interface{}{
-					"hello": "hello",
-					"world": int64(42),
+				Data: map[string]map[string]interface{}{
+					"hello": {
+						"hello": "hello",
+					},
+					"world": {
+						"world": int64(42),
+					},
 				},
 			},
 		},
@@ -89,7 +93,7 @@ func BenchmarkVmDynamic(t *testing.B) {
 
 					newLocals := map[string]interface{}{}
 
-					for _, indicator := range definition.Data["indicators"].([]interface{}) {
+					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
 						indicatorMap := indicator.(map[string]interface{})
 						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
 					}
@@ -164,7 +168,7 @@ func BenchmarkVmDynamic(t *testing.B) {
 
 					newLocals := map[string]interface{}{}
 
-					for _, indicator := range definition.Data["indicators"].([]interface{}) {
+					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
 						indicatorMap := indicator.(map[string]interface{})
 						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
 					}

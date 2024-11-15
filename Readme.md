@@ -19,9 +19,9 @@ macro creditRule {
     kind Syntax
     
     syntax {
-        creditScore <minCreditScore int> <maxCreditScore int>
-        income <minIncome int> <maxIncome int>
-        age <minAge int> <maxAge int>
+        creditScore <min int> <max int>
+        income <min int> <max int>
+        age <min int> <max int>
     }
 }
 ```
@@ -66,7 +66,7 @@ macro chatbot {
     kind Syntax
     
     syntax {
-        intent <name string> {
+        intent <name Name> {
             pattern <pattern string>
             response <response string>
         }
@@ -329,6 +329,16 @@ Definition
 person John {
     name "John" as known as "Johnny"
     age 30 years old
+}
+```
+
+it will be translated as:
+
+```json
+{
+  "name": "John",
+  "knownAs": "Johnny",
+  "age": 30
 }
 ```
 

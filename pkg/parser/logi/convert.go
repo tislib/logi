@@ -297,6 +297,8 @@ func convertValue(element yaccNode) (*common.Value, error) {
 		value = common.StringValue(element.value.(string))
 	case int:
 		value = common.IntegerValue(int64(element.value.(int)))
+	case float64:
+		value = common.FloatValue(element.value.(float64))
 	case bool:
 		value = common.BooleanValue(element.value.(bool))
 	default:

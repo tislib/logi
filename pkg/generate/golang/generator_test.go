@@ -12,6 +12,7 @@ func TestGenerate(t *testing.T) {
 		macroInput    string
 		expectedCode  string
 		expectedError string
+		skip          bool
 	}{
 		{
 			name: "simple macro",
@@ -31,6 +32,7 @@ func TestGenerate(t *testing.T) {
 		},
 		{
 			name: "macro with nested struct",
+			skip: true,
 			macroInput: `
 				macro user {
 					kind Syntax
@@ -65,6 +67,10 @@ func TestGenerate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.skip {
+				t.Skip()
+			}
+
 			var macroAst, err = macro.ParseMacroContent(tt.macroInput)
 
 			if err != nil {

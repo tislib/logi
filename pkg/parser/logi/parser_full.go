@@ -81,6 +81,7 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 
 	definition.MacroName = plainDefinition.MacroName
 	definition.Name = plainDefinition.Name
+	definition.Dynamic = make(map[string]map[string]interface{})
 
 	for _, plainStatement := range plainDefinition.Statements {
 		// locate matching macro syntax for the statement

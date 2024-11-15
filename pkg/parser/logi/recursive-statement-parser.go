@@ -26,13 +26,13 @@ type recursiveStatementParser struct {
 
 type analyseStatementResult struct {
 	hasName          bool
+	stopMatchingName bool
 	hasType          bool
 	hasCodeBlock     bool
 	hasArgumentList  bool
 	nameParts        []string
 	parameters       map[string]common.Value
 	typeDef          common.TypeDefinition
-	hasValue         bool
 	hasAttributeList bool
 	attributes       []plain.DefinitionStatementElementAttribute
 	arguments        []plain.DefinitionStatementElementArgument
@@ -69,6 +69,8 @@ func (p *recursiveStatementParser) apply() error {
 	var attributes []logiAst.Attribute
 	var arguments []logiAst.Argument
 
+	var data = make(map[string]interface{})
+
 	var keys []string
 	for key := range asr.parameters {
 		keys = append(keys, key)
@@ -81,6 +83,8 @@ func (p *recursiveStatementParser) apply() error {
 			Name:  key,
 			Value: asr.parameters[key],
 		})
+
+		data[key] = asr.parameters[key].AsInterface()
 	}
 
 	for _, attribute := range asr.attributes {
@@ -88,6 +92,12 @@ func (p *recursiveStatementParser) apply() error {
 			Name:  attribute.Name,
 			Value: attribute.Value,
 		})
+
+		if attribute.Value != nil {
+			data[attribute.Name] = attribute.Value.AsInterface()
+		} else {
+			data[attribute.Name] = true
+		}
 	}
 
 	for _, argument := range asr.arguments {
@@ -95,6 +105,19 @@ func (p *recursiveStatementParser) apply() error {
 			Name: argument.Name,
 			Type: argument.Type,
 		})
+
+		data[argument.Name] = map[string]interface{}{
+			"name": argument.Name,
+			"type": argument.Type.AsValue().AsInterface(),
+		}
+	}
+
+	if asr.hasCodeBlock {
+		data["code"] = asr.codeBlock
+	}
+
+	if asr.hasType {
+		data["type"] = asr.typeDef.AsValue().AsInterface()
 	}
 
 	if asr.hasName {
@@ -138,6 +161,8 @@ func (p *recursiveStatementParser) apply() error {
 			}
 		}
 	}
+
+	p.definition.Dynamic[name] = data
 
 	return nil
 }
@@ -192,8 +217,10 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			p.reportMismatch(fmt.Sprintf("expected keyword (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))
 			break
 		}
-		p.asr.hasName = true
-		p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
+		if !p.asr.hasName || !p.asr.stopMatchingName {
+			p.asr.hasName = true
+			p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
+		}
 	case macroAst.SyntaxStatementElementKindTypeReference:
 		p.matchTypeReference(syntaxStatementElement, currentElement)
 	case macroAst.SyntaxStatementElementKindVariableKeyword:
@@ -202,6 +229,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			p.asr.parameters[syntaxStatementElement.VariableKeyword.Name] = common.StringValue(currentElement.Identifier.Identifier)
 			if syntaxStatementElement.VariableKeyword.Type.Name == "Type" {
 				p.asr.hasType = true
+				p.asr.stopMatchingName = true
 				p.asr.typeDef = common.TypeDefinition{
 					Name: currentElement.Identifier.Identifier,
 				}
@@ -212,19 +240,27 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			} else {
 				p.matchIdentifierType(syntaxStatementElement, currentElement)
 			}
-			p.asr.hasName = true
-			p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
+			if syntaxStatementElement.VariableKeyword.Type.Name == "Name" {
+				if !p.asr.hasName || !p.asr.stopMatchingName {
+					p.asr.hasName = true
+					p.asr.nameParts = append(p.asr.nameParts, currentElement.Identifier.Identifier)
+				}
+			} else {
+				p.asr.stopMatchingName = true
+			}
 		case plain.DefinitionStatementElementKindArray:
+			p.asr.stopMatchingName = true
 			p.matchArray(currentElement, syntaxStatementElement)
-			p.asr.hasValue = true
 			return
 		case plain.DefinitionStatementElementKindValue:
+			p.asr.stopMatchingName = true
 			p.matchValue(syntaxStatementElement)
-			p.asr.hasValue = true
 		default:
+			p.asr.stopMatchingName = true
 			p.reportMismatch(fmt.Sprintf("expected variable keyword (%s), got %s", syntaxStatementElement.VariableKeyword.Name, currentElement.Kind))
 		}
 	case macroAst.SyntaxStatementElementKindAttributeList:
+		p.asr.stopMatchingName = true
 		if currentElement.Kind != plain.DefinitionStatementElementKindAttributeList {
 			p.reportMismatch(fmt.Sprintf("expected attribute list, got %s", currentElement.Kind))
 
@@ -242,6 +278,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		p.asr.hasAttributeList = true
 		p.asr.attributes = currentElement.AttributeList.Attributes
 	case macroAst.SyntaxStatementElementKindArgumentList:
+		p.asr.stopMatchingName = true
 		if currentElement.Kind != plain.DefinitionStatementElementKindArgumentList {
 			p.reportMismatch(fmt.Sprintf("expected argument list, got %s", currentElement.Kind))
 
@@ -259,6 +296,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		p.asr.hasArgumentList = true
 		p.asr.arguments = currentElement.ArgumentList.Arguments
 	case macroAst.SyntaxStatementElementKindCodeBlock:
+		p.asr.stopMatchingName = true
 		if currentElement.Kind != plain.DefinitionStatementElementKindCodeBlock {
 			p.reportMismatch(fmt.Sprintf("expected code block, got %s", currentElement.Kind))
 
@@ -267,6 +305,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		p.asr.hasCodeBlock = true
 		p.asr.codeBlock = currentElement.CodeBlock.CodeBlock
 	case macroAst.SyntaxStatementElementKindParameterList:
+		p.asr.stopMatchingName = true
 		if currentElement.Kind != plain.DefinitionStatementElementKindParameterList {
 			p.reportMismatch(fmt.Sprintf("expected parameter list, got %s", currentElement.Kind))
 
@@ -278,8 +317,10 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			p.asr.parameters[syntaxStatementElementParameter.Name] = currentElement.ParameterList.Parameters[idx].Value
 		}
 	case macroAst.SyntaxStatementElementKindCombination:
+		p.asr.stopMatchingName = true
 		p.matchCombination(syntaxStatementElement)
 	case macroAst.SyntaxStatementElementKindStructure:
+		p.asr.stopMatchingName = true
 		p.matchStructure(syntaxStatementElement, currentElement)
 	default:
 		p.reportMismatch(fmt.Sprintf("unexpected syntax element kind: %s", syntaxStatementElement.Kind))
@@ -445,6 +486,7 @@ func (p *recursiveStatementParser) matchStructure(rootSyntaxElement macroAst.Syn
 		},
 		definition: &logiAst.Definition{
 			PlainStatements: plainElement.Struct.Statements,
+			Dynamic:         make(map[string]map[string]interface{}),
 		},
 		asr: analyseStatementResult{
 			parameters: make(map[string]common.Value),
@@ -462,13 +504,27 @@ func (p *recursiveStatementParser) matchStructure(rootSyntaxElement macroAst.Syn
 			return // stop matching if a mismatch is found
 		}
 
+		err = sp.apply()
+
+		if err != nil {
+			p.reportMismatch(err.Error())
+			return // stop matching if a mismatch is found
+		}
+
 		if len(sp.asr.parameters) > 0 {
 			if parameters == nil {
 				parameters = make(map[string]common.Value)
 			}
 
-			for key, value := range sp.asr.parameters {
-				parameters[key] = value
+			for _, param := range sp.definition.Parameters {
+				var result = map[string]common.Value{}
+				for _, subParam := range param.Parameters {
+					result[subParam.Name] = subParam.Value
+				}
+				parameters[param.Name] = common.Value{
+					Kind: common.ValueKindMap,
+					Map:  result,
+				}
 			}
 		}
 	}
