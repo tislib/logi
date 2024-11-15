@@ -3,6 +3,7 @@ package vm
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 )
 
@@ -343,6 +344,72 @@ func TestVmDynamic(t *testing.T) {
 				]
 `,
 		},
+		"config": {
+			macro: `
+				macro config {
+					kind Syntax
+					
+					syntax {
+						Param <paramName Name> <paramValue string>
+					}
+				}`,
+			input: `
+				config EngineConfig {
+					Param LogLevel "info"
+					Param Port "8080"
+				}`,
+			expectedDefinitionsAsJson: `
+				[
+					{
+						"macro": "config",
+						"name": "EngineConfig",
+						"data": {
+						  	"paramLogLevel": {
+								"paramName": "LogLevel",
+								"paramValue": "info"
+							},
+							"paramPort": {
+								"paramName": "Port",
+								"paramValue": "8080"
+							}
+						}
+					}
+				]
+`,
+		},
+		"userEntity": {
+			macro: `
+				macro entity {
+					kind Syntax
+					
+					syntax {
+						property <fieldName Name> <fieldType Type>
+					}
+				}`,
+			input: `
+				entity User {
+					property name string
+					property age int
+				}`,
+			expectedDefinitionsAsJson: `
+				[
+					  {
+						"macro": "entity",
+						"name": "User",
+						"data": {
+						  "propertyAge": {
+							"fieldName": "age",
+							"fieldType": "int"
+						  },
+						  "propertyName": {
+							"fieldName": "name",
+							"fieldType": "string"
+						  }
+						}
+					  }
+				]
+`,
+		},
 	}
 
 	for name, tt := range tests {
@@ -368,6 +435,10 @@ func TestVmDynamic(t *testing.T) {
 				return
 			}
 
+			actual, _ := json.MarshalIndent(definitions, "", "  ")
+
+			log.Print(string(actual))
+
 			if tt.expectedDefinitionsAsJson != "" {
 				var defs []Definition
 				err = json.Unmarshal([]byte(tt.expectedDefinitionsAsJson), &defs)
@@ -378,7 +449,6 @@ func TestVmDynamic(t *testing.T) {
 				}
 
 				expected, _ := json.MarshalIndent(defs, "", "  ")
-				actual, _ := json.MarshalIndent(definitions, "", "  ")
 
 				assert.Equal(t, string(expected), string(actual))
 			}

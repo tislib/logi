@@ -116,10 +116,6 @@ func (p *recursiveStatementParser) apply() error {
 		data["code"] = asr.codeBlock
 	}
 
-	if asr.hasType {
-		data["type"] = asr.typeDef.AsValue().AsInterface()
-	}
-
 	if asr.hasName {
 		if asr.hasArgumentList {
 			if asr.hasCodeBlock { // method

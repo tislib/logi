@@ -336,9 +336,13 @@ it will be translated as:
 
 ```json
 {
-  "name": "John",
-  "knownAs": "Johnny",
-  "age": 30
+   "name": {
+      "name": "John",
+      "knownAs": "Johnny"
+   },
+   "age": {
+      "age": 30
+   }
 }
 ```
 
@@ -425,8 +429,14 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-  "LogLevel": "info",
-  "Port": "8080"
+   "paramLogLevel": {
+      "paramName": "LogLevel",
+      "paramValue": "info"
+   },
+   "paramPort": {
+      "paramName": "Port",
+      "paramValue": "8080"
+   }
 }
 ```
 
@@ -442,7 +452,7 @@ macro entity {
     kind Syntax
     
     syntax {
-        property <fieldName string> <fieldType Type>
+        property <fieldName Name> <fieldType Type>
     }
 }
 ```
@@ -458,8 +468,14 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-  "name": "string",
-  "age": "int"
+   "propertyAge": {
+      "fieldName": "age",
+      "fieldType": "int"
+   },
+   "propertyName": {
+      "fieldName": "name",
+      "fieldType": "string"
+   }
 }
 ```
 
