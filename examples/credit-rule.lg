@@ -1,0 +1,11 @@
+creditRule Rule1 {
+    creditScore 500 600
+    income 20000 30000
+    age 18 65
+}
+
+creditRule Rule2 {
+    creditScore 600 700
+    income 30000 40000
+    age 18 65
+}

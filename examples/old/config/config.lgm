@@ -1,0 +1,7 @@
+macro config {
+    kind Syntax
+
+    syntax {
+        Param <paramName Name> <paramValue string>
+    }
+}

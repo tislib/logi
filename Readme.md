@@ -14,6 +14,7 @@ Logi is designed to be a language for abstraction that allows developers to defi
 
 ## Example 1. Define a DSL for a credit rules
 
+credit-rule.lgm
 ```logi
 macro creditRule {
     kind Syntax
@@ -28,6 +29,7 @@ macro creditRule {
 
 Now let's define a credit rule using the macro:
 
+credit-rule.lg
 ```logi
 creditRule Rule1 {
     creditScore 500 600
@@ -42,21 +44,53 @@ creditRule Rule2 {
 }
 ```
 
-Now in golang, you can read the rules and apply them to the user data.
+Now you can easily compile the Logi file and use the definitions in your application.
 
-```go
-var g, err = New(tt.options...)
-if err != nil {
-log.Fatal(err)
-}
+```shell
+logi compile -i engine-config.lg
+```
 
-g.LoadMacroFile("creditRule.lgm")
-definitions,err := g.LoadLogiFile("creditRules.logi")
-if err != nil {
-log.Fatal(err)
-}
+This will parse macro and logi definition file, and will compile it to json, which can be used by your application.
 
-// definitions is a list of credit rules, which can be used by your app to apply the rules to the user data.
+```json
+[
+   {
+      "macro": "creditRule",
+      "name": "Rule1",
+      "data": {
+         "age": {
+            "max": 65,
+            "min": 18
+         },
+         "creditScore": {
+            "max": 600,
+            "min": 500
+         },
+         "income": {
+            "max": 30000,
+            "min": 20000
+         }
+      }
+   },
+   {
+      "macro": "creditRule",
+      "name": "Rule2",
+      "data": {
+         "age": {
+            "max": 65,
+            "min": 18
+         },
+         "creditScore": {
+            "max": 700,
+            "min": 600
+         },
+         "income": {
+            "max": 40000,
+            "min": 30000
+         }
+      }
+   }
+]
 ```
 
 ## Example 2. Define a DSL for a chatbot
