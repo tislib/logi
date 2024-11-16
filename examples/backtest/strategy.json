@@ -1,0 +1,133 @@
+{
+  "macro": "backtest",
+  "name": "VariableHoldUntil4",
+  "data": {
+    "endTime": {
+      "endTime": "2010-12-31"
+    },
+    "indicators": {
+      "indicators": [
+        {
+          "alias": "sma20",
+          "indicatorName": "sma",
+          "period": 20
+        },
+        {
+          "alias": "sma50",
+          "indicatorName": "sma",
+          "period": 50
+        },
+        {
+          "alias": "sma200",
+          "indicatorName": "sma",
+          "period": 200
+        }
+      ]
+    },
+    "initialCapital": {
+      "initialCapital": 10000
+    },
+    "startTime": {
+      "startTime": "2010-01-01"
+    },
+    "strategy": {
+      "code": {
+        "statements": [
+          {
+            "kind": "if",
+            "ifStmt": {
+              "condition": {
+                "kind": "binary_expression",
+                "binaryExpr": {
+                  "left": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "sma20"
+                    }
+                  },
+                  "operator": "\u003c",
+                  "right": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "sma50"
+                    }
+                  }
+                }
+              },
+              "thenBlock": {
+                "statements": [
+                  {
+                    "kind": "return",
+                    "returnStmt": {
+                      "result": {
+                        "kind": "function_call",
+                        "funcCall": {
+                          "name": "Buy",
+                          "arguments": [
+                            {
+                              "kind": "literal",
+                              "literal": {
+                                "value": {
+                                  "kind": "String",
+                                  "string": "SPY",
+                                  "Map": null
+                                }
+                              }
+                            },
+                            {
+                              "kind": "literal",
+                              "literal": {
+                                "value": {
+                                  "kind": "Integer",
+                                  "integer": 100,
+                                  "Map": null
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "return",
+            "returnStmt": {
+              "result": {
+                "kind": "function_call",
+                "funcCall": {
+                  "name": "Buy",
+                  "arguments": [
+                    {
+                      "kind": "literal",
+                      "literal": {
+                        "value": {
+                          "kind": "String",
+                          "string": "SPY",
+                          "Map": null
+                        }
+                      }
+                    },
+                    {
+                      "kind": "literal",
+                      "literal": {
+                        "value": {
+                          "kind": "Integer",
+                          "integer": 200,
+                          "Map": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+macro backtest {
+    kind Syntax
+
+    types {
+        Indicator <indicatorName Name> (<period int>) as <alias Name>
+    }
+
+    syntax {
+        InitialCapital <initialCapital int>
+        StartTime <startTime string>
+        EndTime <endTime string>
+        Indicators <indicators array<Indicator>>
+        Strategy { code }
+    }
+}

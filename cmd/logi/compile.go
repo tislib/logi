@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/tislib/logi/pkg/vm"
+	astMacro "github.com/tislib/logi/pkg/ast/macro"
+	"github.com/tislib/logi/pkg/parser/logi"
+	"github.com/tislib/logi/pkg/parser/macro"
 	"os"
 	"strings"
 )
@@ -14,12 +16,6 @@ var compileCmd = &cobra.Command{
 	Short: "compile - compile logi file",
 	Long:  `compile logi file and generate definitions`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		vm, err := vm.New()
-
-		if err != nil {
-			return fmt.Errorf("failed to create vm: %w", err)
-		}
-
 		if strings.HasSuffix(*compileCmdMacroDir, "/") == false {
 			*compileCmdMacroDir = *compileCmdMacroDir + "/"
 		}
@@ -31,6 +27,8 @@ var compileCmd = &cobra.Command{
 			return fmt.Errorf("error reading macro dir: %v", err)
 		}
 
+		var macros []astMacro.Macro
+
 		// for each file in macro dir
 		for _, file := range macroDir {
 			// check extension
@@ -38,11 +36,19 @@ var compileCmd = &cobra.Command{
 				continue
 			}
 
-			err = vm.LoadMacroFile(*compileCmdMacroDir + file.Name())
+			fileContent, err := os.ReadFile(*compileCmdMacroDir + file.Name())
+
+			if err != nil {
+				return fmt.Errorf("error reading macro file: %v", err)
+			}
+
+			macroAst, err := macro.ParseMacroContent(string(fileContent))
 
 			if err != nil {
 				return fmt.Errorf("failed to load macro file: %w", err)
 			}
+
+			macros = append(macros, macroAst.Macros...)
 		}
 
 		// read logi file
@@ -53,13 +59,50 @@ var compileCmd = &cobra.Command{
 		}
 
 		// compile logi file
-		definitions, err := vm.LoadLogiContent(string(logiContent))
+		definitions, err := logi.Parse(string(logiContent), macros)
 
 		if err != nil {
 			return fmt.Errorf("error compiling logi file: %v", err)
 		}
 
-		result, err := json.MarshalIndent(definitions, "", "  ")
+		var output interface{}
+
+		switch *compileCmdKind {
+		case "plain":
+			var result []interface{}
+
+			for _, definition := range definitions.Definitions {
+				result = append(result, map[string]interface{}{
+					"name":            definition.Name,
+					"macro":           definition.MacroName,
+					"plainStatements": definition.PlainStatements,
+				})
+			}
+			output = result
+		case "full":
+			var result []interface{}
+
+			for _, definition := range definitions.Definitions {
+				result = append(result, definition)
+			}
+			output = result
+		case "dynamic":
+			var result []interface{}
+
+			for _, definition := range definitions.Definitions {
+				result = append(result, map[string]interface{}{
+					"name":    definition.Name,
+					"macro":   definition.MacroName,
+					"dynamic": definition.Dynamic,
+				})
+			}
+
+			output = result
+		default:
+			return fmt.Errorf("unknown kind: %s", *compileCmdKind)
+		}
+
+		result, err := json.MarshalIndent(output, "", "  ")
 
 		if err != nil {
 			return fmt.Errorf("error marshalling definitions: %v", err)
@@ -83,6 +126,7 @@ var compileCmd = &cobra.Command{
 var compileCmdMacroDir = new(string)
 var compileCmdInput = new(string)
 var compileCmdOutDir = new(string)
+var compileCmdKind = new(string)
 
 func init() {
 	rootCmd.AddCommand(compileCmd)
@@ -90,4 +134,5 @@ func init() {
 	compileCmd.PersistentFlags().StringVarP(compileCmdMacroDir, "macro-dir", "m", ".", "directory with macro files")
 	compileCmd.PersistentFlags().StringVarP(compileCmdInput, "input", "i", "", "directory with macro files")
 	compileCmd.PersistentFlags().StringVarP(compileCmdOutDir, "out", "o", "", "output directory")
+	compileCmd.PersistentFlags().StringVarP(compileCmdKind, "kind", "k", "dynamic", "kind of file to compile [`dynamic` for parsed json data, `plain` for plain logi data, `full` for full logi data, default is `dynamic`]")
 }

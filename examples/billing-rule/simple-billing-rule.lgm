@@ -1,0 +1,13 @@
+macro simpleBillingRule {
+    kind Syntax
+
+    syntax {
+        Price <min int> <max int>
+        IsTrial <isTrial bool>
+        BillingEventMaxTime <billingTime int>
+
+        CustomLogic { code }
+        OutCome (ALLOW|REJECT)
+    }
+
+}

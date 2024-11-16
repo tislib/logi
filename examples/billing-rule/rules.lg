@@ -1,0 +1,18 @@
+simpleBillingRule Rule1 {
+    Price 10 20
+    IsTrial true
+
+    OutCome REJECT
+
+    CustomLogic {
+        if (price < current()) {
+            return ALLOW
+        }
+    }
+}
+
+simpleBillingRule Rule2 {
+    Price 10 120
+    IsTrial false
+}
+
