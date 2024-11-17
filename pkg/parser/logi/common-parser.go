@@ -1,5 +1,7 @@
 package logi
 
+import "github.com/tislib/logi/pkg/parser/lexer"
+
 type NodeOp string
 
 const (
@@ -42,14 +44,16 @@ type yaccNode struct {
 	op       NodeOp
 	children []yaccNode
 	value    interface{}
+	token    lexer.Token
+	location lexer.Location
 }
 
-func appendNode(nodeOp NodeOp, children ...yaccNode) yaccNode {
+func appendNode(nodeOp NodeOp, firstChild yaccNode, children ...yaccNode) yaccNode {
 	return yaccNode{op: nodeOp, children: children}
 }
 
-func newNode(nodeOp NodeOp, value interface{}, children ...yaccNode) yaccNode {
-	return yaccNode{op: nodeOp, value: value, children: children}
+func newNode(nodeOp NodeOp, value interface{}, token lexer.Token, location lexer.Location, children ...yaccNode) yaccNode {
+	return yaccNode{op: nodeOp, value: value, children: children, token: token, location: location}
 }
 
 func appendNodeTo(node *yaccNode, child yaccNode) yaccNode {

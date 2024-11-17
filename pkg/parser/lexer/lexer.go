@@ -7,10 +7,20 @@ import (
 )
 
 type lexer struct {
-	config  LexerConfig
-	buf     *bufio.Reader
-	debug   bool
-	readStr string
+	config    LexerConfig
+	buf       *bufio.Reader
+	debug     bool
+	readStr   string
+	lastToken Token
+	location  Location
+}
+
+func (s *lexer) GetLastToken() Token {
+	return s.lastToken
+}
+
+func (s *lexer) GetLastLocation() Location {
+	return s.location
 }
 
 func (s *lexer) GetReadString() any {
@@ -19,6 +29,7 @@ func (s *lexer) GetReadString() any {
 
 func (s *lexer) Next() (token Token, err error) {
 	for {
+		s.location = s.identifyLocation()
 		r := s.read()
 		if r == 0 { // EOF
 			return Token{}, ErrEOF
@@ -34,6 +45,7 @@ func (s *lexer) Next() (token Token, err error) {
 			token, matched := s.matchToken(tokenConfig, r)
 
 			if matched {
+				s.lastToken = *token
 				return *token, nil
 			}
 		}
@@ -167,15 +179,14 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 	if config.IsAlpha {
 		if isAlpha(startingChar) {
 			var value = string(startingChar)
-			for {
-				r := s.read()
-				if !isAlphaNum(r) {
-					s.unread()
-					break
-				}
 
-				value += string(r)
-			}
+			valueRight := s.peekUntil(func(ch rune) bool {
+				return !isAlpha(ch)
+			})
+
+			value += valueRight
+
+			s.discard(len(valueRight))
 
 			return &Token{Id: config.Id, Value: value}, true
 		}
@@ -184,15 +195,14 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 	if config.IsAlphaNum {
 		if isAlphaNum(startingChar) {
 			var value = string(startingChar)
-			for {
-				r := s.read()
-				if !isAlphaNum(r) {
-					s.unread()
-					break
-				}
 
-				value += string(r)
-			}
+			valueRight := s.peekUntil(func(ch rune) bool {
+				return !isAlphaNum(ch)
+			})
+
+			value += valueRight
+
+			s.discard(len(valueRight))
 
 			return &Token{Id: config.Id, Value: value}, true
 		}
@@ -201,15 +211,14 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 	if config.IsIdentifier {
 		if isAlpha(startingChar) {
 			var value = string(startingChar)
-			for {
-				r := s.read()
-				if !isAlphaNum(r) {
-					s.unread()
-					break
-				}
 
-				value += string(r)
-			}
+			valueRight := s.peekUntil(func(ch rune) bool {
+				return !isAlphaNum(ch)
+			})
+
+			value += valueRight
+
+			s.discard(len(valueRight))
 
 			return &Token{Id: config.Id, Value: value}, true
 		}
@@ -260,9 +269,22 @@ func (s *lexer) read() rune {
 	return ch
 }
 
-func (s *lexer) unread() {
-	_ = s.buf.UnreadRune()
-	s.readStr = s.readStr[:len(s.readStr)-1]
+func (s *lexer) peekChar() (rune, error) {
+	res, err := s.buf.Peek(1)
+
+	if err != nil {
+		return 0, err
+	}
+
+	if len(res) == 0 {
+		return 0, nil
+	}
+
+	return rune(res[0]), nil
+}
+
+func (s *lexer) discardChar() {
+	s.discard(1)
 }
 
 func (s *lexer) peekUntil(endFunc func(ch rune) bool) string {
@@ -303,4 +325,20 @@ func (s *lexer) discard(i int) {
 	_, _ = s.buf.Read(buf)
 
 	s.readStr += string(buf)
+}
+
+func (s *lexer) identifyLocation() Location {
+	var result = Location{}
+
+	lineNumber := strings.Count(s.readStr, "\n") + 1
+
+	if lineNumber == 1 {
+		result.Column = len(s.readStr) + 1
+	} else {
+		result.Column = len(s.readStr) - strings.LastIndex(s.readStr, "\n")
+	}
+
+	result.Line = lineNumber
+
+	return result
 }

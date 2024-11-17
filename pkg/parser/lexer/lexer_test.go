@@ -189,6 +189,57 @@ func TestLexer(t *testing.T) {
 				},
 			},
 		},
+		"comments": {
+			input: `
+123 321.321 // aaaaa
+0.123 123.0 -123 
+// 0.123 123.0 -123
+/*
+ml
+ml
+*/
+-123.0 /* 3.3 */ -0.123
+`,
+			config: LexerConfig{
+				HandleComments: true,
+				Tokens: []TokenConfig{
+					{
+						Id:      1,
+						IsDigit: true,
+					},
+				},
+			},
+			expectedTokens: []Token{
+				{
+					Id:    1,
+					Value: "123",
+				},
+				{
+					Id:    1,
+					Value: "321.321",
+				},
+				{
+					Id:    1,
+					Value: "0.123",
+				},
+				{
+					Id:    1,
+					Value: "123.0",
+				},
+				{
+					Id:    1,
+					Value: "-123",
+				},
+				{
+					Id:    1,
+					Value: "-123.0",
+				},
+				{
+					Id:    1,
+					Value: "-0.123",
+				},
+			},
+		},
 	}
 
 	for name, tt := range test {

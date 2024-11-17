@@ -1,0 +1,41 @@
+[
+  {
+    "dynamic": {
+      "checkBody": {
+        "code": {
+          "statements": [
+            {
+              "kind": "return",
+              "returnStmt": {
+                "result": {
+                  "kind": "binary_expression",
+                  "binaryExpr": {
+                    "left": {
+                      "kind": "variable",
+                      "variable": {
+                        "name": "a"
+                      }
+                    },
+                    "operator": "+",
+                    "right": {
+                      "kind": "variable",
+                      "variable": {
+                        "name": "b"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "checkMethod": {},
+      "checkUrl": {
+        "url": "https://www.azeriqaz.com"
+      }
+    },
+    "macro": "plugin",
+    "name": "Azeriqaz"
+  }
+]

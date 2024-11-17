@@ -154,6 +154,9 @@ func (s *macroLexer) lex(lval *yySymType) int {
 		return 0
 	}
 
+	lval.token = token
+	lval.location = s.lexer.GetLastLocation()
+
 	switch token.Id {
 	case token_number:
 		if strings.Contains(token.Value, ".") {

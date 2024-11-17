@@ -1,0 +1,12 @@
+macro plugin {
+    kind Syntax
+
+    syntax {
+         checkUrl <url string>
+         checkMethod (GET|POST|PUT|DELETE)
+         checkUrlDynamicQueryParams { code }
+         checkBody { code }
+         payUrl <url string>
+         payMethod (GET|POST|PUT|DELETE)
+    }
+}

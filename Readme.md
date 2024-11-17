@@ -979,17 +979,33 @@ user JohnDoe {
 This will be translated as:
 
 ```json
-{
-  "name": "John",
-  "age": 30,
-  "Auth": {
-    "username": "john.doe",
-    "password": "password",
-    "Token": {
-      "accessToken": "access token",
-      "refreshToken": "refresh token"
-    }
- }
+ {
+   "age": {
+      "age": 30
+   },
+   "auth": {
+      "auth": {
+         "password": {
+            "password": "password"
+         },
+         "token": {
+            "token": {
+               "accessToken": {
+                  "accessToken": "access token"
+               },
+               "refreshToken": {
+                  "refreshToken": "refresh token"
+               }
+            }
+         },
+         "username": {
+            "username": "john.doe"
+         }
+      }
+   },
+   "name": {
+      "name": "John"
+   }
 }
 ```
 

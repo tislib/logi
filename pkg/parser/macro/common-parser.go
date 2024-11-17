@@ -1,5 +1,7 @@
 package macro
 
+import "github.com/tislib/logi/pkg/parser/lexer"
+
 type NodeOp string
 
 const (
@@ -27,18 +29,23 @@ const (
 	NodeOpSyntaxStructureElement       = "syntax_structure_element"
 )
 
+var emptyToken = lexer.Token{}
+var emptyLocation = lexer.Location{}
+
 type yaccNode struct {
 	op       NodeOp
 	children []yaccNode
 	value    interface{}
+	location lexer.Location
+	token    lexer.Token
 }
 
 func appendNode(nodeOp NodeOp, children ...yaccNode) yaccNode {
 	return yaccNode{op: nodeOp, children: children}
 }
 
-func newNode(nodeOp NodeOp, value interface{}, children ...yaccNode) yaccNode {
-	return yaccNode{op: nodeOp, value: value, children: children}
+func newNode(nodeOp NodeOp, value interface{}, token lexer.Token, location lexer.Location, children ...yaccNode) yaccNode {
+	return yaccNode{op: nodeOp, value: value, children: children, token: token, location: location}
 }
 
 func appendNodeTo(node *yaccNode, child yaccNode) yaccNode {

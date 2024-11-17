@@ -1,0 +1,16 @@
+macro user {
+    kind Syntax
+
+    syntax {
+        name <name string>
+        age <age int>
+        Auth {
+            username <username string>
+            password <password string>
+            Token {
+                accessToken <accessToken string>
+                refreshToken <refreshToken string>
+            }
+        }
+    }
+}

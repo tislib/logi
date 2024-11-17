@@ -1,31 +1,29 @@
 package lexer
 
 func (sc *lexer) handleComments(r rune) {
+	nc, _ := sc.peekChar()
+
 	// single line comments
-	if sc.read() == '/' {
-		for {
-			r = sc.read()
-			if isEol(r) || r == 0 {
-				sc.unread()
-				return
-			}
-		}
-	} else {
-		sc.unread()
+	if nc == '/' {
+		l := sc.peekUntil(func(ch rune) bool {
+			return ch == '\n'
+		})
+
+		sc.discard(len(l))
+		return
 	}
 
 	// multi line comments
-	if sc.read() == '*' {
+	if nc == '*' {
 		for {
 			r = sc.read()
 			if r == '*' {
-				if sc.read() == '/' {
-					sc.unread()
+				nc, _ := sc.peekChar()
+				if nc == '/' {
+					sc.discardChar()
 					return
 				}
 			}
 		}
-	} else {
-		sc.unread()
 	}
 }

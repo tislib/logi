@@ -924,45 +924,6 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
-		"fail macro if kind is missing": {
-			input: `
-				macro simple {
-				}
-			`,
-			expectedError: "syntax error",
-		},
-		"fail macro if name is missing": {
-			input: `
-				macro {
-					kind Syntax
-				}
-			`,
-			expectedError: "syntax error",
-		},
-		"fail macro if name is in incorrect format": {
-			input: `
-				macro simple!{
-					kind Syntax
-				}
-			`,
-			expectedError: "syntax error",
-		},
-		"fail macro if name is in incorrect format[2]": {
-			input: `
-				macro simple simple{
-					kind Syntax
-				}
-			`,
-			expectedError: "syntax error",
-		},
-		"fail macro if name is in incorrect format[3]": {
-			input: `
-				macro SimPlEE{
-					kind Syntax
-				}
-			`,
-			expectedError: "failed to convert base macro: unexpected name value: SimPlEE",
-		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

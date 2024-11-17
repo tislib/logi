@@ -31,7 +31,14 @@ type Union struct {
 	string string
 }
 
+type Location struct {
+	Line   int
+	Column int
+}
+
 type Lexer interface {
 	Next() (Token, error)
 	GetReadString() any
+	GetLastToken() Token
+	GetLastLocation() Location
 }

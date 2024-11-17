@@ -17,7 +17,7 @@ func convertNodeToMacroAst(node yaccNode) (*astMacro.Ast, error) {
 		macro, err := convertMacro(child)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert syntax macro: %w", err)
+			return nil, err
 		}
 
 		res.Macros = append(res.Macros, *macro)
@@ -42,7 +42,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 	case "Syntax":
 		result.Kind = astMacro.KindSyntax
 	default:
-		return nil, fmt.Errorf("unexpected kind value: %s", kind)
+		return nil, newErrorFromNode(body.children[0], fmt.Sprintf("unexpected kind value: \"%s\", expecting \"Syntax\"", kind))
 	}
 
 	for _, child := range body.children {
@@ -55,7 +55,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 				syntaxBody, err := convertSyntaxBody(child.children[0])
 
 				if err != nil {
-					return nil, fmt.Errorf("failed to convert syntax: %w", err)
+					return nil, err
 				}
 
 				result.Syntax = astMacro.Syntax{Statements: syntaxBody}
@@ -68,7 +68,7 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 				types, err := convertTypes(child.children[0])
 
 				if err != nil {
-					return nil, fmt.Errorf("failed to convert definition: %w", err)
+					return nil, err
 				}
 
 				result.Types = *types
@@ -77,6 +77,10 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 	}
 
 	return result, nil
+}
+
+func newErrorFromNode(name yaccNode, msg string) error {
+	return newError(name.location.Line, name.location.Column, name.token.Value, msg)
 }
 
 func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) {
@@ -90,7 +94,7 @@ func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) 
 		statement, err := convertSyntaxStatement(child)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert syntax statement: %w", err)
+			return nil, err
 		}
 
 		result = append(result, *statement)
@@ -110,7 +114,7 @@ func convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 		statement, err := convertTypeStatement(child)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert type statement: %w", err)
+			return nil, err
 		}
 
 		result = append(result, *statement)
@@ -130,7 +134,7 @@ func convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
 		element, err := convertSyntaxStatementElement(child)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+			return nil, err
 		}
 
 		result.Elements = append(result.Elements, *element)
@@ -146,7 +150,7 @@ func convertSyntaxStatement(child yaccNode) (*astMacro.SyntaxStatement, error) {
 		element, err := convertSyntaxStatementElement(elementNode)
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+			return nil, err
 		}
 
 		result.Elements = append(result.Elements, *element)
@@ -171,7 +175,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		typeDef, err := convertTypeDefinition(node.children[1])
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert type definition: %w", err)
+			return nil, err
 		}
 
 		result.VariableKeyword = &astMacro.SyntaxStatementElementVariableKeyword{Name: varName, Type: *typeDef}
@@ -183,7 +187,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 			element, err := convertSyntaxStatementElement(elementNode)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+				return nil, err
 			}
 
 			elements = append(elements, *element)
@@ -198,7 +202,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 			statement, err := convertSyntaxStatement(elementNode)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax statement element: %w", err)
+				return nil, err
 			}
 
 			statements = append(statements, *statement)
@@ -214,7 +218,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 			parameter, err := convertSyntaxStatementElementParameter(parameterNode)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax statement element parameter: %w", err)
+				return nil, err
 			}
 
 			parameters = append(parameters, *parameter)
@@ -230,7 +234,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 			argument, err := convertSyntaxStatementElementArgument(argumentNode)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax statement element parameter: %w", err)
+				return nil, err
 			}
 
 			arguments = append(arguments, *argument)
@@ -252,7 +256,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 			attribute, err := convertSyntaxStatementElementAttribute(attributeNode)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert syntax statement element attribute: %w", err)
+				return nil, err
 			}
 
 			attributes = append(attributes, *attribute)
@@ -272,7 +276,7 @@ func convertSyntaxStatementElementParameter(node yaccNode) (*astMacro.SyntaxStat
 	typeDef, err := convertTypeDefinition(node.children[1])
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert type definition: %w", err)
+		return nil, err
 	}
 
 	result.Name = varName
@@ -287,7 +291,7 @@ func convertSyntaxStatementElementArgument(node yaccNode) (*astMacro.SyntaxState
 	typeDef, err := convertTypeDefinition(node.children[1])
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert type definition: %w", err)
+		return nil, err
 	}
 
 	result.Name = varName
@@ -306,7 +310,7 @@ func convertSyntaxStatementElementAttribute(node yaccNode) (*astMacro.SyntaxStat
 		typeDef, err := convertTypeDefinition(node.children[0])
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to convert type definition: %w", err)
+			return nil, err
 		}
 
 		result.Type = *typeDef
@@ -324,7 +328,7 @@ func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
 			subType, err := convertTypeDefinition(child)
 
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert type definition: %w", err)
+				return nil, err
 			}
 
 			result.SubTypes = append(result.SubTypes, *subType)

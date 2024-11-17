@@ -5,7 +5,7 @@ simpleBillingRule Rule1 {
     OutCome REJECT
 
     CustomLogic {
-        if (price < current()) {
+        ixf price < current() {
             return ALLOW
         }
     }
