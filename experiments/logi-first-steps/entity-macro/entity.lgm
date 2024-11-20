@@ -1,7 +1,0 @@
-macro entity {
-    kind Syntax
-
-    syntax {
-       <property Name> <type Type> [id, required, default: <defaultValue>, unique]
-    }
-}

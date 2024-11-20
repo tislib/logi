@@ -5,6 +5,7 @@ import (
 )
 
 type Ast struct {
+	SourceFile common.SourceFile `json:"sourceFile"`
 	// The Macros of the package
 	Definitions []Definition `json:"definitions"`
 	Functions   []Function   `json:"functions"`
@@ -15,6 +16,9 @@ type Definition struct {
 	Name      string `json:"name"`
 
 	Statements []DefinitionStatement `json:"elements"`
+
+	MacroNameSourceLocation common.SourceLocation `json:"macroNameSourceLocation"`
+	NameSourceLocation      common.SourceLocation `json:"nameSourceLocation"`
 }
 
 type Function struct {
@@ -25,6 +29,8 @@ type Function struct {
 
 type DefinitionStatement struct {
 	Elements []DefinitionStatementElement `json:"elements"`
+
+	SourceLocation common.SourceLocation `json:"sourceLocation"`
 }
 
 func (s DefinitionStatement) AsValue() common.Value {
@@ -69,6 +75,8 @@ type DefinitionStatementElement struct {
 	ArgumentList  *DefinitionStatementElementArgumentList  `json:"argumentList,omitempty"`
 	ParameterList *DefinitionStatementElementParameterList `json:"parameterList,omitempty"`
 	CodeBlock     *DefinitionStatementElementCodeBlock     `json:"codeBlock,omitempty"`
+
+	SourceLocation common.SourceLocation `json:"sourceLocation"`
 }
 
 func (e DefinitionStatementElement) AsValue() common.Value {

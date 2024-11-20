@@ -7,6 +7,6 @@ user JohnDoe {
         Token {
             accessToken "access token"
             refreshToken "refresh token"
-        }
+        } as token
     }
 }

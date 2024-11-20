@@ -2,6 +2,7 @@ package lexer
 
 type TokenConfig struct {
 	Id                    int
+	Label                 string
 	StartsWith            string
 	EndsWith              string
 	Equals                string

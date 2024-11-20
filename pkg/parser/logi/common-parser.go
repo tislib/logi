@@ -38,6 +38,11 @@ const (
 	NodeOpParameterList       = "parameter_list"
 	NodeOpParameter           = "parameter"
 	NodeOpStruct              = "struct"
+	NodeOpJsonObject          = "json_object"
+	NodeOpJsonObjectItem      = "json_object_item"
+	NodeOpJsonObjectItemValue = "json_object_item_value"
+	NodeOpJsonArray           = "json_array"
+	NodeOpJsonArrayContent    = "json_array_content"
 )
 
 type yaccNode struct {
@@ -48,8 +53,14 @@ type yaccNode struct {
 	location lexer.Location
 }
 
-func appendNode(nodeOp NodeOp, firstChild yaccNode, children ...yaccNode) yaccNode {
-	return yaccNode{op: nodeOp, children: children}
+func appendNode(nodeOp NodeOp, children ...yaccNode) yaccNode {
+	result := yaccNode{op: nodeOp, children: children}
+
+	if len(children) > 0 {
+		result.location = children[0].location
+	}
+
+	return result
 }
 
 func newNode(nodeOp NodeOp, value interface{}, token lexer.Token, location lexer.Location, children ...yaccNode) yaccNode {

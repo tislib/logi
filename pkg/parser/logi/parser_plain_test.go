@@ -91,6 +91,82 @@ func TestSyntaxLogi(t *testing.T) {
 				},
 			},
 		},
+		"json element": {
+			input: `
+				entity User {
+					data { 
+						"key1": "value1", 
+						"nestedKey": [
+							{ 
+								"nestedKey": "nestedValue" 
+							}
+						] 
+					}
+				}
+			`,
+			expected: &plain.Ast{
+				Definitions: []plain.Definition{
+					{
+						MacroName: "entity",
+						Name:      "User",
+						NameSourceLocation: common.SourceLocation{
+							Line:   2,
+							Column: 12,
+						},
+						MacroNameSourceLocation: common.SourceLocation{
+							Line:   2,
+							Column: 5,
+						},
+						Statements: []plain.DefinitionStatement{
+							{
+								Elements: []plain.DefinitionStatementElement{
+									{
+										Kind: plain.DefinitionStatementElementKindIdentifier,
+										Identifier: &plain.DefinitionStatementElementIdentifier{
+											Identifier: "data",
+										},
+										SourceLocation: common.SourceLocation{
+											Line:   3,
+											Column: 6,
+										},
+									},
+									{
+										Kind: plain.DefinitionStatementElementKindValue,
+										Value: &plain.DefinitionStatementElementValue{
+											Value: common.Value{
+												Kind: common.ValueKindMap,
+												Map: map[string]common.Value{
+													"key1": common.StringValue("value1"),
+													"nestedKey": {
+														Kind: common.ValueKindArray,
+														Array: []common.Value{
+															{
+																Kind: common.ValueKindMap,
+																Map: map[string]common.Value{
+																	"nestedKey": common.StringValue("nestedValue"),
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										SourceLocation: common.SourceLocation{
+											Line:   4,
+											Column: 7,
+										},
+									},
+								},
+								SourceLocation: common.SourceLocation{
+									Line:   3,
+									Column: 6,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"definition with arguments": {
 			input: `
 				service UserService {

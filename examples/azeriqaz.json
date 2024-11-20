@@ -1,41 +1,96 @@
 [
   {
-    "dynamic": {
-      "checkBody": {
-        "code": {
-          "statements": [
-            {
-              "kind": "return",
-              "returnStmt": {
-                "result": {
-                  "kind": "binary_expression",
-                  "binaryExpr": {
-                    "left": {
-                      "kind": "variable",
-                      "variable": {
-                        "name": "a"
+    "macroName": "api",
+    "name": "Simple",
+    "elements": [
+      {
+        "elements": [
+          {
+            "kind": "Identifier",
+            "identifier": {
+              "identifier": "GET"
+            },
+            "sourceLocation": {
+              "line": 2,
+              "column": 5
+            }
+          },
+          {
+            "kind": "Value",
+            "value": {
+              "value": {
+                "kind": "String",
+                "string": "/students",
+                "Map": null
+              }
+            },
+            "sourceLocation": {
+              "line": 2,
+              "column": 9
+            }
+          },
+          {
+            "kind": "Struct",
+            "struct": {
+              "statements": [
+                {
+                  "elements": [
+                    {
+                      "kind": "Identifier",
+                      "identifier": {
+                        "identifier": "response"
+                      },
+                      "sourceLocation": {
+                        "line": 3,
+                        "column": 9
                       }
                     },
-                    "operator": "+",
-                    "right": {
-                      "kind": "variable",
-                      "variable": {
-                        "name": "b"
+                    {
+                      "kind": "Value",
+                      "value": {
+                        "value": {
+                          "kind": "Map",
+                          "Map": {
+                            "aa": {
+                              "kind": "String",
+                              "string": "bb",
+                              "Map": null
+                            }
+                          }
+                        }
+                      },
+                      "sourceLocation": {
+                        "line": 3,
+                        "column": 20
                       }
                     }
+                  ],
+                  "sourceLocation": {
+                    "line": 3,
+                    "column": 9
                   }
                 }
-              }
+              ]
+            },
+            "sourceLocation": {
+              "line": 3,
+              "column": 9
             }
-          ]
+          }
+        ],
+        "sourceLocation": {
+          "line": 2,
+          "column": 5
         }
-      },
-      "checkMethod": {},
-      "checkUrl": {
-        "url": "https://www.azeriqaz.com"
       }
+    ],
+    "macroNameSourceLocation": {
+      "line": 1,
+      "column": 1
     },
-    "macro": "plugin",
-    "name": "Azeriqaz"
+    "nameSourceLocation": {
+      "line": 1,
+      "column": 5
+    }
   }
 ]

@@ -1,5 +1,5 @@
 .idea
-experiments/tengo
+experiments
 pkg/stdlib
 pkg/registry
 pkg/logi
@@ -7,3 +7,4 @@ y.output
 temp
 pkg/experiments
 dist
+plugins/intellij

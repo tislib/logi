@@ -1,7 +1,5 @@
-plugin Azeriqaz {
-    checkUrl "https://www.azeriqaz.com"
-    checkMethod GET
-    checkBody {
-         return a + b
+api Simple {
+    GET "/students" {
+        response { "aa": ["bb"] }
     }
 }
