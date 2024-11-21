@@ -7,3 +7,13 @@ macro creditRule {
         age <min int> <max int>
     }
 }
+
+macro abc {
+    kind Syntax
+
+    syntax {
+        a <a string>
+        b <b string>
+        c <c string>
+    }
+}

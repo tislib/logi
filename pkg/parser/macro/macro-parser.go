@@ -63,22 +63,25 @@ func (y *yyMakroLexerProxy) translateToken(token string) string {
 	return token
 }
 
-func ParseMacroContent(d string) (*astMacro.Ast, error) {
+func ParseMacroContent(d string, enableSourceMap bool) (*astMacro.Ast, error) {
 	s := newMacroLexer(strings.NewReader(d), false)
 	parser := yyNewParser()
 	proxy := &yyMakroLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}
 
 	parser.Parse(proxy)
 
+	var c = &converter{enableSourceMap}
+	var result, err = c.convertNodeToMacroAst(proxy.Node)
+
 	if s.Err != nil {
-		return nil, s.Err
+		return result, s.Err
 	}
 
 	if proxy.err != nil {
-		return nil, proxy.err
+		return result, proxy.err
 	}
 
-	return convertNodeToMacroAst(proxy.Node)
+	return result, err
 }
 
 func init() {

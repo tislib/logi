@@ -6,18 +6,22 @@ import (
 	astMacro "github.com/tislib/logi/pkg/ast/macro"
 )
 
-func convertNodeToMacroAst(node yaccNode) (*astMacro.Ast, error) {
+type converter struct {
+	enableSourceMap bool
+}
+
+func (c *converter) convertNodeToMacroAst(node yaccNode) (*astMacro.Ast, error) {
 	var res = new(astMacro.Ast)
 
 	if node.op != NodeOpFile {
-		return nil, ErrUnexpectedNode
+		return res, ErrUnexpectedNode
 	}
 
 	for _, child := range node.children {
-		macro, err := convertMacro(child)
+		macro, err := c.convertMacro(child)
 
 		if err != nil {
-			return nil, err
+			return res, err
 		}
 
 		res.Macros = append(res.Macros, *macro)
@@ -26,13 +30,21 @@ func convertNodeToMacroAst(node yaccNode) (*astMacro.Ast, error) {
 	return res, nil
 }
 
-func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
+func (c *converter) convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 	var signature = macroNode.children[0]
 	var name = signature.children[0]
 	var body = macroNode.children[1]
 	var kind = body.children[0].value.(string)
 
 	var result = new(astMacro.Macro)
+
+	// source maps
+	if c.enableSourceMap {
+		result.SourceMap = make(map[string]common.SourceLocation)
+		result.SourceMap["macro"] = signature.location.AsSourceLocation()
+		result.SourceMap["name"] = name.location.AsSourceLocation()
+	}
+
 	if !NamePattern.MatchString(name.value.(string)) {
 		return nil, fmt.Errorf("unexpected name value: %s", name.value)
 	}
@@ -42,33 +54,40 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 	case "Syntax":
 		result.Kind = astMacro.KindSyntax
 	default:
-		return nil, newErrorFromNode(body.children[0], fmt.Sprintf("unexpected kind value: \"%s\", expecting \"Syntax\"", kind))
+		return result, c.newErrorFromNode(body.children[0], fmt.Sprintf("unexpected kind value: \"%s\", expecting \"Syntax\"", kind))
 	}
 
 	for _, child := range body.children {
 		switch child.op {
 		case NodeOpSyntax:
+			if c.enableSourceMap {
+				result.SourceMap["syntax"] = child.location.AsSourceLocation()
+			}
+
 			if result.Kind != astMacro.KindSyntax {
-				return nil, fmt.Errorf("syntax defined for macro of kind %s; but expected Syntax", result.Kind)
+				return result, fmt.Errorf("syntax defined for macro of kind %s; but expected Syntax", result.Kind)
 			}
 			if len(child.children) != 0 {
-				syntaxBody, err := convertSyntaxBody(child.children[0])
+				syntaxBody, err := c.convertSyntaxBody(child.children[0])
 
 				if err != nil {
-					return nil, err
+					return result, err
 				}
 
 				result.Syntax = astMacro.Syntax{Statements: syntaxBody}
 			}
 		case NodeOpTypes:
+			if c.enableSourceMap {
+				result.SourceMap["types"] = child.location.AsSourceLocation()
+			}
 			if result.Kind != astMacro.KindSyntax {
-				return nil, fmt.Errorf("types defined for macro of kind %s; but expected Syntax", result.Kind)
+				return result, fmt.Errorf("types defined for macro of kind %s; but expected Syntax", result.Kind)
 			}
 			if len(child.children) != 0 {
-				types, err := convertTypes(child.children[0])
+				types, err := c.convertTypes(child.children[0])
 
 				if err != nil {
-					return nil, err
+					return result, err
 				}
 
 				result.Types = *types
@@ -79,11 +98,11 @@ func convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 	return result, nil
 }
 
-func newErrorFromNode(name yaccNode, msg string) error {
+func (c *converter) newErrorFromNode(name yaccNode, msg string) error {
 	return newError(name.location.Line, name.location.Column, name.token.Value, msg)
 }
 
-func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) {
+func (c *converter) convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) {
 	if syntaxNode.children == nil {
 		return nil, nil
 	}
@@ -91,7 +110,7 @@ func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) 
 	var result []astMacro.SyntaxStatement
 
 	for _, child := range syntaxNode.children {
-		statement, err := convertSyntaxStatement(child)
+		statement, err := c.convertSyntaxStatement(child)
 
 		if err != nil {
 			return nil, err
@@ -103,7 +122,7 @@ func convertSyntaxBody(syntaxNode yaccNode) ([]astMacro.SyntaxStatement, error) 
 	return result, nil
 }
 
-func convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
+func (c *converter) convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 	if typesNode.children == nil {
 		return nil, nil
 	}
@@ -111,7 +130,7 @@ func convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 	var result []astMacro.TypeStatement
 
 	for _, child := range typesNode.children {
-		statement, err := convertTypeStatement(child)
+		statement, err := c.convertTypeStatement(child)
 
 		if err != nil {
 			return nil, err
@@ -123,7 +142,7 @@ func convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 	return &astMacro.Types{Types: result}, nil
 }
 
-func convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
+func (c *converter) convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
 	var result = new(astMacro.TypeStatement)
 	var name = node.children[0].value.(string)
 	var items = node.children[1].children
@@ -131,7 +150,7 @@ func convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
 	result.Name = name
 
 	for _, child := range items {
-		element, err := convertSyntaxStatementElement(child)
+		element, err := c.convertSyntaxStatementElement(child)
 
 		if err != nil {
 			return nil, err
@@ -143,11 +162,11 @@ func convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
 	return result, nil
 }
 
-func convertSyntaxStatement(child yaccNode) (*astMacro.SyntaxStatement, error) {
+func (c *converter) convertSyntaxStatement(child yaccNode) (*astMacro.SyntaxStatement, error) {
 	var result = new(astMacro.SyntaxStatement)
 
 	for _, elementNode := range child.children {
-		element, err := convertSyntaxStatementElement(elementNode)
+		element, err := c.convertSyntaxStatementElement(elementNode)
 
 		if err != nil {
 			return nil, err
@@ -159,7 +178,7 @@ func convertSyntaxStatement(child yaccNode) (*astMacro.SyntaxStatement, error) {
 	return result, nil
 }
 
-func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElement, error) {
+func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElement, error) {
 	var result = new(astMacro.SyntaxStatementElement)
 
 	switch node.op {
@@ -172,7 +191,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 	case NodeOpSyntaxVariableKeywordElement:
 		result.Kind = astMacro.SyntaxStatementElementKindVariableKeyword
 		var varName = node.children[0].value.(string)
-		typeDef, err := convertTypeDefinition(node.children[1])
+		typeDef, err := c.convertTypeDefinition(node.children[1])
 
 		if err != nil {
 			return nil, err
@@ -184,7 +203,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 
 		var elements []astMacro.SyntaxStatementElement
 		for _, elementNode := range node.children {
-			element, err := convertSyntaxStatementElement(elementNode)
+			element, err := c.convertSyntaxStatementElement(elementNode)
 
 			if err != nil {
 				return nil, err
@@ -199,7 +218,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 
 		var statements []astMacro.SyntaxStatement
 		for _, elementNode := range node.children {
-			statement, err := convertSyntaxStatement(elementNode)
+			statement, err := c.convertSyntaxStatement(elementNode)
 
 			if err != nil {
 				return nil, err
@@ -215,7 +234,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		var parameters []astMacro.SyntaxStatementElementParameter
 
 		for _, parameterNode := range node.children {
-			parameter, err := convertSyntaxStatementElementParameter(parameterNode)
+			parameter, err := c.convertSyntaxStatementElementParameter(parameterNode)
 
 			if err != nil {
 				return nil, err
@@ -231,7 +250,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		var arguments []astMacro.SyntaxStatementElementArgument
 
 		for _, argumentNode := range node.children {
-			argument, err := convertSyntaxStatementElementArgument(argumentNode)
+			argument, err := c.convertSyntaxStatementElementArgument(argumentNode)
 
 			if err != nil {
 				return nil, err
@@ -253,7 +272,7 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 		var attributes []astMacro.SyntaxStatementElementAttribute
 
 		for _, attributeNode := range node.children {
-			attribute, err := convertSyntaxStatementElementAttribute(attributeNode)
+			attribute, err := c.convertSyntaxStatementElementAttribute(attributeNode)
 
 			if err != nil {
 				return nil, err
@@ -270,10 +289,10 @@ func convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElem
 	return result, nil
 }
 
-func convertSyntaxStatementElementParameter(node yaccNode) (*astMacro.SyntaxStatementElementParameter, error) {
+func (c *converter) convertSyntaxStatementElementParameter(node yaccNode) (*astMacro.SyntaxStatementElementParameter, error) {
 	var result = new(astMacro.SyntaxStatementElementParameter)
 	var varName = node.children[0].value.(string)
-	typeDef, err := convertTypeDefinition(node.children[1])
+	typeDef, err := c.convertTypeDefinition(node.children[1])
 
 	if err != nil {
 		return nil, err
@@ -285,10 +304,10 @@ func convertSyntaxStatementElementParameter(node yaccNode) (*astMacro.SyntaxStat
 	return result, nil
 }
 
-func convertSyntaxStatementElementArgument(node yaccNode) (*astMacro.SyntaxStatementElementArgument, error) {
+func (c *converter) convertSyntaxStatementElementArgument(node yaccNode) (*astMacro.SyntaxStatementElementArgument, error) {
 	var result = new(astMacro.SyntaxStatementElementArgument)
 	var varName = node.children[0].value.(string)
-	typeDef, err := convertTypeDefinition(node.children[1])
+	typeDef, err := c.convertTypeDefinition(node.children[1])
 
 	if err != nil {
 		return nil, err
@@ -300,14 +319,14 @@ func convertSyntaxStatementElementArgument(node yaccNode) (*astMacro.SyntaxState
 	return result, nil
 }
 
-func convertSyntaxStatementElementAttribute(node yaccNode) (*astMacro.SyntaxStatementElementAttribute, error) {
+func (c *converter) convertSyntaxStatementElementAttribute(node yaccNode) (*astMacro.SyntaxStatementElementAttribute, error) {
 	var result = new(astMacro.SyntaxStatementElementAttribute)
 	var varName = node.value.(string)
 
 	result.Name = varName
 
 	if len(node.children) > 0 {
-		typeDef, err := convertTypeDefinition(node.children[0])
+		typeDef, err := c.convertTypeDefinition(node.children[0])
 
 		if err != nil {
 			return nil, err
@@ -319,13 +338,13 @@ func convertSyntaxStatementElementAttribute(node yaccNode) (*astMacro.SyntaxStat
 	return result, nil
 }
 
-func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
+func (c *converter) convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
 	var result = new(common.TypeDefinition)
 	result.Name = node.value.(string)
 
 	if len(node.children) > 0 {
 		for _, child := range node.children {
-			subType, err := convertTypeDefinition(child)
+			subType, err := c.convertTypeDefinition(child)
 
 			if err != nil {
 				return nil, err

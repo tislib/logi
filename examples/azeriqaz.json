@@ -52,8 +52,14 @@
                           "kind": "Map",
                           "Map": {
                             "aa": {
-                              "kind": "String",
-                              "string": "bb",
+                              "kind": "Array",
+                              "array": [
+                                {
+                                  "kind": "String",
+                                  "string": "bb",
+                                  "Map": null
+                                }
+                              ],
                               "Map": null
                             }
                           }

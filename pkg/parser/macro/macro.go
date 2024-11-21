@@ -575,7 +575,7 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line macro.y:72
 		{
-			yyVAL.node = appendNode(NodeOpSignature, newNode(NodeOpName, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location))
+			yyVAL.node = newNode(NodeOpSignature, nil, yyDollar[1].token, yyDollar[1].location, newNode(NodeOpName, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location))
 		}
 	case 13:
 		yyDollar = yyS[yypt-11 : yypt+1]
@@ -588,7 +588,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:90
 		{
-			yyVAL.node = appendNode(NodeOpTypes, yyDollar[2].node)
+			yyVAL.node = newNode(NodeOpTypes, nil, yyDollar[1].token, yyDollar[1].location, yyDollar[2].node)
 		}
 	case 15:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -630,7 +630,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line macro.y:120
 		{
-			yyVAL.node = appendNode(NodeOpSyntax, yyDollar[2].node)
+			yyVAL.node = newNode(NodeOpSyntax, nil, yyDollar[1].token, yyDollar[1].location, yyDollar[2].node)
 		}
 	case 22:
 		yyDollar = yyS[yypt-0 : yypt+1]

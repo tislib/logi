@@ -15,20 +15,21 @@ type Parser interface {
 }
 
 type parser struct {
+	enableSourceMap bool
 }
 
 func (p parser) ParseMacroContent(content string) (*macroAst.Ast, error) {
-	ast, err := macro.ParseMacroContent(content)
+	ast, err := macro.ParseMacroContent(content, p.enableSourceMap)
 
 	if err != nil {
-		return nil, err
+		return ast, err
 	}
 
 	return ast, nil
 }
 
 func (p parser) ParseLogiContent(content string, macros []macroAst.Macro) (*logiAst.Ast, error) {
-	ast, err := logi.Parse(content, macros)
+	ast, err := logi.Parse(content, macros, p.enableSourceMap)
 
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func (p parser) ParseLogiContent(content string, macros []macroAst.Macro) (*logi
 }
 
 func (p parser) ParseLogiPlainContent(content string) (*plain.Ast, error) {
-	ast, err := logi.ParsePlainContent(content)
+	ast, err := logi.ParsePlainContent(content, p.enableSourceMap)
 
 	if err != nil {
 		return ast, err
@@ -47,6 +48,6 @@ func (p parser) ParseLogiPlainContent(content string) (*plain.Ast, error) {
 	return ast, nil
 }
 
-func NewParser() Parser {
-	return &parser{}
+func NewParser(enableSourceMap bool) Parser {
+	return &parser{enableSourceMap}
 }

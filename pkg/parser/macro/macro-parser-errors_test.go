@@ -56,7 +56,7 @@ func TestSyntaxMacroErrors(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			_, err := ParseMacroContent(tt.input)
+			_, err := ParseMacroContent(tt.input, false)
 
 			assert.Equal(t, tt.expectedError, err.Error())
 		})

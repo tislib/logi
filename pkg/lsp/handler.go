@@ -12,13 +12,15 @@ type Handler interface {
 
 type handler struct {
 	protocol.Handler
-	parser      parser.Parser
-	fileContent map[string]string
+	parser             parser.Parser
+	fileContent        map[string]string
+	fileSemanticTokens map[string][]protocol.UInteger
 }
 
 func NewHandler() Handler {
 	var h = &handler{
-		fileContent: make(map[string]string),
+		fileContent:        make(map[string]string),
+		fileSemanticTokens: make(map[string][]protocol.UInteger),
 	}
 
 	h.Initialize = h.onInitialize
@@ -31,7 +33,7 @@ func NewHandler() Handler {
 	h.TextDocumentHover = h.onTextDocumentHover
 	h.TextDocumentSemanticTokensFull = h.onTextDocumentSemanticTokensFull
 
-	h.parser = parser.NewParser()
+	h.parser = parser.NewParser(true)
 
 	return h
 }

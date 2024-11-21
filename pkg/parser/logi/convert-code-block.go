@@ -5,7 +5,7 @@ import (
 	"github.com/tislib/logi/pkg/ast/common"
 )
 
-func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
+func (c *converter) convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 	codeBlock := new(common.CodeBlock)
 
 	var statementsElement = element.children[0].children
@@ -13,7 +13,7 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 	for _, child := range statementsElement {
 		switch child.op {
 		case NodeOpIf:
-			ifStatement, err := convertIfStatement(child)
+			ifStatement, err := c.convertIfStatement(child)
 
 			if err != nil {
 				return nil, err
@@ -25,7 +25,7 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 				IfStmt: ifStatement,
 			})
 		case NodeOpReturn:
-			returnStatement, err := convertReturnStatement(child)
+			returnStatement, err := c.convertReturnStatement(child)
 
 			if err != nil {
 				return nil, err
@@ -38,7 +38,7 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 			})
 
 		case NodeOpVariableDeclaration:
-			varDeclaration, err := convertVariableDeclaration(child)
+			varDeclaration, err := c.convertVariableDeclaration(child)
 
 			if err != nil {
 				return nil, err
@@ -50,7 +50,7 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 				VarDecl: varDeclaration,
 			})
 		case NodeOpFunctionCall:
-			functionCall, err := convertFunctionCallStatement(child)
+			functionCall, err := c.convertFunctionCallStatement(child)
 
 			if err != nil {
 				return nil, err
@@ -69,10 +69,10 @@ func convertCodeBlock(element yaccNode) (*common.CodeBlock, error) {
 	return codeBlock, nil
 }
 
-func convertReturnStatement(element yaccNode) (*common.ReturnStatement, error) {
+func (c *converter) convertReturnStatement(element yaccNode) (*common.ReturnStatement, error) {
 	returnStatement := new(common.ReturnStatement)
 
-	expression, err := convertExpression(element.children[0])
+	expression, err := c.convertExpression(element.children[0])
 
 	if err != nil {
 		return nil, err
@@ -83,12 +83,12 @@ func convertReturnStatement(element yaccNode) (*common.ReturnStatement, error) {
 	return returnStatement, nil
 }
 
-func convertVariableDeclaration(child yaccNode) (*common.VarDeclaration, error) {
+func (c *converter) convertVariableDeclaration(child yaccNode) (*common.VarDeclaration, error) {
 	varDeclaration := new(common.VarDeclaration)
 
 	varDeclaration.Name = child.children[0].value.(string)
 
-	typeDef, err := convertTypeDefinition(child.children[0])
+	typeDef, err := c.convertTypeDefinition(child.children[0])
 
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func convertVariableDeclaration(child yaccNode) (*common.VarDeclaration, error) 
 	varDeclaration.Type = *typeDef
 
 	if len(child.children) > 2 {
-		expression, err := convertExpression(child.children[1])
+		expression, err := c.convertExpression(child.children[1])
 
 		if err != nil {
 			return nil, err
@@ -110,10 +110,10 @@ func convertVariableDeclaration(child yaccNode) (*common.VarDeclaration, error) 
 
 }
 
-func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
+func (c *converter) convertIfStatement(element yaccNode) (*common.IfStatement, error) {
 	ifStatement := new(common.IfStatement)
 
-	condition, err := convertExpression(element.children[0])
+	condition, err := c.convertExpression(element.children[0])
 
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
 
 	ifStatement.Condition = condition
 
-	codeBlock, err := convertCodeBlock(element.children[1])
+	codeBlock, err := c.convertCodeBlock(element.children[1])
 
 	if err != nil {
 		return nil, err
@@ -130,7 +130,7 @@ func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
 	ifStatement.ThenBlock = codeBlock
 
 	if len(element.children) > 2 {
-		elseBlock, err := convertCodeBlock(element.children[2])
+		elseBlock, err := c.convertCodeBlock(element.children[2])
 
 		if err != nil {
 			return nil, err
@@ -142,10 +142,10 @@ func convertIfStatement(element yaccNode) (*common.IfStatement, error) {
 	return ifStatement, nil
 }
 
-func convertFunctionCallStatement(element yaccNode) (*common.FunctionCallStatement, error) {
+func (c *converter) convertFunctionCallStatement(element yaccNode) (*common.FunctionCallStatement, error) {
 	functionCall := new(common.FunctionCallStatement)
 
-	expression, err := convertExpression(element.children[0])
+	expression, err := c.convertExpression(element.children[0])
 
 	if err != nil {
 		return nil, err
@@ -156,12 +156,12 @@ func convertFunctionCallStatement(element yaccNode) (*common.FunctionCallStateme
 	return functionCall, nil
 }
 
-func convertExpression(element yaccNode) (*common.Expression, error) {
+func (c *converter) convertExpression(element yaccNode) (*common.Expression, error) {
 	expression := new(common.Expression)
 
 	switch element.op {
 	case NodeOpBinaryExpression:
-		binaryExpression, err := convertBinaryExpression(element)
+		binaryExpression, err := c.convertBinaryExpression(element)
 
 		if err != nil {
 			return nil, err
@@ -170,7 +170,7 @@ func convertExpression(element yaccNode) (*common.Expression, error) {
 		expression.Kind = common.BinaryExprKind
 		expression.BinaryExpr = binaryExpression
 	case NodeOpLiteral:
-		literal, err := convertValue(element)
+		literal, err := c.convertValue(element)
 
 		if err != nil {
 			return nil, err
@@ -179,7 +179,7 @@ func convertExpression(element yaccNode) (*common.Expression, error) {
 		expression.Kind = common.LiteralKind
 		expression.Literal = &common.Literal{Value: *literal}
 	case NodeOpVariable:
-		variable, err := convertVariable(element)
+		variable, err := c.convertVariable(element)
 
 		if err != nil {
 			return nil, err
@@ -188,7 +188,7 @@ func convertExpression(element yaccNode) (*common.Expression, error) {
 		expression.Kind = common.VariableKind
 		expression.Variable = variable
 	case NodeOpFunctionCall:
-		functionCall, err := convertFunctionCall(element)
+		functionCall, err := c.convertFunctionCall(element)
 
 		if err != nil {
 			return nil, err
@@ -203,13 +203,13 @@ func convertExpression(element yaccNode) (*common.Expression, error) {
 	return expression, nil
 }
 
-func convertFunctionCall(element yaccNode) (*common.FunctionCall, error) {
+func (c *converter) convertFunctionCall(element yaccNode) (*common.FunctionCall, error) {
 	functionCall := new(common.FunctionCall)
 
 	functionCall.Name = element.value.(string)
 
 	if len(element.children) > 0 {
-		arguments, err := convertArguments(element.children[0])
+		arguments, err := c.convertArguments(element.children[0])
 
 		if err != nil {
 			return nil, err
@@ -221,11 +221,11 @@ func convertFunctionCall(element yaccNode) (*common.FunctionCall, error) {
 	return functionCall, nil
 }
 
-func convertArguments(element yaccNode) ([]*common.Expression, error) {
+func (c *converter) convertArguments(element yaccNode) ([]*common.Expression, error) {
 	var arguments []*common.Expression
 
 	for _, child := range element.children {
-		argument, err := convertExpression(child)
+		argument, err := c.convertExpression(child)
 
 		if err != nil {
 			return nil, err
@@ -237,10 +237,10 @@ func convertArguments(element yaccNode) ([]*common.Expression, error) {
 	return arguments, nil
 }
 
-func convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error) {
+func (c *converter) convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error) {
 	binaryExpression := new(common.BinaryExpression)
 
-	left, err := convertExpression(element.children[0])
+	left, err := c.convertExpression(element.children[0])
 
 	if err != nil {
 		return nil, err
@@ -248,7 +248,7 @@ func convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error)
 
 	binaryExpression.Left = left
 
-	right, err := convertExpression(element.children[1])
+	right, err := c.convertExpression(element.children[1])
 
 	if err != nil {
 		return nil, err
@@ -261,7 +261,7 @@ func convertBinaryExpression(element yaccNode) (*common.BinaryExpression, error)
 	return binaryExpression, nil
 }
 
-func convertVariable(element yaccNode) (*common.Variable, error) {
+func (c *converter) convertVariable(element yaccNode) (*common.Variable, error) {
 	variable := new(common.Variable)
 
 	variable.Name = element.value.(string)

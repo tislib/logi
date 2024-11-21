@@ -63,14 +63,16 @@ func (y *yyLogiLexerProxy) translateToken(token string) string {
 	return token
 }
 
-func ParsePlainContent(d string) (*plain.Ast, error) {
+func ParsePlainContent(d string, enableSourceMap bool) (*plain.Ast, error) {
 	s := NewLogiLexer(strings.NewReader(d), false)
 	parser := yyNewParser()
 	proxy := &yyLogiLexerProxy{lexer: s, Node: yaccNode{op: NodeOpFile}}
 
 	parser.Parse(proxy)
 
-	ast, err := convertNodeToLogiAst(proxy.Node)
+	var c = converter{enableSourceMap}
+
+	ast, err := c.convertNodeToLogiAst(proxy.Node)
 
 	if s.Err != nil {
 		return ast, s.Err

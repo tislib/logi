@@ -2,12 +2,10 @@ package server
 
 import (
 	"errors"
-	log "github.com/sirupsen/logrus"
 	"os"
 )
 
 func (self *Server) RunStdio() error {
-	log.Info("reading from stdin, writing to stdout")
 	self.ServeStream(Stdio{})
 	return nil
 }

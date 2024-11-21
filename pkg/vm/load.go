@@ -17,7 +17,7 @@ func (v *vm) LoadMacroFile(path ...string) error {
 			return fmt.Errorf("error reading file: %v", err)
 		}
 
-		ast, err := macro.ParseMacroContent(string(data))
+		ast, err := macro.ParseMacroContent(string(data), v.enableSourceMap)
 
 		if err != nil {
 			return fmt.Errorf("error parsing macro content: %v", err)
@@ -31,7 +31,7 @@ func (v *vm) LoadMacroFile(path ...string) error {
 
 func (v *vm) LoadMacroContent(content ...string) error {
 	for _, c := range content {
-		ast, err := macro.ParseMacroContent(c)
+		ast, err := macro.ParseMacroContent(c, v.enableSourceMap)
 
 		if err != nil {
 			return fmt.Errorf("error parsing macro content: %v", err)
@@ -61,7 +61,7 @@ func (v *vm) LoadLogiFile(path ...string) ([]Definition, error) {
 			return nil, fmt.Errorf("error reading file: %v", err)
 		}
 
-		ast, err := logi.Parse(string(data), v.Macros)
+		ast, err := logi.Parse(string(data), v.Macros, false)
 
 		if err != nil {
 			return nil, fmt.Errorf("error parsing logi content: %v", err)
@@ -88,7 +88,7 @@ func (v *vm) LoadLogiContent(content ...string) ([]Definition, error) {
 	var result []Definition
 
 	for _, c := range content {
-		ast, err := logi.Parse(c, v.Macros)
+		ast, err := logi.Parse(c, v.Macros, false)
 
 		if err != nil {
 			return nil, fmt.Errorf("error parsing logi content: %v", err)

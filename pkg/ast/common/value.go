@@ -25,6 +25,8 @@ type Value struct {
 	Integer *int64   `json:"integer,omitempty"`
 	Array   []Value  `json:"array,omitempty"`
 	Map     map[string]Value
+
+	SourceLocation SourceLocation `json:"sourceLocation,omitempty"`
 }
 
 func (v Value) ToDisplayName() string {

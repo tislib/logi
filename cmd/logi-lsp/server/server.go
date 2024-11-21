@@ -12,9 +12,8 @@ var DefaultTimeout = time.Minute
 //
 
 type Server struct {
-	Handler     common.Handler
-	LogBaseName string
-	Debug       bool
+	Handler common.Handler
+	Debug   bool
 
 	Timeout          time.Duration
 	ReadTimeout      time.Duration
@@ -23,10 +22,9 @@ type Server struct {
 	WebSocketTimeout time.Duration
 }
 
-func NewServer(handler common.Handler, logName string, debug bool) *Server {
+func NewServer(handler common.Handler, debug bool) *Server {
 	return &Server{
 		Handler:          handler,
-		LogBaseName:      logName,
 		Debug:            debug,
 		Timeout:          DefaultTimeout,
 		ReadTimeout:      DefaultTimeout,

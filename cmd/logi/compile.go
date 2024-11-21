@@ -30,7 +30,7 @@ var compileCmd = &cobra.Command{
 		var output interface{}
 
 		if *compileCmdKind == "plain" {
-			plainAst, err := logi.ParsePlainContent(string(logiContent))
+			plainAst, err := logi.ParsePlainContent(string(logiContent), true)
 
 			if err != nil {
 				return fmt.Errorf("error compiling logi file: %v", err)

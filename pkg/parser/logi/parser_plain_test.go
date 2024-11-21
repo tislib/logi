@@ -98,7 +98,8 @@ func TestSyntaxLogi(t *testing.T) {
 						"key1": "value1", 
 						"nestedKey": [
 							{ 
-								"nestedKey": "nestedValue" 
+								"nestedKey": "nestedValue",
+								"nestedKey2": null
 							}
 						] 
 					}
@@ -109,14 +110,6 @@ func TestSyntaxLogi(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
-						NameSourceLocation: common.SourceLocation{
-							Line:   2,
-							Column: 12,
-						},
-						MacroNameSourceLocation: common.SourceLocation{
-							Line:   2,
-							Column: 5,
-						},
 						Statements: []plain.DefinitionStatement{
 							{
 								Elements: []plain.DefinitionStatementElement{
@@ -124,10 +117,6 @@ func TestSyntaxLogi(t *testing.T) {
 										Kind: plain.DefinitionStatementElementKindIdentifier,
 										Identifier: &plain.DefinitionStatementElementIdentifier{
 											Identifier: "data",
-										},
-										SourceLocation: common.SourceLocation{
-											Line:   3,
-											Column: 6,
 										},
 									},
 									{
@@ -143,7 +132,8 @@ func TestSyntaxLogi(t *testing.T) {
 															{
 																Kind: common.ValueKindMap,
 																Map: map[string]common.Value{
-																	"nestedKey": common.StringValue("nestedValue"),
+																	"nestedKey":  common.StringValue("nestedValue"),
+																	"nestedKey2": common.NullValue(),
 																},
 															},
 														},
@@ -151,15 +141,7 @@ func TestSyntaxLogi(t *testing.T) {
 												},
 											},
 										},
-										SourceLocation: common.SourceLocation{
-											Line:   4,
-											Column: 7,
-										},
 									},
-								},
-								SourceLocation: common.SourceLocation{
-									Line:   3,
-									Column: 6,
 								},
 							},
 						},
@@ -339,7 +321,7 @@ func TestSyntaxLogi(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := ParsePlainContent(tt.input)
+			got, err := ParsePlainContent(tt.input, false)
 
 			if tt.expectedError != "" {
 				if err == nil {

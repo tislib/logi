@@ -109,7 +109,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line logi.y:464
+//line logi.y:467
 
 //		entity User {
 //	  		id int [primary, autoincrement]
@@ -122,8 +122,8 @@ var yyExca = [...]int8{
 	1, -1,
 	-2, 0,
 	-1, 78,
-	25, 79,
-	-2, 89,
+	25, 80,
+	-2, 90,
 	-1, 104,
 	4, 30,
 	5, 30,
@@ -134,7 +134,7 @@ var yyExca = [...]int8{
 	20, 30,
 	23, 30,
 	25, 30,
-	-2, 92,
+	-2, 93,
 	-1, 105,
 	4, 29,
 	5, 29,
@@ -144,7 +144,7 @@ var yyExca = [...]int8{
 	13, 29,
 	20, 29,
 	25, 29,
-	-2, 95,
+	-2, 96,
 	-1, 106,
 	4, 31,
 	5, 31,
@@ -155,7 +155,7 @@ var yyExca = [...]int8{
 	20, 31,
 	23, 31,
 	25, 31,
-	-2, 93,
+	-2, 94,
 	-1, 107,
 	4, 32,
 	5, 32,
@@ -166,78 +166,80 @@ var yyExca = [...]int8{
 	20, 32,
 	23, 32,
 	25, 32,
-	-2, 94,
+	-2, 95,
 }
 
 const yyPrivate = 57344
 
-const yyLast = 327
+const yyLast = 343
 
 var yyAct = [...]uint8{
-	4, 49, 9, 12, 13, 42, 15, 162, 33, 103,
-	32, 18, 19, 79, 100, 66, 35, 56, 60, 29,
-	186, 126, 24, 171, 160, 72, 177, 53, 25, 7,
-	8, 190, 58, 94, 6, 14, 106, 104, 105, 107,
-	188, 61, 59, 47, 14, 52, 14, 62, 63, 7,
-	7, 155, 51, 70, 30, 50, 90, 14, 80, 141,
-	81, 68, 14, 82, 14, 150, 121, 120, 61, 129,
-	14, 170, 108, 14, 96, 78, 23, 61, 93, 113,
-	114, 115, 116, 117, 118, 119, 122, 123, 139, 91,
-	133, 110, 78, 78, 125, 127, 132, 109, 7, 134,
-	7, 92, 158, 138, 174, 61, 30, 21, 172, 131,
-	130, 98, 14, 173, 45, 44, 43, 46, 137, 14,
-	97, 47, 154, 52, 28, 143, 145, 55, 142, 144,
-	51, 149, 147, 50, 156, 14, 54, 146, 148, 140,
-	161, 41, 166, 153, 135, 68, 151, 136, 48, 26,
-	157, 159, 69, 88, 87, 83, 89, 101, 22, 45,
-	44, 43, 46, 57, 20, 128, 47, 175, 52, 178,
-	179, 176, 124, 17, 16, 51, 180, 181, 50, 1,
-	62, 166, 112, 152, 61, 187, 182, 185, 183, 191,
-	26, 184, 189, 166, 167, 150, 121, 120, 102, 192,
-	88, 87, 83, 89, 150, 121, 120, 38, 84, 113,
-	114, 115, 116, 117, 118, 119, 122, 123, 113, 114,
-	115, 116, 117, 118, 119, 122, 123, 111, 121, 120,
-	88, 87, 83, 89, 88, 87, 83, 89, 3, 86,
-	11, 113, 114, 115, 116, 117, 118, 119, 122, 123,
-	85, 7, 80, 73, 81, 14, 80, 82, 81, 77,
-	76, 82, 45, 44, 43, 46, 75, 45, 44, 47,
-	46, 52, 74, 45, 44, 67, 46, 2, 51, 10,
-	47, 50, 52, 7, 71, 65, 39, 164, 163, 51,
-	165, 27, 50, 64, 169, 99, 168, 45, 44, 43,
-	46, 40, 37, 95, 47, 36, 52, 34, 14, 88,
-	87, 83, 89, 51, 31, 5, 50, 164, 163, 0,
-	165, 0, 0, 144, 169, 0, 168,
+	4, 49, 9, 12, 13, 42, 15, 162, 33, 100,
+	103, 18, 19, 79, 66, 56, 35, 29, 32, 60,
+	187, 72, 24, 172, 191, 155, 126, 53, 25, 189,
+	7, 94, 58, 164, 163, 166, 165, 14, 14, 7,
+	170, 61, 169, 150, 121, 120, 62, 8, 63, 171,
+	59, 6, 30, 70, 14, 178, 90, 113, 114, 115,
+	116, 117, 118, 119, 122, 123, 7, 160, 61, 68,
+	141, 14, 108, 14, 129, 14, 92, 61, 14, 93,
+	78, 14, 96, 88, 87, 83, 89, 14, 88, 87,
+	83, 89, 110, 109, 125, 127, 132, 78, 78, 134,
+	23, 139, 124, 138, 133, 61, 30, 131, 130, 7,
+	80, 7, 81, 175, 7, 82, 21, 91, 137, 101,
+	158, 98, 174, 55, 28, 143, 145, 173, 14, 142,
+	97, 149, 54, 154, 156, 144, 147, 146, 148, 140,
+	161, 41, 167, 153, 151, 135, 159, 26, 136, 157,
+	48, 69, 57, 68, 88, 87, 83, 89, 22, 128,
+	45, 44, 43, 46, 17, 16, 20, 47, 144, 52,
+	179, 180, 177, 1, 112, 176, 51, 181, 182, 50,
+	152, 14, 167, 185, 168, 61, 188, 183, 186, 184,
+	192, 26, 102, 190, 167, 38, 150, 121, 120, 84,
+	193, 88, 87, 83, 89, 150, 121, 120, 86, 85,
+	113, 114, 115, 116, 117, 118, 119, 122, 123, 113,
+	114, 115, 116, 117, 118, 119, 122, 123, 111, 121,
+	120, 45, 44, 73, 46, 88, 87, 83, 89, 3,
+	77, 11, 113, 114, 115, 116, 117, 118, 119, 122,
+	123, 106, 104, 105, 107, 76, 14, 80, 47, 81,
+	52, 2, 82, 10, 75, 74, 71, 51, 65, 39,
+	50, 27, 14, 80, 99, 81, 40, 37, 82, 45,
+	44, 43, 46, 95, 36, 34, 47, 31, 52, 5,
+	45, 44, 43, 46, 0, 51, 0, 47, 50, 52,
+	62, 45, 44, 67, 46, 0, 51, 0, 47, 50,
+	52, 7, 0, 0, 0, 0, 0, 51, 0, 0,
+	50, 64, 45, 44, 43, 46, 0, 0, 0, 47,
+	0, 52, 0, 164, 163, 166, 165, 0, 51, 0,
+	170, 50, 169,
 }
 
 var yyPact = [...]int16{
-	24, 24, 4, 4, 37, 4, 168, -1000, 167, 37,
-	4, 4, 37, 37, -1000, 94, 53, -1000, 37, 37,
-	-1000, 4, 136, 100, 110, -1000, 4, 112, -1000, -1000,
-	157, 258, 155, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, -1000, -1000, -1000, 4, -1000, -1000,
-	269, 141, 4, 230, -1000, 4, -1000, 69, 87, 155,
-	8, -1000, -1000, 110, -1000, 96, -1000, 157, 293, 151,
-	32, 226, 22, -1000, -1000, -1000, -1000, -1000, -1000, 209,
-	149, 196, 159, 46, -1000, -1000, -1000, -1000, -1000, -1000,
-	48, 157, -1000, 8, -1000, 75, 293, -1000, 4, 132,
-	-1000, 263, 73, -1000, 123, 46, -1000, -1000, 45, 22,
-	8, 305, 196, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	119, 114, -1000, -1000, 196, 177, -1000, 186, 157, 196,
-	-1000, 103, 39, 4, 110, 83, 151, -1000, 10, 4,
-	313, -1000, 8, 186, -1000, 186, -1000, -1000, 47, -4,
-	111, 90, 89, 186, -1000, -1000, 110, -1000, -1000, -1000,
-	-1000, 21, -1000, -1000, -1000, -1000, -1000, -1000, 4, 4,
-	136, 136, 196, -1000, 196, 293, -1000, 123, 21, 283,
-	-7, -1000, 186, 186, 25, -1000, 136, 19, 4, -1000,
-	-1000, 283, -1000,
+	41, 41, 5, 5, 48, 5, 159, -1000, 158, 48,
+	5, 5, 48, 48, -1000, 103, 77, -1000, 48, 48,
+	-1000, 5, 134, 100, 156, -1000, 5, 108, -1000, -1000,
+	146, 286, 275, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000, -1000, -1000, -1000, 5, -1000, -1000,
+	297, 140, 5, 231, -1000, 5, -1000, 97, 62, 275,
+	6, -1000, -1000, 156, -1000, 106, -1000, 146, 318, 113,
+	247, 84, 21, -1000, -1000, -1000, -1000, -1000, -1000, 210,
+	79, 197, 153, 51, -1000, -1000, -1000, -1000, -1000, -1000,
+	46, 146, -1000, 6, -1000, 89, 318, -1000, 5, 133,
+	-1000, 227, 86, -1000, 123, 51, -1000, -1000, 56, 21,
+	6, 150, 197, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	119, 118, -1000, -1000, 197, 178, -1000, 187, 146, 197,
+	-1000, 114, 13, 5, 156, 101, 113, -1000, 53, 5,
+	329, -1000, 6, 187, -1000, 187, -1000, -1000, 25, -4,
+	117, 109, 98, 187, -1000, -1000, 156, -1000, -1000, -1000,
+	-1000, 50, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 5,
+	5, 134, 134, 197, -1000, 197, 318, -1000, 123, 50,
+	29, -7, -1000, 187, 187, 14, -1000, 134, 12, 5,
+	-1000, -1000, 29, -1000,
 }
 
 var yyPgo = [...]int16{
-	0, 17, 277, 315, 148, 314, 10, 8, 307, 305,
-	303, 302, 16, 301, 295, 14, 141, 291, 19, 286,
-	285, 15, 5, 284, 25, 272, 266, 260, 259, 253,
-	13, 250, 239, 208, 21, 207, 1, 198, 9, 194,
-	7, 191, 183, 238, 182, 179, 0, 18,
+	0, 15, 261, 289, 150, 287, 18, 8, 285, 284,
+	283, 277, 16, 276, 274, 9, 141, 271, 17, 269,
+	268, 14, 5, 266, 21, 265, 264, 255, 240, 233,
+	13, 209, 208, 199, 26, 195, 1, 192, 10, 184,
+	7, 183, 180, 239, 174, 173, 0, 19,
 }
 
 var yyR1 = [...]int8{
@@ -245,14 +247,14 @@ var yyR1 = [...]int8{
 	45, 45, 45, 2, 3, 4, 5, 5, 6, 6,
 	7, 7, 7, 7, 7, 7, 7, 7, 7, 8,
 	12, 12, 12, 9, 10, 10, 10, 11, 35, 36,
-	37, 37, 37, 38, 40, 40, 40, 40, 40, 39,
-	41, 41, 41, 13, 14, 14, 15, 15, 16, 16,
-	17, 17, 18, 19, 19, 20, 20, 21, 1, 1,
-	22, 23, 23, 23, 24, 24, 24, 24, 24, 29,
-	25, 26, 26, 26, 26, 27, 28, 28, 30, 30,
-	30, 30, 31, 31, 31, 32, 44, 44, 44, 44,
+	37, 37, 37, 38, 40, 40, 40, 40, 40, 40,
+	39, 41, 41, 41, 13, 14, 14, 15, 15, 16,
+	16, 17, 17, 18, 19, 19, 20, 20, 21, 1,
+	1, 22, 23, 23, 23, 24, 24, 24, 24, 24,
+	29, 25, 26, 26, 26, 26, 27, 28, 28, 30,
+	30, 30, 30, 31, 31, 31, 32, 44, 44, 44,
 	44, 44, 44, 44, 44, 44, 44, 44, 44, 44,
-	33, 34, 42, 42, 42, 43,
+	44, 33, 34, 42, 42, 42, 43,
 }
 
 var yyR2 = [...]int8{
@@ -260,14 +262,14 @@ var yyR2 = [...]int8{
 	3, 3, 0, 3, 2, 5, 2, 3, 1, 2,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 5, 1, 4, 0, 1, 1, 5,
-	1, 4, 0, 3, 1, 1, 1, 1, 1, 5,
-	1, 4, 0, 5, 1, 3, 1, 2, 3, 2,
-	1, 4, 2, 3, 2, 1, 4, 1, 1, 4,
-	5, 2, 3, 0, 1, 1, 1, 1, 1, 1,
-	3, 5, 7, 3, 5, 2, 3, 5, 1, 1,
+	1, 4, 0, 3, 1, 1, 1, 1, 1, 1,
+	5, 1, 4, 0, 5, 1, 3, 1, 2, 3,
+	2, 1, 4, 2, 3, 2, 1, 4, 1, 1,
+	4, 5, 2, 3, 0, 1, 1, 1, 1, 1,
+	1, 3, 5, 7, 3, 5, 2, 3, 5, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 2, 2,
-	3, 4, 1, 3, 0, 4,
+	1, 1, 1, 1, 1, 1, 1, 1, 2, 2,
+	2, 3, 4, 1, 3, 0, 4,
 }
 
 var yyChk = [...]int16{
@@ -287,33 +289,33 @@ var yyChk = [...]int16{
 	-18, -1, -46, 15, -46, 12, 15, -12, -46, 15,
 	16, 14, -47, -30, 18, -30, 18, 18, -30, -22,
 	18, -1, -42, -30, 19, 12, -46, -21, 19, -15,
-	14, -46, -40, 5, 4, 7, -36, -39, 13, 11,
-	24, 27, 18, 24, 15, -6, -38, 5, -46, -46,
-	-22, -22, -30, -30, -41, -40, 27, -46, 15, -22,
-	12, -46, -40,
+	14, -46, -40, 5, 4, 7, 6, -36, -39, 13,
+	11, 24, 27, 18, 24, 15, -6, -38, 5, -46,
+	-46, -22, -22, -30, -30, -41, -40, 27, -46, 15,
+	-22, 12, -46, -40,
 }
 
 var yyDef = [...]int8{
 	3, -2, 3, 3, 9, 3, 0, 1, 0, 8,
 	3, 3, 6, 7, 2, 0, 0, 14, 10, 11,
-	13, 3, 0, 0, 0, 115, 3, 0, 59, 60,
+	13, 3, 0, 0, 0, 116, 3, 0, 60, 61,
 	0, 3, 0, 18, 20, 21, 22, 23, 24, 25,
 	26, 27, 28, 29, 30, 31, 32, 3, 37, 38,
-	0, 0, 3, 73, 58, 3, 62, 68, 0, 0,
-	16, 19, 4, 36, 59, 0, 65, 29, 67, 0,
-	42, 3, 0, 74, 75, 76, 77, 78, -2, 0,
-	0, 0, 0, 95, 88, 90, 91, 92, 93, 94,
-	0, 0, 15, 17, 5, 3, 34, 63, 3, 0,
-	54, 56, 3, 40, -2, -2, -2, -2, 0, 0,
-	71, 0, 0, 96, 97, 98, 99, 100, 101, 102,
-	103, 104, 105, 106, 0, 0, 89, 85, 0, 114,
-	61, 0, 0, 3, 0, 0, 0, 57, 0, 3,
-	0, 70, 72, 80, 107, 110, 109, 108, 0, 83,
-	0, 86, 0, 112, 69, 33, 0, 66, 53, 55,
-	39, 0, 43, 44, 45, 46, 47, 48, 3, 3,
-	0, 0, 0, 111, 0, 35, 41, 0, 42, 52,
-	81, 84, 87, 113, 3, 50, 0, 0, 3, 82,
-	49, 0, 51,
+	0, 0, 3, 74, 59, 3, 63, 69, 0, 0,
+	16, 19, 4, 36, 60, 0, 66, 29, 68, 0,
+	42, 3, 0, 75, 76, 77, 78, 79, -2, 0,
+	0, 0, 0, 96, 89, 91, 92, 93, 94, 95,
+	0, 0, 15, 17, 5, 3, 34, 64, 3, 0,
+	55, 57, 3, 40, -2, -2, -2, -2, 0, 0,
+	72, 0, 0, 97, 98, 99, 100, 101, 102, 103,
+	104, 105, 106, 107, 0, 0, 90, 86, 0, 115,
+	62, 0, 0, 3, 0, 0, 0, 58, 0, 3,
+	0, 71, 73, 81, 108, 111, 110, 109, 0, 84,
+	0, 87, 0, 113, 70, 33, 0, 67, 54, 56,
+	39, 0, 43, 44, 45, 46, 47, 48, 49, 3,
+	3, 0, 0, 0, 112, 0, 35, 41, 0, 42,
+	53, 82, 85, 88, 114, 3, 51, 0, 0, 3,
+	83, 50, 0, 52,
 }
 
 var yyTok1 = [...]int8{
@@ -846,7 +848,7 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line logi.y:187
 		{
-			yyVAL.node = yyDollar[1].node
+			yyVAL.node = newNode(NodeOpJsonIdentifier, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
 		}
 	case 48:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -855,350 +857,356 @@ yydefault:
 			yyVAL.node = yyDollar[1].node
 		}
 	case 49:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line logi.y:193
+		{
+			yyVAL.node = yyDollar[1].node
+		}
+	case 50:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:195
+//line logi.y:198
 		{
 			yyVAL.node = yyDollar[3].node
 		}
-	case 50:
+	case 51:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:200
+//line logi.y:203
 		{
 			yyVAL.node = appendNode(NodeOpJsonArray, yyDollar[1].node)
 		}
-	case 51:
+	case 52:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:203
+//line logi.y:206
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[4].node)
 		}
-	case 52:
+	case 53:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line logi.y:206
+//line logi.y:209
 		{
 			yyVAL.node = appendNode(NodeOpJsonArray)
 		}
-	case 53:
+	case 54:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:212
+//line logi.y:215
 		{
 			yyVAL.node = yyDollar[3].node
 		}
-	case 54:
+	case 55:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:217
+//line logi.y:220
 		{
 			yyVAL.node = appendNode(NodeOpAttributeList, yyDollar[1].node)
 		}
-	case 55:
+	case 56:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:221
+//line logi.y:224
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[3].node)
 		}
-	case 56:
+	case 57:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:226
+//line logi.y:229
 		{
 			yyVAL.node = newNode(NodeOpAttribute, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 57:
+	case 58:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:230
+//line logi.y:233
 		{
 			yyVAL.node = newNode(NodeOpAttribute, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location, yyDollar[2].node)
 		}
-	case 58:
+	case 59:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:235
+//line logi.y:238
 		{
 			yyVAL.node = yyDollar[2].node
 		}
-	case 59:
+	case 60:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:239
+//line logi.y:242
 		{
 			yyVAL.node = appendNode(NodeOpArgumentList)
 		}
-	case 60:
+	case 61:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:244
+//line logi.y:247
 		{
 			yyVAL.node = appendNode(NodeOpArgumentList, yyDollar[1].node)
 		}
-	case 61:
+	case 62:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:248
+//line logi.y:251
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[4].node)
 		}
-	case 62:
+	case 63:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:253
+//line logi.y:256
 		{
 			yyVAL.node = newNode(NodeOpArgument, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location, yyDollar[2].node)
 		}
-	case 63:
+	case 64:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:258
+//line logi.y:261
 		{
 			yyVAL.node = yyDollar[2].node
 		}
-	case 64:
+	case 65:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:262
+//line logi.y:265
 		{
 			yyVAL.node = appendNode(NodeOpParameterList)
 		}
-	case 65:
+	case 66:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:267
+//line logi.y:270
 		{
 			yyVAL.node = appendNode(NodeOpParameterList, yyDollar[1].node)
 		}
-	case 66:
+	case 67:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:271
+//line logi.y:274
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[4].node)
 		}
-	case 67:
+	case 68:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:276
+//line logi.y:279
 		{
 			yyVAL.node = newNode(NodeOpParameter, yyDollar[1].node, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 68:
+	case 69:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:282
+//line logi.y:285
 		{
 			yyVAL.node = newNode(NodeOpTypeDef, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 69:
+	case 70:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:286
+//line logi.y:289
 		{
 			yyVAL.node = newNode(NodeOpTypeDef, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location, yyDollar[3].node)
 		}
-	case 70:
+	case 71:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:294
+//line logi.y:297
 		{
 			yyVAL.node = appendNode(NodeOpCodeBlock, yyDollar[3].node)
 		}
-	case 71:
+	case 72:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:299
+//line logi.y:302
 		{
 			yyVAL.node = appendNode(NodeOpStatements, yyDollar[1].node)
 		}
-	case 72:
+	case 73:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:303
+//line logi.y:306
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[2].node)
 		}
-	case 73:
+	case 74:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line logi.y:307
+//line logi.y:310
 		{
 			yyVAL.node = appendNode(NodeOpStatements)
 		}
-	case 79:
+	case 80:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:316
+//line logi.y:319
 		{
 			yyVAL.node = appendNode(NodeOpFunctionCall, yyDollar[1].node)
 		}
-	case 80:
+	case 81:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:321
+//line logi.y:324
 		{
 			yyVAL.node = appendNode(NodeOpAssignment, yyDollar[1].node, yyDollar[3].node)
 		}
-	case 81:
+	case 82:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:326
+//line logi.y:329
 		{
 			yyVAL.node = appendNode(NodeOpIf, yyDollar[3].node, yyDollar[5].node)
 		}
-	case 82:
+	case 83:
 		yyDollar = yyS[yypt-7 : yypt+1]
-//line logi.y:330
+//line logi.y:333
 		{
 			yyVAL.node = appendNode(NodeOpIfElse, yyDollar[3].node, yyDollar[5].node, yyDollar[7].node)
 		}
-	case 83:
+	case 84:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:334
+//line logi.y:337
 		{
 			yyVAL.node = appendNode(NodeOpIf, yyDollar[2].node, yyDollar[3].node)
 		}
-	case 84:
+	case 85:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:338
+//line logi.y:341
 		{
 			yyVAL.node = appendNode(NodeOpIfElse, yyDollar[2].node, yyDollar[3].node, yyDollar[5].node)
 		}
-	case 85:
+	case 86:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:343
+//line logi.y:346
 		{
 			yyVAL.node = appendNode(NodeOpReturn, yyDollar[2].node)
 		}
-	case 86:
+	case 87:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:348
+//line logi.y:351
 		{
 			yyVAL.node = appendNode(NodeOpVariableDeclaration, newNode(NodeOpName, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location), yyDollar[3].node)
 		}
-	case 87:
+	case 88:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line logi.y:352
+//line logi.y:355
 		{
 			yyVAL.node = appendNode(NodeOpVariableDeclaration, newNode(NodeOpName, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location), yyDollar[3].node, yyDollar[5].node)
 		}
-	case 92:
+	case 93:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:361
+//line logi.y:364
 		{
 			yyVAL.node = newNode(NodeOpLiteral, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 93:
+	case 94:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:365
+//line logi.y:368
 		{
 			yyVAL.node = newNode(NodeOpLiteral, yyDollar[1].number, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 94:
+	case 95:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:369
+//line logi.y:372
 		{
 			yyVAL.node = newNode(NodeOpLiteral, yyDollar[1].bool, yyDollar[1].token, yyDollar[1].location)
 		}
-	case 95:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:374
-		{
-			yyVAL.node = newNode(NodeOpVariable, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
-		}
 	case 96:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:378
+//line logi.y:377
 		{
-			yyVAL.string = "+"
+			yyVAL.node = newNode(NodeOpVariable, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location)
 		}
 	case 97:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line logi.y:381
 		{
-			yyVAL.string = "-"
+			yyVAL.string = "+"
 		}
 	case 98:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:385
+//line logi.y:384
 		{
-			yyVAL.string = "*"
+			yyVAL.string = "-"
 		}
 	case 99:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:389
+//line logi.y:388
 		{
-			yyVAL.string = "/"
+			yyVAL.string = "*"
 		}
 	case 100:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:393
+//line logi.y:392
 		{
-			yyVAL.string = "%"
+			yyVAL.string = "/"
 		}
 	case 101:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:397
+//line logi.y:396
 		{
-			yyVAL.string = "!"
+			yyVAL.string = "%"
 		}
 	case 102:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:401
+//line logi.y:400
 		{
-			yyVAL.string = "&&"
+			yyVAL.string = "!"
 		}
 	case 103:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:405
+//line logi.y:404
 		{
-			yyVAL.string = "<"
+			yyVAL.string = "&&"
 		}
 	case 104:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:409
+//line logi.y:408
 		{
-			yyVAL.string = ">"
+			yyVAL.string = "<"
 		}
 	case 105:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:413
+//line logi.y:412
 		{
-			yyVAL.string = "||"
+			yyVAL.string = ">"
 		}
 	case 106:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:417
+//line logi.y:416
+		{
+			yyVAL.string = "||"
+		}
+	case 107:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line logi.y:420
 		{
 			yyVAL.string = "^"
 		}
-	case 107:
+	case 108:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:421
+//line logi.y:424
 		{
 			yyVAL.string = "=="
 		}
-	case 108:
+	case 109:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:425
+//line logi.y:428
 		{
 			yyVAL.string = ">="
 		}
-	case 109:
+	case 110:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line logi.y:429
+//line logi.y:432
 		{
 			yyVAL.string = "<="
 		}
-	case 110:
+	case 111:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:434
+//line logi.y:437
 		{
 			yyVAL.node = appendNode(NodeOpBinaryExpression, yyDollar[1].node, yyDollar[3].node, newNode(NodeOpOperator, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location))
 		}
-	case 111:
+	case 112:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:439
+//line logi.y:442
 		{
 			yyVAL.node = newNode(NodeOpFunctionCall, yyDollar[1].string, yyDollar[1].token, yyDollar[1].location, yyDollar[3].node)
 		}
-	case 112:
+	case 113:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line logi.y:444
+//line logi.y:447
 		{
 			yyVAL.node = appendNode(NodeOpFunctionParams, yyDollar[1].node)
 		}
-	case 113:
+	case 114:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line logi.y:448
+//line logi.y:451
 		{
 			yyVAL.node = appendNodeTo(&yyDollar[1].node, yyDollar[3].node)
 		}
-	case 114:
+	case 115:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line logi.y:452
+//line logi.y:455
 		{
 			yyVAL.node = appendNode(NodeOpFunctionParams)
 		}
-	case 115:
+	case 116:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line logi.y:460
+//line logi.y:463
 		{
 			yyVAL.node = appendNode(NodeOpFunctionDefinition, newNode(NodeOpName, yyDollar[2].string, yyDollar[2].token, yyDollar[2].location), yyDollar[3].node, yyDollar[4].node)
 		}

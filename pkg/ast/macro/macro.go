@@ -32,6 +32,8 @@ type Macro struct {
 
 	// The Syntax of the macro, used to define the syntax of the macro, it will be used in the syntax section
 	Syntax Syntax `json:"syntax,omitempty"`
+
+	SourceMap map[string]common.SourceLocation `json:"sourceMap,omitempty"`
 }
 
 type Types struct {

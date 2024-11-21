@@ -5,6 +5,8 @@ type SourceLocation struct {
 	Column int `json:"column"`
 }
 
+type SourceMap map[string]SourceLocation
+
 type SourceFile struct {
 	Url string `json:"url"`
 }

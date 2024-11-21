@@ -54,7 +54,7 @@ func TestParserFunc(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := ParseFullWithMacro(tt.input, tt.macroInput)
+			got, err := ParseFullWithMacro(tt.input, tt.macroInput, false)
 
 			if got != nil && tt.expected != nil {
 				if len(got.Definitions) == len(tt.expected.Definitions) {

@@ -71,7 +71,7 @@ func TestGenerate(t *testing.T) {
 				t.Skip()
 			}
 
-			var macroAst, err = macro.ParseMacroContent(tt.macroInput)
+			var macroAst, err = macro.ParseMacroContent(tt.macroInput, false)
 
 			if err != nil {
 				t.Errorf("failed to parse macro, %s", err)

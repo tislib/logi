@@ -22,7 +22,7 @@ func BenchmarkSimpleParse(b *testing.B) {
 				}
 			`
 
-	mAst, err := macro.ParseMacroContent(macroInput)
+	mAst, err := macro.ParseMacroContent(macroInput, false)
 
 	if err != nil {
 		b.Error(err)
@@ -32,7 +32,7 @@ func BenchmarkSimpleParse(b *testing.B) {
 	// parallel benchmark
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			_, err := Parse(logiInput, mAst.Macros)
+			_, err := Parse(logiInput, mAst.Macros, false)
 
 			if err != nil {
 				b.Error(err)

@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-func ParseFullWithMacro(logiInput string, macroInput string) (*logi.Ast, error) {
-	mAst, err := macro.ParseMacroContent(macroInput)
+func ParseFullWithMacro(logiInput string, macroInput string, enableSourceMap bool) (*logi.Ast, error) {
+	mAst, err := macro.ParseMacroContent(macroInput, enableSourceMap)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse macro: %w", err)
 	}
 
-	plainAst, err := ParsePlainContent(logiInput)
+	plainAst, err := ParsePlainContent(logiInput, enableSourceMap)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse logi: %w", err)
@@ -27,12 +27,12 @@ func ParseFullWithMacro(logiInput string, macroInput string) (*logi.Ast, error) 
 	return ast, err
 }
 
-func Parse(logiInput string, macros []macroAst.Macro) (*logi.Ast, error) {
+func Parse(logiInput string, macros []macroAst.Macro, enableSourceMap bool) (*logi.Ast, error) {
 	var mAst = new(macroAst.Ast)
 
 	mAst.Macros = macros
 
-	plainAst, err := ParsePlainContent(logiInput)
+	plainAst, err := ParsePlainContent(logiInput, enableSourceMap)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse logi: %w", err)

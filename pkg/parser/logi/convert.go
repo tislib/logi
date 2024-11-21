@@ -6,19 +6,23 @@ import (
 	"github.com/tislib/logi/pkg/ast/plain"
 )
 
-func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
+type converter struct {
+	enableSourceMap bool
+}
+
+func (c *converter) convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 	var res = new(plain.Ast)
 
 	for _, child := range node.children {
 		switch child.op {
 		case NodeOpDefinition:
-			definition, err := convertPlainDefinition(child)
+			definition, err := c.convertPlainDefinition(child)
 			if err != nil {
 				return res, fmt.Errorf("failed to convert definition: %w", err)
 			}
 			res.Definitions = append(res.Definitions, *definition)
 		case NodeOpFunctionDefinition:
-			function, err := convertFunctionDefinition(child)
+			function, err := c.convertFunctionDefinition(child)
 			if err != nil {
 				return res, fmt.Errorf("failed to convert function definition: %w", err)
 			}
@@ -31,7 +35,7 @@ func convertNodeToLogiAst(node yaccNode) (*plain.Ast, error) {
 	return res, nil
 }
 
-func convertPlainDefinition(child yaccNode) (*plain.Definition, error) {
+func (c *converter) convertPlainDefinition(child yaccNode) (*plain.Definition, error) {
 	definition := new(plain.Definition)
 
 	var signature = child.children[0]
@@ -44,7 +48,7 @@ func convertPlainDefinition(child yaccNode) (*plain.Definition, error) {
 		switch statement.op {
 		case NodeOpStatements:
 			for _, statementElement := range statement.children {
-				definitionStatement, err := convertDefinitionStatementElement(statementElement)
+				definitionStatement, err := c.convertDefinitionStatementElement(statementElement)
 				if err != nil {
 					return definition, fmt.Errorf("failed to convert definition statement element: %w", err)
 				}
@@ -55,59 +59,63 @@ func convertPlainDefinition(child yaccNode) (*plain.Definition, error) {
 		}
 	}
 
-	definition.NameSourceLocation = common.SourceLocation{
-		Line:   signature.children[1].location.Line,
-		Column: signature.children[1].location.Column,
-	}
-	definition.MacroNameSourceLocation = common.SourceLocation{
-		Line:   signature.children[0].location.Line,
-		Column: signature.children[0].location.Column,
+	if c.enableSourceMap {
+		definition.NameSourceLocation = common.SourceLocation{
+			Line:   signature.children[1].location.Line,
+			Column: signature.children[1].location.Column,
+		}
+		definition.MacroNameSourceLocation = common.SourceLocation{
+			Line:   signature.children[0].location.Line,
+			Column: signature.children[0].location.Column,
+		}
 	}
 
 	return definition, nil
 
 }
 
-func convertDefinitionStatementElement(element yaccNode) (*plain.DefinitionStatement, error) {
+func (c *converter) convertDefinitionStatementElement(element yaccNode) (*plain.DefinitionStatement, error) {
 	definitionStatement := new(plain.DefinitionStatement)
 
 	for _, child := range element.children {
-		statementElement, err := convertStatementElement(child)
+		statementElement, err := c.convertStatementElement(child)
 		if err != nil {
 			return definitionStatement, fmt.Errorf("failed to convert statement: %w", err)
 		}
 		definitionStatement.Elements = append(definitionStatement.Elements, *statementElement)
 	}
 
-	definitionStatement.SourceLocation = common.SourceLocation{
-		Line:   element.location.Line,
-		Column: element.location.Column,
+	if c.enableSourceMap {
+		definitionStatement.SourceLocation = common.SourceLocation{
+			Line:   element.location.Line,
+			Column: element.location.Column,
+		}
 	}
 
 	return definitionStatement, nil
 
 }
 
-func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElement, error) {
+func (c *converter) convertStatementElement(element yaccNode) (*plain.DefinitionStatementElement, error) {
 	statementElement := new(plain.DefinitionStatementElement)
 
 	switch element.op {
 	case NodeOpIdentifier:
-		identifier, err := convertIdentifier(element)
+		identifier, err := c.convertIdentifier(element)
 		if err != nil {
 			return statementElement, fmt.Errorf("failed to convert identifier: %w", err)
 		}
 		statementElement.Kind = plain.DefinitionStatementElementKindIdentifier
 		statementElement.Identifier = identifier
 	case NodeOpValue:
-		value, err := convertValue(element)
+		value, err := c.convertValue(element)
 		if err != nil {
 			return statementElement, fmt.Errorf("failed to convert value: %w", err)
 		}
 		statementElement.Kind = plain.DefinitionStatementElementKindValue
 		statementElement.Value = &plain.DefinitionStatementElementValue{Value: *value}
 	case NodeOpArray:
-		array, err := convertArray(element)
+		array, err := c.convertArray(element)
 
 		if err != nil {
 			return statementElement, err
@@ -116,14 +124,14 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		statementElement.Kind = plain.DefinitionStatementElementKindArray
 		statementElement.Array = array
 	case NodeOpAttributeList:
-		attributeList, err := convertAttributeList(element)
+		attributeList, err := c.convertAttributeList(element)
 		if err != nil {
 			return statementElement, err
 		}
 		statementElement.Kind = plain.DefinitionStatementElementKindAttributeList
 		statementElement.AttributeList = attributeList
 	case NodeOpArgumentList:
-		argumentList, err := convertArgumentList(element)
+		argumentList, err := c.convertArgumentList(element)
 
 		if err != nil {
 			return statementElement, err
@@ -132,7 +140,7 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		statementElement.Kind = plain.DefinitionStatementElementKindArgumentList
 		statementElement.ArgumentList = argumentList
 	case NodeOpParameterList:
-		parameterList, err := convertParameterList(element)
+		parameterList, err := c.convertParameterList(element)
 
 		if err != nil {
 			return statementElement, err
@@ -141,7 +149,7 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		statementElement.Kind = plain.DefinitionStatementElementKindParameterList
 		statementElement.ParameterList = parameterList
 	case NodeOpCodeBlock:
-		codeBlock, err := convertCodeBlock(element)
+		codeBlock, err := c.convertCodeBlock(element)
 
 		if err != nil {
 			return statementElement, err
@@ -150,7 +158,7 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		statementElement.Kind = plain.DefinitionStatementElementKindCodeBlock
 		statementElement.CodeBlock = &plain.DefinitionStatementElementCodeBlock{CodeBlock: *codeBlock}
 	case NodeOpStruct:
-		structure, err := convertStruct(element)
+		structure, err := c.convertStruct(element)
 
 		if err != nil {
 			return statementElement, err
@@ -159,7 +167,7 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		statementElement.Kind = plain.DefinitionStatementElementKindStruct
 		statementElement.Struct = structure
 	case NodeOpJsonObject:
-		jsonObject, err := convertJsonObject(element)
+		jsonObject, err := c.convertJsonObject(element)
 
 		if err != nil {
 			return statementElement, err
@@ -171,22 +179,24 @@ func convertStatementElement(element yaccNode) (*plain.DefinitionStatementElemen
 		return statementElement, fmt.Errorf("unexpected node op: %s", element.op)
 	}
 
-	statementElement.SourceLocation = common.SourceLocation{
-		Line:   element.location.Line,
-		Column: element.location.Column,
+	if c.enableSourceMap {
+		statementElement.SourceLocation = common.SourceLocation{
+			Line:   element.location.Line,
+			Column: element.location.Column,
+		}
 	}
 
 	return statementElement, nil
 }
 
-func convertJsonObject(element yaccNode) (common.Value, error) {
+func (c *converter) convertJsonObject(element yaccNode) (common.Value, error) {
 	var result = common.Value{
 		Kind: common.ValueKindMap,
 		Map:  make(map[string]common.Value),
 	}
 
 	for _, child := range element.children {
-		value, err := convertJsonValue(child.children[0])
+		value, err := c.convertJsonValue(child.children[0])
 
 		if err != nil {
 			return result, err
@@ -197,14 +207,14 @@ func convertJsonObject(element yaccNode) (common.Value, error) {
 	return result, nil
 }
 
-func convertJsonArray(element yaccNode) (common.Value, error) {
+func (c *converter) convertJsonArray(element yaccNode) (common.Value, error) {
 	var result = common.Value{
 		Kind:  common.ValueKindArray,
 		Array: make([]common.Value, 0),
 	}
 
 	for _, child := range element.children {
-		value, err := convertJsonValue(child)
+		value, err := c.convertJsonValue(child)
 
 		if err != nil {
 			return common.Value{}, err
@@ -215,7 +225,7 @@ func convertJsonArray(element yaccNode) (common.Value, error) {
 	return result, nil
 }
 
-func convertJsonValue(node yaccNode) (common.Value, error) {
+func (c *converter) convertJsonValue(node yaccNode) (common.Value, error) {
 	switch node.op {
 	case NodeOpJsonObjectItemValue:
 		switch node.value.(type) {
@@ -231,21 +241,29 @@ func convertJsonValue(node yaccNode) (common.Value, error) {
 			panic(fmt.Sprintf("unexpected value type: %T", node.value))
 		}
 	case NodeOpJsonArray:
-		return convertJsonArray(node)
+		return c.convertJsonArray(node)
 	case NodeOpJsonObject:
-		return convertJsonObject(node)
+		return c.convertJsonObject(node)
+	case NodeOpJsonIdentifier:
+		var valStr = node.value.(string)
+		switch valStr {
+		case "null":
+			return common.NullValue(), nil
+		default:
+			return common.StringValue(valStr), fmt.Errorf("unexpected json identifier: %s", valStr)
+		}
 	default:
 		panic(fmt.Sprintf("unexpected node op: %s", node.op))
 	}
 }
 
-func convertArgumentList(element yaccNode) (*plain.DefinitionStatementElementArgumentList, error) {
+func (c *converter) convertArgumentList(element yaccNode) (*plain.DefinitionStatementElementArgumentList, error) {
 	argumentList := new(plain.DefinitionStatementElementArgumentList)
 
 	for _, child := range element.children {
 		switch child.op {
 		case NodeOpArgument:
-			argument, err := convertArgument(child)
+			argument, err := c.convertArgument(child)
 			if err != nil {
 				return argumentList, fmt.Errorf("failed to convert argument: %w", err)
 			}
@@ -256,13 +274,13 @@ func convertArgumentList(element yaccNode) (*plain.DefinitionStatementElementArg
 	return argumentList, nil
 }
 
-func convertArgument(element yaccNode) (*plain.DefinitionStatementElementArgument, error) {
+func (c *converter) convertArgument(element yaccNode) (*plain.DefinitionStatementElementArgument, error) {
 	argument := new(plain.DefinitionStatementElementArgument)
 
 	argument.Name = element.value.(string)
 
 	if len(element.children) > 0 {
-		typeDef, err := convertTypeDefinition(element.children[0])
+		typeDef, err := c.convertTypeDefinition(element.children[0])
 		if err != nil {
 			return argument, fmt.Errorf("failed to convert type def: %w", err)
 		}
@@ -272,13 +290,13 @@ func convertArgument(element yaccNode) (*plain.DefinitionStatementElementArgumen
 	return argument, nil
 }
 
-func convertParameterList(element yaccNode) (*plain.DefinitionStatementElementParameterList, error) {
+func (c *converter) convertParameterList(element yaccNode) (*plain.DefinitionStatementElementParameterList, error) {
 	parameterList := new(plain.DefinitionStatementElementParameterList)
 
 	for _, child := range element.children {
 		switch child.op {
 		case NodeOpParameter:
-			parameter, err := convertParameter(child)
+			parameter, err := c.convertParameter(child)
 			if err != nil {
 				return parameterList, fmt.Errorf("failed to convert parameter: %w", err)
 			}
@@ -289,10 +307,10 @@ func convertParameterList(element yaccNode) (*plain.DefinitionStatementElementPa
 	return parameterList, nil
 }
 
-func convertParameter(element yaccNode) (*plain.DefinitionStatementElementParameter, error) {
+func (c *converter) convertParameter(element yaccNode) (*plain.DefinitionStatementElementParameter, error) {
 	parameter := new(plain.DefinitionStatementElementParameter)
 
-	value, err := statementToValue(element.value.(yaccNode))
+	value, err := c.statementToValue(element.value.(yaccNode))
 
 	if err != nil {
 		return parameter, fmt.Errorf("failed to convert value: %w", err)
@@ -303,8 +321,8 @@ func convertParameter(element yaccNode) (*plain.DefinitionStatementElementParame
 	return parameter, nil
 }
 
-func statementToValue(node yaccNode) (*common.Value, error) {
-	statement, err := convertDefinitionStatementElement(node)
+func (c *converter) statementToValue(node yaccNode) (*common.Value, error) {
+	statement, err := c.convertDefinitionStatementElement(node)
 
 	value := statement.AsValue()
 
@@ -315,13 +333,13 @@ func statementToValue(node yaccNode) (*common.Value, error) {
 	return &value, nil
 }
 
-func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
+func (c *converter) convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
 	var result = new(common.TypeDefinition)
 	result.Name = node.value.(string)
 
 	if len(node.children) > 0 {
 		for _, child := range node.children {
-			subType, err := convertTypeDefinition(child)
+			subType, err := c.convertTypeDefinition(child)
 
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert type definition: %w", err)
@@ -334,7 +352,7 @@ func convertTypeDefinition(node yaccNode) (*common.TypeDefinition, error) {
 	return result, nil
 }
 
-func convertIdentifier(element yaccNode) (*plain.DefinitionStatementElementIdentifier, error) {
+func (c *converter) convertIdentifier(element yaccNode) (*plain.DefinitionStatementElementIdentifier, error) {
 	identifier := new(plain.DefinitionStatementElementIdentifier)
 
 	identifier.Identifier = element.value.(string)
@@ -342,13 +360,13 @@ func convertIdentifier(element yaccNode) (*plain.DefinitionStatementElementIdent
 	return identifier, nil
 }
 
-func convertAttributeList(element yaccNode) (*plain.DefinitionStatementElementAttributeList, error) {
+func (c *converter) convertAttributeList(element yaccNode) (*plain.DefinitionStatementElementAttributeList, error) {
 	attributeList := new(plain.DefinitionStatementElementAttributeList)
 
 	for _, child := range element.children {
 		switch child.op {
 		case NodeOpAttribute:
-			attribute, err := convertAttribute(child)
+			attribute, err := c.convertAttribute(child)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert attribute: %w", err)
 			}
@@ -360,13 +378,13 @@ func convertAttributeList(element yaccNode) (*plain.DefinitionStatementElementAt
 
 }
 
-func convertAttribute(element yaccNode) (*plain.DefinitionStatementElementAttribute, error) {
+func (c *converter) convertAttribute(element yaccNode) (*plain.DefinitionStatementElementAttribute, error) {
 	attribute := new(plain.DefinitionStatementElementAttribute)
 
 	attribute.Name = element.value.(string)
 
 	if len(element.children) > 0 {
-		value, err := convertValue(element.children[0])
+		value, err := c.convertValue(element.children[0])
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert value: %w", err)
 		}
@@ -377,7 +395,7 @@ func convertAttribute(element yaccNode) (*plain.DefinitionStatementElementAttrib
 
 }
 
-func convertValue(element yaccNode) (*common.Value, error) {
+func (c *converter) convertValue(element yaccNode) (*common.Value, error) {
 	var value common.Value
 
 	switch element.value.(type) {
@@ -396,11 +414,11 @@ func convertValue(element yaccNode) (*common.Value, error) {
 	return &value, nil
 }
 
-func convertArray(element yaccNode) (*plain.DefinitionStatementElementArray, error) {
+func (c *converter) convertArray(element yaccNode) (*plain.DefinitionStatementElementArray, error) {
 	array := new(plain.DefinitionStatementElementArray)
 
 	for _, child := range element.children {
-		st, err := convertDefinitionStatementElement(child)
+		st, err := c.convertDefinitionStatementElement(child)
 
 		if err != nil {
 			return nil, err
@@ -412,11 +430,11 @@ func convertArray(element yaccNode) (*plain.DefinitionStatementElementArray, err
 	return array, nil
 }
 
-func convertStruct(element yaccNode) (*plain.DefinitionStatementElementStruct, error) {
+func (c *converter) convertStruct(element yaccNode) (*plain.DefinitionStatementElementStruct, error) {
 	result := new(plain.DefinitionStatementElementStruct)
 
 	for _, child := range element.children[0].children[0].children {
-		st, err := convertDefinitionStatementElement(child)
+		st, err := c.convertDefinitionStatementElement(child)
 
 		if err != nil {
 			return nil, err
@@ -428,7 +446,7 @@ func convertStruct(element yaccNode) (*plain.DefinitionStatementElementStruct, e
 	return result, nil
 }
 
-func convertFunctionDefinition(node yaccNode) (*plain.Function, error) {
+func (c *converter) convertFunctionDefinition(node yaccNode) (*plain.Function, error) {
 	function := new(plain.Function)
 
 	var nameNode = node.children[0]
@@ -438,14 +456,14 @@ func convertFunctionDefinition(node yaccNode) (*plain.Function, error) {
 	function.Name = nameNode.value.(string)
 
 	for _, argument := range argumentListNode.children {
-		arg, err := convertArgument(argument)
+		arg, err := c.convertArgument(argument)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert argument: %w", err)
 		}
 		function.Arguments = append(function.Arguments, *arg)
 	}
 
-	codeBlock, err := convertCodeBlock(codeBlockNode)
+	codeBlock, err := c.convertCodeBlock(codeBlockNode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert code block: %w", err)
 	}

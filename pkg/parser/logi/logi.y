@@ -183,6 +183,9 @@ json_value: token_string
 } | token_bool
 {
 	$$ = newNode(NodeOpJsonObjectItemValue, $1, yyDollar[1].token, yyDollar[1].location)
+} | token_identifier
+{
+	$$ = newNode(NodeOpJsonIdentifier, $1, yyDollar[1].token, yyDollar[1].location)
 } | json_object
 {
 	$$ = $1

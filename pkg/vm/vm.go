@@ -8,12 +8,13 @@ import (
 )
 
 type vm struct {
-	Macros      []macroAst.Macro
-	Logis       []logiAst.Ast
-	Definitions []Definition
-	locals      map[string]interface{}
-	vars        map[string]interface{}
-	types       map[string]common.TypeDefinition
+	Macros          []macroAst.Macro
+	Logis           []logiAst.Ast
+	Definitions     []Definition
+	locals          map[string]interface{}
+	vars            map[string]interface{}
+	types           map[string]common.TypeDefinition
+	enableSourceMap bool
 }
 
 func (v *vm) SetLocals(locals map[string]interface{}) {

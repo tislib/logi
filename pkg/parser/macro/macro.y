@@ -70,7 +70,7 @@ macro: macro_signature eol_allowed macro_body {
 
 macro_signature: MacroKeyword token_identifier
 {
-	$$ = appendNode(NodeOpSignature, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location))
+	$$ = newNode(NodeOpSignature, nil, yyDollar[1].token, yyDollar[1].location, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location))
 };
 
 macro_body: BraceOpen eol_allowed
@@ -88,7 +88,7 @@ macro_body: BraceOpen eol_allowed
 
 types_definition: TypesKeyword types_definition_body eol_required
 {
-	$$ = appendNode(NodeOpTypes, $2)
+	$$ = newNode(NodeOpTypes, nil, yyDollar[1].token, yyDollar[1].location, $2)
 }
 | // empty
 {
@@ -118,7 +118,7 @@ types_definition_statement: token_identifier syntax_statement
 
 syntax_definition: SyntaxKeyword syntax_body eol_required
 {
-	$$ = appendNode(NodeOpSyntax, $2)
+	$$ = newNode(NodeOpSyntax, nil, yyDollar[1].token, yyDollar[1].location, $2)
 }
 | // empty
 {

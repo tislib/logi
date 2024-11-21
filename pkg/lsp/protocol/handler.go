@@ -740,7 +740,7 @@ func (self *Handler) CreateServerCapabilities() ServerCapabilities {
 			capabilities.TextDocumentSync = &TextDocumentSyncOptions{}
 		}
 		// This can be overriden to TextDocumentSyncKindFull
-		value := TextDocumentSyncKindIncremental
+		value := TextDocumentSyncKindFull
 		capabilities.TextDocumentSync.(*TextDocumentSyncOptions).Change = &value
 	}
 

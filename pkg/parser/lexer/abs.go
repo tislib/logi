@@ -1,5 +1,9 @@
 package lexer
 
+import (
+	"github.com/tislib/logi/pkg/ast/common"
+)
+
 type TokenConfig struct {
 	Id                    int
 	Label                 string
@@ -35,6 +39,13 @@ type Union struct {
 type Location struct {
 	Line   int
 	Column int
+}
+
+func (l Location) AsSourceLocation() common.SourceLocation {
+	return common.SourceLocation{
+		Line:   l.Line,
+		Column: l.Column,
+	}
 }
 
 type Lexer interface {

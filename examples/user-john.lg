@@ -1,12 +1,10 @@
-user JohnDoe {
-    name "John"
-    age 30
-    Auth {
-        username "john.doe"
-        password "password"
-        Token {
-            accessToken "access token"
-            refreshToken "refresh token"
-        } as token
+plugin AzeriNeft {
+    checkUrl "https://www.azerineft.com"
+    checkMethod GET
+    sadasdasdas
+    payUrl "https://www.azerineft.com"
+    checkUrlDynamicQueryParams {
+        return sessionId
     }
+    payMethod POST
 }

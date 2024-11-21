@@ -947,7 +947,7 @@ func TestParserFull(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := ParseFullWithMacro(tt.input, tt.macroInput)
+			got, err := ParseFullWithMacro(tt.input, tt.macroInput, false)
 
 			if tt.skipped {
 				t.Skip()

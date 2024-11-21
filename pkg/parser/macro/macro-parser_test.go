@@ -927,7 +927,7 @@ func TestSyntaxMacro(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := ParseMacroContent(tt.input)
+			got, err := ParseMacroContent(tt.input, false)
 
 			if tt.expectedError != "" {
 				if err == nil {
