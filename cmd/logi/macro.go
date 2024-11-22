@@ -54,7 +54,7 @@ var macroGenerateCmd = &cobra.Command{
 				return fmt.Errorf("error reading macro file: %v", err)
 			}
 			// parse file
-			macroAstFile, err := macroParser.ParseMacroContent(string(fileContent))
+			macroAstFile, err := macroParser.ParseMacroContent(string(fileContent), true)
 			if err != nil {
 				return fmt.Errorf("error parsing macro file: %v", err)
 			}
