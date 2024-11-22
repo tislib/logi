@@ -61,6 +61,19 @@ func (c *converter) convertCodeBlock(element yaccNode) (*common.CodeBlock, error
 
 				FuncCall: functionCall,
 			})
+		case NodeOpExpression:
+			expression, err := c.convertExpression(child)
+
+			if err != nil {
+				return nil, err
+			}
+
+			codeBlock.Statements = append(codeBlock.Statements, common.Statement{
+				Kind: common.ExprStatementKind,
+				ExprStmt: &common.ExpressionStatement{
+					Expr: expression,
+				},
+			})
 		default:
 			return nil, fmt.Errorf("unexpected node op: %s", child.op)
 		}
@@ -196,6 +209,14 @@ func (c *converter) convertExpression(element yaccNode) (*common.Expression, err
 
 		expression.Kind = common.FuncCallKind
 		expression.FuncCall = functionCall
+	case NodeOpExpression:
+		subExpression, err := c.convertExpression(element.children[0])
+
+		if err != nil {
+			return nil, err
+		}
+
+		return subExpression, nil
 	default:
 		return nil, fmt.Errorf("unexpected node op: %s", element.op)
 	}

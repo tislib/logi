@@ -75,6 +75,10 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 	if isSingleChar {
 		if config.IsEol {
 			if isEol(startingChar) {
+				s.discardUntil(func(ch rune) bool {
+					return !isEol(ch)
+				})
+
 				return &Token{Id: config.Id, Value: string(startingChar)}, true
 			}
 		}
@@ -285,6 +289,12 @@ func (s *lexer) peekChar() (rune, error) {
 
 func (s *lexer) discardChar() {
 	s.discard(1)
+}
+
+func (s *lexer) discardUntil(endFunc func(ch rune) bool) {
+	str := s.peekUntil(endFunc)
+
+	s.discard(len(str))
 }
 
 func (s *lexer) peekUntil(endFunc func(ch rune) bool) string {

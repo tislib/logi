@@ -62,7 +62,7 @@ var compileCmd = &cobra.Command{
 					return fmt.Errorf("error reading macro file: %v", err)
 				}
 
-				macroAst, err := macro.ParseMacroContent(string(fileContent))
+				macroAst, err := macro.ParseMacroContent(string(fileContent), true)
 
 				if err != nil {
 					return fmt.Errorf("failed to load macro file: %w", err)
@@ -72,7 +72,7 @@ var compileCmd = &cobra.Command{
 			}
 
 			// compile logi file
-			definitions, err := logi.Parse(string(logiContent), macros)
+			definitions, err := logi.Parse(string(logiContent), macros, true)
 
 			if err != nil {
 				return fmt.Errorf("error compiling logi file: %v", err)

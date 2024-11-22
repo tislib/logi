@@ -291,7 +291,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		}
 		p.asr.hasArgumentList = true
 		p.asr.arguments = currentElement.ArgumentList.Arguments
-	case macroAst.SyntaxStatementElementKindCodeBlock:
+	case macroAst.SyntaxStatementElementKindCodeBlock, macroAst.SyntaxStatementElementKindExpressionBlock:
 		p.asr.stopMatchingName = true
 		if currentElement.Kind != plain.DefinitionStatementElementKindCodeBlock {
 			p.reportMismatch(fmt.Sprintf("expected code block, got %s", currentElement.Kind))

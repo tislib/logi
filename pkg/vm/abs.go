@@ -30,4 +30,5 @@ type VirtualMachine interface {
 	GetDefinitionByName(name string) (*Definition, error)
 	SetLocals(locals map[string]interface{})
 	GetLocals() map[string]interface{}
+	Execute(def *Definition, s string) (interface{}, error)
 }

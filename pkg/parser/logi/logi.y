@@ -34,7 +34,7 @@ import (
 %type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_struct definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
 %type<node> definition_statement_element_parameter_list definition_statement_element_parameter_list_content definition_statement_element_parameter_list_item
-%type<node> code_block code_block_statements code_block_statement assignment_statement if_statement return_statement variable_declaration_statement function_call_statement
+%type<node> code_block code_block_statements code_block_statement assignment_statement expression_statement if_statement return_statement variable_declaration_statement function_call_statement
 %type<node> expression literal variable binary_expression function_call
 %type<node> definition_statement_element_json json_object json_object_content json_object_item json_array json_value json_array_content
 %type<node> function_params
@@ -46,13 +46,10 @@ import (
 
 // Helpers
 eol_allowed: Eol
-| eol_allowed Eol
 | // empty
 ;
 
-eol_required: Eol
-| eol_required Eol
-;
+eol_required: Eol;
 
 file: definition eol_allowed {
 	registerRootNode(yylex, $1)
@@ -298,13 +295,13 @@ code_block: BraceOpen eol_allowed code_block_statements eol_allowed BraceClose
 	$$ = appendNode(NodeOpCodeBlock, $3)
 };
 
-code_block_statements: code_block_statement eol_required
+code_block_statements: code_block_statement
 {
 	$$ = appendNode(NodeOpStatements, $1)
 }
-| code_block_statements code_block_statement eol_required
+| code_block_statements eol_required code_block_statement
 {
-	$$ = appendNodeTo(&$1, $2)
+	$$ = appendNodeTo(&$1, $3)
 }
 | // empty
 {
@@ -312,7 +309,7 @@ code_block_statements: code_block_statement eol_required
 }
 ;
 
-code_block_statement: function_call_statement | assignment_statement | if_statement | return_statement | variable_declaration_statement;
+code_block_statement: function_call_statement | assignment_statement | expression_statement | if_statement | return_statement | variable_declaration_statement;
 
 // Statements
 function_call_statement: function_call
@@ -323,6 +320,11 @@ function_call_statement: function_call
 assignment_statement: expression Equal expression
 {
 	$$ = appendNode(NodeOpAssignment, $1, $3)
+};
+
+expression_statement: expression
+{
+	$$ = appendNode(NodeOpExpression, $1)
 };
 
 if_statement: IfKeyword ParenOpen expression ParenClose code_block
@@ -465,8 +467,3 @@ function_definition: FuncKeyword token_identifier definition_statement_element_a
 };
 
 %%
-
-// 	entity User {
-//   		id int [primary, autoincrement]
-//  		name string [required, default "John Doe"]
-//   	}

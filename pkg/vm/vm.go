@@ -54,20 +54,6 @@ func (v *vm) MapToStruct(definition Definition) (string, error) {
 	panic("implement me")
 }
 
-func (v *vm) LocateCodeBlock(definition Definition, codeBlockPath string) (ExecutableFunc, error) {
-	if definition.Data[codeBlockPath] == nil || definition.Data[codeBlockPath]["exec"] == nil {
-		return nil, fmt.Errorf("code block %s not found in definition %s", codeBlockPath, definition.Name)
-	}
-
-	fn, ok := definition.Data[codeBlockPath]["exec"].(ExecutableFunc)
-
-	if !ok {
-		return nil, fmt.Errorf("code block %s is not a function in definition %s", codeBlockPath, definition.Name)
-	}
-
-	return fn, nil
-}
-
 func (v *vm) GetDefinitionByName(name string) (*Definition, error) {
 	for _, definition := range v.Definitions {
 		if definition.Name == name {

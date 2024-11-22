@@ -11,7 +11,7 @@ func TestVmDynamic(t *testing.T) {
 	tests := map[string]struct {
 		macro                     string
 		input                     string
-		calls                     []func(vm VirtualMachine) error
+		calls                     []func(t *testing.T, vm VirtualMachine) error
 		expectedDefinitions       []Definition
 		expectedDefinitionsAsJson string
 		options                   []Option
@@ -71,9 +71,8 @@ func TestVmDynamic(t *testing.T) {
 				
 					Strategy {
 						if (sma20 < sma50) {
-							return Buy("SPY", 100)
+							return Sell("SPY", 100)
 						}
-
 						return Buy("SPY", 200)
 					}
 				}
@@ -83,10 +82,13 @@ func TestVmDynamic(t *testing.T) {
 					"Buy": func(symbol string, quantity int64) int64 {
 						return quantity
 					},
+					"Sell": func(symbol string, quantity int64) int64 {
+						return -quantity
+					},
 				}),
 			},
-			calls: []func(vm VirtualMachine) error{
-				func(vm VirtualMachine) error {
+			calls: []func(t *testing.T, vm VirtualMachine) error{
+				func(t *testing.T, vm VirtualMachine) error {
 					definition, err := vm.GetDefinitionByName("VariableHoldUntil4")
 
 					if err != nil {
@@ -114,7 +116,7 @@ func TestVmDynamic(t *testing.T) {
 						return err
 					}
 
-					assert.Equal(t, result, int64(100))
+					assert.Equal(t, result, int64(200))
 
 					return nil
 				},
@@ -159,8 +161,8 @@ func TestVmDynamic(t *testing.T) {
 					},
 				}),
 			},
-			calls: []func(vm VirtualMachine) error{
-				func(vm VirtualMachine) error {
+			calls: []func(t *testing.T, vm VirtualMachine) error{
+				func(t *testing.T, vm VirtualMachine) error {
 					definition, err := vm.GetDefinitionByName("VariableHoldUntil4")
 
 					if err != nil {
@@ -410,6 +412,57 @@ func TestVmDynamic(t *testing.T) {
 				]
 `,
 		},
+		"simple expressions": {
+			macro: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						entry { expr }
+						exit  { expr }
+					}
+				}`,
+			input: `
+				simple SimpleOp {
+					entry { 1 + d() }
+					exit  { 2 - c }
+				}`,
+			options: []Option{
+				WithLocals(map[string]interface{}{
+					"c": 5,
+					"d": func() int64 {
+						return 2
+					},
+				}),
+			},
+			calls: []func(t *testing.T, v VirtualMachine) error{
+				func(t *testing.T, v VirtualMachine) error {
+					def, err := v.GetDefinitionByName("SimpleOp")
+
+					if err != nil {
+						return err
+					}
+
+					result, err := v.Execute(def, "entry")
+
+					if err != nil {
+						return err
+					}
+
+					assert.Equal(t, int64(3), result)
+
+					result, err = v.Execute(def, "exit")
+
+					if err != nil {
+						return err
+					}
+
+					assert.Equal(t, int64(-3), result)
+
+					return nil
+				},
+			},
+		},
 	}
 
 	for name, tt := range tests {
@@ -458,7 +511,7 @@ func TestVmDynamic(t *testing.T) {
 			}
 
 			for _, call := range tt.calls {
-				if err := call(g); err != nil {
+				if err := call(t, g); err != nil {
 					t.Errorf("error: %v", err)
 				}
 			}

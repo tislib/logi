@@ -8,23 +8,34 @@ import (
 
 func (v *vm) executableFunc(block common.CodeBlock) ExecutableFunc {
 	return func(args ...interface{}) (interface{}, error) {
+		var lastExpressionResult interface{}
 		for _, statement := range block.Statements {
 			switch statement.Kind {
 			case common.ExprStatementKind:
-				_, err := v.evaluateExpression(statement.ExprStmt.Expr)
+				result, err := v.evaluateExpression(statement.ExprStmt.Expr)
 
 				if err != nil {
 					return nil, fmt.Errorf("failed to evaluate expression: %w", err)
 				}
+
+				lastExpressionResult = result
 			case common.IfStatementKind:
 				con, err := v.evaluateBool(statement.IfStmt.Condition)
 				if err != nil {
 					return nil, fmt.Errorf("failed to evaluate condition: %w", err)
 				}
 				if con {
-					return v.executableFunc(*statement.IfStmt.ThenBlock)(args...)
+					_, err := v.executableFunc(*statement.IfStmt.ThenBlock)(args...)
+
+					if err != nil {
+						return nil, fmt.Errorf("failed to execute then block: %w", err)
+					}
 				} else if statement.IfStmt.ElseBlock != nil {
-					return v.executableFunc(*statement.IfStmt.ElseBlock)(args...)
+					_, err := v.executableFunc(*statement.IfStmt.ElseBlock)(args...)
+
+					if err != nil {
+						return nil, fmt.Errorf("failed to execute then block: %w", err)
+					}
 				}
 			case common.ReturnStatementKind:
 				return v.evaluateExpression(statement.ReturnStmt.Result)
@@ -49,7 +60,7 @@ func (v *vm) executableFunc(block common.CodeBlock) ExecutableFunc {
 			}
 		}
 
-		return nil, nil
+		return lastExpressionResult, nil
 	}
 }
 
@@ -357,4 +368,28 @@ func (v *vm) evaluateFunctionCall(call *common.FunctionCall) (interface{}, error
 
 	// call function
 	return fn(args...)
+}
+
+func (v *vm) LocateCodeBlock(definition Definition, codeBlockPath string) (ExecutableFunc, error) {
+	if definition.Data[codeBlockPath] == nil || definition.Data[codeBlockPath]["exec"] == nil {
+		return nil, fmt.Errorf("code block %s not found in definition %s", codeBlockPath, definition.Name)
+	}
+
+	fn, ok := definition.Data[codeBlockPath]["exec"].(ExecutableFunc)
+
+	if !ok {
+		return nil, fmt.Errorf("code block %s is not a function in definition %s", codeBlockPath, definition.Name)
+	}
+
+	return fn, nil
+}
+
+func (v *vm) Execute(def *Definition, s string) (interface{}, error) {
+	exec, err := v.LocateCodeBlock(*def, s)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return exec()
 }
