@@ -93,6 +93,8 @@ This will parse macro and logi definition file, and will compile it to json, whi
 ]
 ```
 
+See examples folder for all examples.
+
 ## Example 2. Define a DSL for a chatbot
 
 ```logi
@@ -124,21 +126,52 @@ chatbot MyChatbot {
 }
 ```
 
-Now in golang, you can read the chatbot definition and use it to create a chatbot.
+Logi language also have Virtual Machine where you can load, read, execute the Logi content.
 
+A sample in golang:
 ```go
-var g, err = New(tt.options...)
-if err != nil {
-log.Fatal(err)
+package main
+
+import "github.com/tislib/logi/pkg/vm"
+
+func main() {
+   var v, err = vm.New()
+
+   if err != nil {
+      panic(err)
+   }
+
+   // load Macro, which will be used to parse actual logi content
+   _ = v.LoadMacroContent(`
+		macro conversation {
+			kind Syntax
+			
+			syntax {
+				greeting { expr }
+				farewell { expr }
+			}
+		}`)
+
+   // load Logi content, based on given Macro DSL
+   def, err := v.LoadLogiContent(`
+		conversation SimpleOp {
+			greeting { "Hello, " + name }
+			farewell { "Goodbye, " + name }
+		}
+`)
+
+   // execute the loaded Logi content
+   v.SetLocal("name", "John Doe")
+   result, err := v.Execute(&def[0], "greeting")
+
+   println("Greeting: " + result.(string))
+
+   result, _ = v.Execute(&def[0], "farewell")
+
+   println("Farewell: " + result.(string))
+
 }
 
-g.LoadMacroFile("chatbot.lgm")
-definitions,err := g.LoadLogiFile("chatbot.logi")
-if err != nil {
-log.Fatal(err)
-}
-
-// definitions is a list of chatbot intents, which can be used by your app to create a chatbot.
 ```
 
 # Syntax
@@ -219,8 +252,12 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-  "name": "John",
-  "age": 30
+   "age": {
+      "age": 30
+   },
+   "name": {
+      "name": "John"
+   }
 }
 ```
 

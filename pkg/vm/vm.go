@@ -90,3 +90,7 @@ func New(option ...Option) (VirtualMachine, error) {
 
 	return v, nil
 }
+
+func (v *vm) SetLocal(key string, value interface{}) {
+	v.locals[key] = value
+}

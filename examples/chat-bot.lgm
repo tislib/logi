@@ -1,0 +1,10 @@
+macro chatbot {
+    kind Syntax
+
+    syntax {
+        intent <name Name> {
+            pattern <pattern string>
+            response <response string>
+        }
+    }
+}

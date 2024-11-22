@@ -1,0 +1,4 @@
+person2 JohnDoe {
+    firstName "John" lastName "Doe"
+    age 30
+}

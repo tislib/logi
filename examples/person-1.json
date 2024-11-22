@@ -1,0 +1,14 @@
+[
+  {
+    "dynamic": {
+      "age": {
+        "age": 30
+      },
+      "name": {
+        "name": "John"
+      }
+    },
+    "macro": "person",
+    "name": "John"
+  }
+]

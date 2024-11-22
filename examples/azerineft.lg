@@ -1,9 +1,0 @@
-plugin AzeriNeft {
-    checkUrl "https://www.azerineft.com"
-    checkMethod GET
-    payUrl "https://www.azerineft.com"
-    checkUrlDynamicQueryParams {
-        return sessionId
-    }
-    payMethod POST
-}

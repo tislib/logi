@@ -1,0 +1,4 @@
+entity User {
+    property name string
+    property age int
+}

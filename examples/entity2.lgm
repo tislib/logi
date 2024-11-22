@@ -1,0 +1,11 @@
+macro entity2 {
+    kind Syntax
+
+    types {
+        FieldType Name
+    }
+
+    syntax {
+        field <fieldName FieldType> <fieldValue string>
+    }
+}

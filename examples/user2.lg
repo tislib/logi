@@ -1,0 +1,4 @@
+entity2 User {
+    field name "John"
+    field age "30"
+}

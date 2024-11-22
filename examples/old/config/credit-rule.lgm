@@ -1,9 +1,0 @@
-macro creditRule {
-    kind Syntax
-
-    syntax {
-        creditScore <min int> <max int>
-        income <min int> <max int>
-        age <min int> <max int>
-    }
-}

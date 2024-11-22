@@ -1,0 +1,16 @@
+[
+  {
+    "dynamic": {
+      "paramLogLevel": {
+        "paramName": "LogLevel",
+        "paramValue": "info"
+      },
+      "paramPort": {
+        "paramName": "Port",
+        "paramValue": "8080"
+      }
+    },
+    "macro": "config",
+    "name": "EngineConfig"
+  }
+]

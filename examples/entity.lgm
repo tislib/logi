@@ -1,0 +1,7 @@
+macro entity {
+    kind Syntax
+
+    syntax {
+        property <fieldName Name> <fieldType Type>
+    }
+}

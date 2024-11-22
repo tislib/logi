@@ -1,0 +1,8 @@
+macro person2 {
+    kind Syntax
+
+    syntax {
+        firstName <firstName string> lastName <lastName string>
+        age <age int>
+    }
+}

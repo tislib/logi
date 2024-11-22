@@ -1,0 +1,16 @@
+[
+  {
+    "dynamic": {
+      "propertyAge": {
+        "fieldName": "age",
+        "fieldType": "int"
+      },
+      "propertyName": {
+        "fieldName": "name",
+        "fieldType": "string"
+      }
+    },
+    "macro": "entity",
+    "name": "User"
+  }
+]

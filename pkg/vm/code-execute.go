@@ -222,6 +222,8 @@ func (v *vm) evaluateBinaryExpressionString(expr *common.BinaryExpression, left 
 		return left == right, nil
 	case "!=":
 		return left != right, nil
+	case "+":
+		return left + right, nil
 	default:
 		return nil, fmt.Errorf("unknown operator: %s", expr.Operator)
 	}
