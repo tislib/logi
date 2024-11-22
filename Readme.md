@@ -12,6 +12,8 @@ With the help of Logi, you can create a custom language for your specific system
 
 Logi is designed to be a language for abstraction that allows developers to define systems declaratively.
 
+You can download binaries from release page, or you can build from source.
+
 ## Example 1. Define a DSL for a credit rules
 
 credit-rule.lgm
