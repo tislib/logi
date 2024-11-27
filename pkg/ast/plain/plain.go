@@ -138,7 +138,11 @@ func (l DefinitionStatementElementAttributeList) AsValue() common.Value {
 	var valueMap = make(map[string]common.Value)
 
 	for _, a := range l.Attributes {
-		valueMap[a.Name] = *a.Value
+		if a.Value != nil {
+			valueMap[a.Name] = *a.Value
+		} else {
+			valueMap[a.Name] = common.BooleanValue(true)
+		}
 	}
 
 	return common.MapValue(valueMap)
