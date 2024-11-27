@@ -1,6 +1,7 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -11,4 +12,16 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
 	},
+}
+
+var verbose bool
+
+func init() {
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+}
+
+func initCommand(cmd *cobra.Command) {
+	if verbose {
+		log.SetLevel(log.TraceLevel)
+	}
 }

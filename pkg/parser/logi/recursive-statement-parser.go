@@ -2,6 +2,7 @@ package logi
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/tislib/logi/pkg/ast/common"
 	logiAst "github.com/tislib/logi/pkg/ast/logi"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
@@ -204,6 +205,9 @@ func (p *recursiveStatementParser) match() {
 }
 
 func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macroAst.SyntaxStatementElement, currentElement plain.DefinitionStatementElement) {
+	log.Trace(fmt.Sprintf("matching %s with %s at: %s", syntaxStatementElement.Kind, currentElement.Kind, currentElement.SourceLocation))
+	log.Trace(fmt.Sprintf("Current element: %v", currentElement.AsValue().AsInterface()))
+
 	switch syntaxStatementElement.Kind {
 	case macroAst.SyntaxStatementElementKindKeyword:
 		if currentElement.Kind != plain.DefinitionStatementElementKindIdentifier {
@@ -465,6 +469,8 @@ func (p *recursiveStatementParser) matchCombination(element macroAst.SyntaxState
 			p.mismatchCause = "" // reset the mismatch cause
 		}
 	}
+
+	p.reportMismatch(fmt.Sprintf("no combination matched for: %v at %s", currentElement.AsValue().AsInterface(), currentElement.SourceLocation))
 }
 
 func (p *recursiveStatementParser) matchStructure(rootSyntaxElement macroAst.SyntaxStatementElement, plainElement plain.DefinitionStatementElement) {

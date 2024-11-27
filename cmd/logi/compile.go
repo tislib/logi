@@ -8,6 +8,7 @@ import (
 	"github.com/tislib/logi/pkg/parser/logi"
 	"github.com/tislib/logi/pkg/parser/macro"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -16,6 +17,8 @@ var compileCmd = &cobra.Command{
 	Short: "compile - compile logi file",
 	Long:  `compile logi file and generate definitions`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		initCommand(cmd)
+
 		if strings.HasSuffix(*compileCmdMacroDir, "/") == false {
 			*compileCmdMacroDir = *compileCmdMacroDir + "/"
 		}
@@ -113,7 +116,13 @@ var compileCmd = &cobra.Command{
 		if compileCmdOutDir == nil || *compileCmdOutDir == "" {
 			fmt.Println(string(result))
 		} else {
-			err = os.WriteFile(*compileCmdOutDir, result, 0644)
+			var fileDir = path.Dir(*compileCmdInput)
+
+			var fileName = strings.TrimPrefix(*compileCmdInput, fileDir)
+			fileName = strings.TrimSuffix(fileName, ".lg") + ".json"
+
+			var outputFile = *compileCmdOutDir + fileName
+			err = os.WriteFile(outputFile, result, 0644)
 
 			if err != nil {
 				return fmt.Errorf("error writing definitions: %v", err)

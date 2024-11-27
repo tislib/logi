@@ -85,6 +85,8 @@ func (e DefinitionStatementElement) AsValue() common.Value {
 		return e.Identifier.AsValue()
 	case DefinitionStatementElementKindValue:
 		return e.Value.Value
+	case DefinitionStatementElementKindArray:
+		return e.Array.AsValue()
 	case DefinitionStatementElementKindAttributeList:
 		return e.AttributeList.AsValue()
 	case DefinitionStatementElementKindArgumentList:

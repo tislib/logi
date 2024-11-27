@@ -55,9 +55,8 @@ func (v Value) ToDisplayName() string {
 		}
 		return strings.Join(result, ", ")
 	default:
-		panic("unknown value kind")
+		return "null"
 	}
-	return ""
 }
 
 func (v Value) AsInterface() interface{} {
@@ -83,7 +82,7 @@ func (v Value) AsInterface() interface{} {
 		}
 		return result
 	default:
-		panic("unknown value kind")
+		return nil
 	}
 }
 
