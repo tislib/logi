@@ -9,12 +9,17 @@ import (
 
 type vm struct {
 	Macros          []macroAst.Macro
+	MacroContents   map[string]string
 	Logis           []logiAst.Ast
 	Definitions     []Definition
 	locals          map[string]interface{}
 	vars            map[string]interface{}
 	types           map[string]common.TypeDefinition
 	enableSourceMap bool
+}
+
+func (v *vm) GetMacroContent(name string) string {
+	return v.MacroContents[name]
 }
 
 func (v *vm) SetLocals(locals map[string]interface{}) {
@@ -78,8 +83,9 @@ func WithLocals(locals map[string]interface{}) Option {
 
 func New(option ...Option) (VirtualMachine, error) {
 	v := &vm{
-		locals: make(map[string]interface{}),
-		vars:   make(map[string]interface{}),
+		locals:        make(map[string]interface{}),
+		vars:          make(map[string]interface{}),
+		MacroContents: make(map[string]string),
 	}
 
 	for _, o := range option {

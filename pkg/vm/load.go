@@ -24,6 +24,7 @@ func (v *vm) LoadMacroFile(path ...string) error {
 		}
 
 		v.Macros = append(v.Macros, ast.Macros...)
+		v.MacroContents[p] = string(data)
 	}
 
 	return nil
@@ -38,6 +39,7 @@ func (v *vm) LoadMacroContent(content ...string) error {
 		}
 
 		v.Macros = append(v.Macros, ast.Macros...)
+		v.MacroContents[c] = c
 	}
 
 	return nil

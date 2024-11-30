@@ -14,7 +14,7 @@ func locateMacroDefinition(definition plain.Definition, ast macroAst.Ast) (*macr
 		}
 	}
 
-	return nil, fmt.Errorf("macro definition not found")
+	return nil, fmt.Errorf("macro definition not found: %s", definition.MacroName)
 
 }
 
