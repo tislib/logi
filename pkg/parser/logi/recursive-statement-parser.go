@@ -387,6 +387,8 @@ func (p *recursiveStatementParser) matchTypeStatement(name string, statement mac
 		p.pei++
 	}
 
+	p.parameterize()
+
 	asrCopy := p.asr
 	p.asr = asrBck
 
@@ -432,6 +434,8 @@ func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionState
 			p.reportMismatch(sp.mismatchCause)
 			break
 		}
+
+		sp.parameterize()
 
 		valueArr = append(valueArr, sp.asr.parameters[syntaxElement.VariableKeyword.Name])
 
@@ -575,6 +579,12 @@ func (p *recursiveStatementParser) matchTypeReference(syntaxElement macroAst.Syn
 
 func (p *recursiveStatementParser) matchIdentifierType(element macroAst.SyntaxStatementElement, element2 plain.DefinitionStatementElement) {
 
+}
+
+func (p *recursiveStatementParser) parameterize() {
+	if p.asr.hasName {
+		p.asr.parameters["name"] = common.StringValue(camelCaseFromNameParts(p.asr.nameParts))
+	}
 }
 
 func isSyntaxElementAlwaysRequired(element macroAst.SyntaxStatementElement) bool {

@@ -129,6 +129,18 @@ func ArrayValue(arr ...Value) Value {
 	}
 }
 
+func ArrayValueOf[T any](arr []T, mapper func(val T) Value) Value {
+	var mapped []Value
+
+	for _, val := range arr {
+		mapped = append(mapped, mapper(val))
+	}
+	return Value{
+		Kind:  ValueKindArray,
+		Array: mapped,
+	}
+}
+
 func MapValue(m map[string]Value) Value {
 	return Value{
 		Kind: ValueKindMap,

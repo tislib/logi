@@ -857,6 +857,7 @@ func TestParserFull(t *testing.T) {
 												{
 													Kind: common.ValueKindMap,
 													Map: map[string]common.Value{
+														"name":          common.StringValue("sma"),
 														"alias":         common.StringValue("sma20"),
 														"indicatorName": common.StringValue("sma"),
 														"period":        common.IntegerValue(20),
@@ -865,6 +866,7 @@ func TestParserFull(t *testing.T) {
 												{
 													Kind: common.ValueKindMap,
 													Map: map[string]common.Value{
+														"name":          common.StringValue("sma"),
 														"alias":         common.StringValue("sma50"),
 														"indicatorName": common.StringValue("sma"),
 														"period":        common.IntegerValue(50),
@@ -873,6 +875,7 @@ func TestParserFull(t *testing.T) {
 												{
 													Kind: common.ValueKindMap,
 													Map: map[string]common.Value{
+														"name":          common.StringValue("sma"),
 														"alias":         common.StringValue("sma200"),
 														"indicatorName": common.StringValue("sma"),
 														"period":        common.IntegerValue(200),
@@ -996,11 +999,6 @@ func TestParserFull(t *testing.T) {
 				gotJson, _ := json.MarshalIndent(got, "", "  ")
 
 				assert.Equal(t, string(expectedJson), string(gotJson))
-
-				if t.Failed() {
-					t.Logf("expected: %s", string(expectedJson))
-					t.Logf("got: %s", string(gotJson))
-				}
 			}
 		})
 	}
