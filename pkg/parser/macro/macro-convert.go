@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tislib/logi/pkg/ast/common"
 	astMacro "github.com/tislib/logi/pkg/ast/macro"
+	"strings"
 )
 
 type converter struct {
@@ -145,37 +146,84 @@ func (c *converter) convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 func (c *converter) convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
 	var result = new(astMacro.TypeStatement)
 	var name = node.children[0].value.(string)
-	var items = node.children[1].children
+	var body = node.children[1].children
 
 	result.Name = name
 
-	for _, child := range items {
-		element, err := c.convertSyntaxStatementElement(child)
+	for _, item := range body {
+		switch item.op {
+		case NodeOpSyntaxElements:
+			for _, child := range item.children {
+				element, err := c.convertSyntaxStatementElement(child)
 
-		if err != nil {
-			return nil, err
+				if err != nil {
+					return nil, err
+				}
+
+				result.Elements = append(result.Elements, *element)
+			}
+		default:
+			return nil, fmt.Errorf("unexpected type statement op: %s", item.op)
 		}
-
-		result.Elements = append(result.Elements, *element)
 	}
 
 	return result, nil
 }
 
-func (c *converter) convertSyntaxStatement(child yaccNode) (*astMacro.SyntaxStatement, error) {
+func (c *converter) convertSyntaxStatement(body yaccNode) (*astMacro.SyntaxStatement, error) {
 	var result = new(astMacro.SyntaxStatement)
 
-	for _, elementNode := range child.children {
-		element, err := c.convertSyntaxStatementElement(elementNode)
+	for _, item := range body.children {
+		switch item.op {
+		case NodeOpSyntaxElements:
+			for _, child := range item.children {
+				element, err := c.convertSyntaxStatementElement(child)
 
-		if err != nil {
-			return nil, err
+				if err != nil {
+					return nil, err
+				}
+
+				result.Elements = append(result.Elements, *element)
+			}
+		case NodeOpSyntaxExamples:
+			var examples []string
+
+			for _, child := range item.children {
+				examples = append(examples, c.convertValue(child))
+			}
+
+			result.Examples = examples
+		default:
+			return nil, fmt.Errorf("unexpected syntax statement op: %s", item.op)
 		}
-
-		result.Elements = append(result.Elements, *element)
 	}
 
 	return result, nil
+}
+
+func (c *converter) convertValue(child yaccNode) string {
+	var parts []string
+
+	for _, item := range child.children {
+		switch item.op {
+		case NodeOpValueIdentifier:
+			parts = append(parts, item.value.(string))
+		case NodeOpValueString:
+			parts = append(parts, fmt.Sprintf("\"%s\"", item.value.(string)))
+		case NodeOpValueArray:
+			var array []string
+
+			for _, arrayItem := range item.children {
+				array = append(array, c.convertValue(arrayItem))
+			}
+
+			parts = append(parts, fmt.Sprintf("[%s]", strings.Join(array, ", ")))
+		default:
+			parts = append(parts, fmt.Sprintf("%v", item.value))
+		}
+	}
+
+	return strings.Join(parts, " ")
 }
 
 func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.SyntaxStatementElement, error) {

@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	log "github.com/sirupsen/logrus"
+	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/vm"
 	"google.golang.org/api/option"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -20,6 +22,111 @@ type generator struct {
 	examples  []string
 	vm        vm.VirtualMachine
 	modelName string
+}
+
+func (g *generator) AddExamples() {
+	var examples = ``
+
+	for _, macro := range g.vm.GetMacros() {
+		examples += g.generateExample(macro, macro.Name+"1") + "\n"
+		examples += g.generateExample(macro, macro.Name+"2") + "\n"
+		examples += g.generateExample(macro, macro.Name+"3") + "\n"
+	}
+
+	g.AddExample(examples)
+}
+
+func (g *generator) generateExample(macro macroAst.Macro, defName string) string {
+	body := g.generateStatementsExample(macro.Syntax.Statements)
+
+	return fmt.Sprintf("%s %s {\n%s}\n", macro.Name, defName, body)
+}
+
+func (g *generator) generateStatementsExample(statements []macroAst.SyntaxStatement) string {
+	var body = ``
+
+	for _, syntax := range statements {
+		var examples []string
+
+		if len(syntax.Examples) > 0 {
+			examples = syntax.Examples
+		} else {
+			examples = []string{g.generateStatementExample(syntax), g.generateStatementExample(syntax), g.generateStatementExample(syntax)}
+		}
+
+		for _, example := range examples {
+			body += fmt.Sprintf("    %s\n", example)
+		}
+	}
+
+	return body
+}
+
+func (g *generator) generateStatementExample(syntax macroAst.SyntaxStatement) string {
+	var parts []string
+
+	for _, part := range syntax.Elements {
+		parts = append(parts, g.generateStatementElementExample(part))
+	}
+
+	return strings.Join(parts, ", ")
+}
+
+func (g *generator) generateStatementElementExample(element macroAst.SyntaxStatementElement) string {
+	switch element.Kind {
+	case macroAst.SyntaxStatementElementKindKeyword:
+		return element.KeywordDef.Name
+	case macroAst.SyntaxStatementElementKindTypeReference:
+		return g.generateExampleValue(element.TypeReference.Name)
+	case macroAst.SyntaxStatementElementKindVariableKeyword:
+		return g.generateExampleValue(element.VariableKeyword.Type.Name)
+	case macroAst.SyntaxStatementElementKindCombination:
+		var l = int32(len(element.Combination.Elements))
+		return g.generateStatementElementExample(element.Combination.Elements[rand.Int31()%l])
+	case macroAst.SyntaxStatementElementKindStructure:
+		return g.generateStatementsExample(element.Structure.Statements)
+	case macroAst.SyntaxStatementElementKindParameterList:
+		panic("not supported yet")
+	case macroAst.SyntaxStatementElementKindArgumentList:
+		panic("not supported yet")
+	case macroAst.SyntaxStatementElementKindCodeBlock:
+		return `
+{
+	if (a > b) {
+		return a
+	} else {
+		return b
+	}
+}
+`
+	case macroAst.SyntaxStatementElementKindExpressionBlock:
+		return `{ a + b }`
+	case macroAst.SyntaxStatementElementKindAttributeList:
+		panic("not supported yet")
+	}
+	return "aa"
+}
+
+func (g *generator) generateExampleValue(typeName string) string {
+	var unixMs = time.Now().Unix()
+	switch typeName {
+	case "int":
+		var values = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
+		return values[unixMs%10]
+	case "string":
+		var values = []string{"\"hello\"", "\"world\"", "\"foo\"", "\"bar\"", "\"baz\"", "\"qux\"", "\"quux\"", "\"corge\"", "\"grault\"", "\"garply\""}
+		return values[unixMs%10]
+	case "bool":
+		var values = []string{"true", "false"}
+		return values[unixMs%2]
+	case "Name":
+		var values = []string{"int", "string", "bool", "Name", "Type", "Syntax", "Statement", "Element", "Kind", "Keyword"}
+		return values[unixMs%10]
+	case "Array":
+		panic("not supported yet")
+	default:
+		return fmt.Sprintf("%s_%d", typeName, unixMs%10)
+	}
 }
 
 func (g *generator) GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error) {
@@ -194,6 +301,7 @@ func clean(content string) string {
 
 type Generator interface {
 	AddExample(examples string)
+	AddExamples()
 	GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error)
 }
 

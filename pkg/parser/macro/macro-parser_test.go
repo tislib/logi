@@ -924,6 +924,135 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"simple syntax with examples": {
+			input: `
+				macro simple {
+					kind Syntax
+
+					types {
+						World <value string>
+					}
+
+					syntax {
+						Hello <World> # Hello "World", Hello "World2"
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Types: astMacro.Types{
+							Types: []astMacro.TypeStatement{
+								{
+									Name: "World",
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "value",
+												Type: common.TypeDefinition{
+													Name: "string",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "Hello",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindTypeReference,
+											TypeReference: &astMacro.SyntaxStatementElementTypeReference{
+												Name: "World",
+											},
+										},
+									},
+									Examples: []string{
+										`Hello "World"`,
+										`Hello "World2"`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"simple syntax with examples2": {
+			input: `
+				macro simple {
+					kind Syntax
+
+					types {
+						World <value string>
+					}
+
+					syntax {
+						Hello <World> # [Hello "World", Hello "World2"]
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Types: astMacro.Types{
+							Types: []astMacro.TypeStatement{
+								{
+									Name: "World",
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+											VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+												Name: "value",
+												Type: common.TypeDefinition{
+													Name: "string",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "Hello",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindTypeReference,
+											TypeReference: &astMacro.SyntaxStatementElementTypeReference{
+												Name: "World",
+											},
+										},
+									},
+									Examples: []string{
+										`[Hello "World", Hello "World2"]`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

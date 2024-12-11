@@ -18,6 +18,10 @@ type vm struct {
 	enableSourceMap bool
 }
 
+func (v *vm) GetMacros() []macroAst.Macro {
+	return v.Macros
+}
+
 func (v *vm) GetMacroContent(name string) string {
 	return v.MacroContents[name]
 }

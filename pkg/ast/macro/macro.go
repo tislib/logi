@@ -45,7 +45,8 @@ type Syntax struct {
 }
 
 type SyntaxStatement struct {
-	Elements []SyntaxStatementElement
+	Elements []SyntaxStatementElement `json:"elements,omitempty"`
+	Examples []string                 `json:"examples,omitempty"`
 }
 
 type TypeStatement struct {

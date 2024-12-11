@@ -12,6 +12,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tliron/commonlog v0.2.19
 	github.com/tliron/glsp v0.2.2
+	golang.org/x/exp v0.0.0-20190121172915-509febef88a4
 	google.golang.org/api v0.205.0
 )
 

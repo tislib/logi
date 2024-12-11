@@ -33,4 +33,5 @@ type VirtualMachine interface {
 	Execute(def *Definition, s string) (interface{}, error)
 	SetLocal(key string, value interface{})
 	GetMacroContent(name string) string
+	GetMacros() []macroAst.Macro
 }

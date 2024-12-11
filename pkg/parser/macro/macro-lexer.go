@@ -81,6 +81,10 @@ func tokens() []lexer.TokenConfig {
 			Equals: ":",
 		},
 		{
+			Id:     Semicolon,
+			Equals: ";",
+		},
+		{
 			Id:     ParenOpen,
 			Equals: "(",
 		},
@@ -119,6 +123,10 @@ func tokens() []lexer.TokenConfig {
 		{
 			Id:     Or,
 			Equals: "|",
+		},
+		{
+			Id:     Hash,
+			Equals: "#",
 		},
 		{
 			Id:       token_string,

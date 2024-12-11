@@ -28,13 +28,14 @@ import (
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon ParenOpen ParenClose Eol CodeBlock ExpressionBlock
 
 // Opeartors
-%token Equal GreaterThan LessThan Dash Dot Arrow Or
+%token Equal GreaterThan LessThan Dash Dot Arrow Or Hash
 
 %type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
 %type<node> types_definition types_definition_body types_definition_content types_definition_statement
-%type<node> syntax_statement syntax_element syntax_element_combination syntax_element_structure syntax_element_structure_content syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
+%type<node> syntax_statement syntax_example syntax_examples syntax_elements syntax_element syntax_element_combination syntax_element_structure syntax_element_structure_content syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
-%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item syntax_element_expression_block
+%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item syntax_element_expression_block value
+%type<node> value_array value_array_content value_array_item
 
 %start file
 
@@ -141,11 +142,74 @@ syntax_content: syntax_statement eol_required {
 	$$ = newNode(NodeOpBody, nil, emptyToken, emptyLocation)
 };
 
-syntax_statement: syntax_element
+syntax_statement: syntax_elements
 {
 	$$ = appendNode(NodeOpSyntaxStatement, $1)
+} | syntax_elements Hash syntax_examples
+{
+	$$ = appendNode(NodeOpSyntaxStatement, $1, $3)
+};
+
+syntax_examples: syntax_example
+{
+	$$ = appendNode(NodeOpSyntaxExamples, $1)
+} | syntax_examples Comma syntax_example
+{
+	$$ = appendNodeTo(&$1, $3)
+};
+
+syntax_example: value
+{
+	$$ = appendNode(NodeOpSyntaxExample, $1)
+} | syntax_example value
+{
+	$$ = appendNodeTo(&$1, $2)
+};
+
+value: token_identifier
+{
+	$$ = newNode(NodeOpValueIdentifier, $1, yyDollar[1].token, yyDollar[1].location)
 }
-| syntax_statement syntax_element
+| token_number
+{
+	$$ = newNode(NodeOpValueNumber, $1, yyDollar[1].token, yyDollar[1].location)
+} | token_string
+{
+	$$ = newNode(NodeOpValueString, $1, yyDollar[1].token, yyDollar[1].location)
+} | token_bool
+{
+	$$ = newNode(NodeOpValueBool, $1, yyDollar[1].token, yyDollar[1].location)
+}; | value_array
+{
+	$$ = $1
+};
+
+value_array: BracketOpen value_array_content BracketClose
+{
+	$$ = $2
+};
+
+value_array_item: value
+{
+	$$ = appendNode(NodeOpValueArrayItem, $1)
+} | value_array_item value
+{
+	$$ = appendNodeTo(&$1, $2)
+};
+
+value_array_content: value_array_item
+{
+	$$ = appendNode(NodeOpValueArray, $1)
+} | value_array_content Comma value_array_item
+{
+	$$ = appendNodeTo(&$1, $3)
+};
+
+syntax_elements: syntax_element
+{
+	$$ = appendNode(NodeOpSyntaxElements, $1)
+}
+| syntax_elements syntax_element
 {
 	$$ = appendNodeTo(&$1, $2)
 };
@@ -229,7 +293,7 @@ syntax_element_attribute_list_item: token_identifier
 }
 | token_identifier type_definition
 {
-	$$ = newNode(NodeOpValue, $1, yyDollar[1].token, yyDollar[1].location, $2)
+	$$ = newNode(NodeOpName, $1, yyDollar[1].token, yyDollar[1].location, $2)
 };
 
 syntax_element_argument_list: ParenOpen three_dots BracketOpen eol_allowed syntax_element_argument_list_content eol_allowed BracketClose ParenClose
