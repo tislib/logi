@@ -1,0 +1,26 @@
+circuit simple1 {
+	components {
+		yellowLed Led 5
+		redLed Led 6
+		blueLed Led 13
+		button1 Button 17
+		button2 Button 17
+	}
+
+	actions {
+	    on(yellowLed)
+	    on(redLed)
+
+	    onPress(button1) {
+            off(yellowLed)
+            off(redLed)
+            on(blueLed)
+        }
+
+        onPress(button2) {
+            off(blueLed)
+            on(yellowLed)
+            on(redLed)
+        }
+	}
+}

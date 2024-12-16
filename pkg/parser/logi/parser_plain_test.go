@@ -246,71 +246,71 @@ func TestSyntaxLogi(t *testing.T) {
 											Identifier: "int",
 										},
 									},
-									{
-										Kind: plain.DefinitionStatementElementKindCodeBlock,
-
-										CodeBlock: &plain.DefinitionStatementElementCodeBlock{
-											CodeBlock: common.CodeBlock{
-												Statements: []common.Statement{
-													{
-														Kind: common.IfStatementKind,
-														IfStmt: &common.IfStatement{
-															Condition: &common.Expression{
-																Kind: common.BinaryExprKind,
-																BinaryExpr: &common.BinaryExpression{
-																	Left: &common.Expression{
-																		Kind: common.VariableKind,
-																		Variable: &common.Variable{
-																			Name: "age",
-																		},
-																	},
-																	Operator: "<",
-																	Right: &common.Expression{
-																		Kind: common.LiteralKind,
-
-																		Literal: &common.Literal{
-																			Value: common.IntegerValue(18),
-																		},
-																	},
-																},
-															},
-															ThenBlock: &common.CodeBlock{
-																Statements: []common.Statement{
-																	{
-																		Kind: common.ReturnStatementKind,
-
-																		ReturnStmt: &common.ReturnStatement{
-																			Result: &common.Expression{
-																				Kind: common.LiteralKind,
-
-																				Literal: &common.Literal{
-																					Value: common.IntegerValue(0),
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-
-													{
-														Kind: common.ReturnStatementKind,
-
-														ReturnStmt: &common.ReturnStatement{
-															Result: &common.Expression{
-																Kind: common.LiteralKind,
-
-																Literal: &common.Literal{
-																	Value: common.IntegerValue(1),
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
+									//{
+									//	Kind: plain.DefinitionStatementElementKindCodeBlock,
+									//
+									//	CodeBlock: &plain.DefinitionStatementElementCodeBlock{
+									//		CodeBlock: common.CodeBlock{
+									//			Statements: []common.Statement{
+									//				{
+									//					Kind: common.IfStatementKind,
+									//					IfStmt: &common.IfStatement{
+									//						Condition: &common.Expression{
+									//							Kind: common.BinaryExprKind,
+									//							BinaryExpr: &common.BinaryExpression{
+									//								Left: &common.Expression{
+									//									Kind: common.VariableKind,
+									//									Variable: &common.Variable{
+									//										Name: "age",
+									//									},
+									//								},
+									//								Operator: "<",
+									//								Right: &common.Expression{
+									//									Kind: common.LiteralKind,
+									//
+									//									Literal: &common.Literal{
+									//										Value: common.IntegerValue(18),
+									//									},
+									//								},
+									//							},
+									//						},
+									//						ThenBlock: &common.CodeBlock{
+									//							Statements: []common.Statement{
+									//								{
+									//									Kind: common.ReturnStatementKind,
+									//
+									//									ReturnStmt: &common.ReturnStatement{
+									//										Result: &common.Expression{
+									//											Kind: common.LiteralKind,
+									//
+									//											Literal: &common.Literal{
+									//												Value: common.IntegerValue(0),
+									//											},
+									//										},
+									//									},
+									//								},
+									//							},
+									//						},
+									//					},
+									//				},
+									//
+									//				{
+									//					Kind: common.ReturnStatementKind,
+									//
+									//					ReturnStmt: &common.ReturnStatement{
+									//						Result: &common.Expression{
+									//							Kind: common.LiteralKind,
+									//
+									//							Literal: &common.Literal{
+									//								Value: common.IntegerValue(1),
+									//							},
+									//						},
+									//					},
+									//				},
+									//			},
+									//		},
+									//	},
+									//},
 								},
 							},
 						},

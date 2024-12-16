@@ -26,7 +26,6 @@ import (
 %token DefinitionKeyword SyntaxKeyword FuncKeyword
 
 %token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon Equal GreaterThan LessThan Dot Arrow ParenOpen ParenClose Eol
-%token IfKeyword ElseKeyword ReturnKeyword SwitchKeyword CaseKeyword VarKeyword
 %token Plus Minus Star Slash Percent Exclamation And Or Xor
 
 %type<node> type_definition
@@ -34,11 +33,9 @@ import (
 %type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_struct definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
 %type<node> definition_statement_element_parameter_list definition_statement_element_parameter_list_content definition_statement_element_parameter_list_item
-%type<node> code_block code_block_statements code_block_statement assignment_statement expression_statement if_statement return_statement variable_declaration_statement function_call_statement
 %type<node> expression literal variable binary_expression function_call
 %type<node> definition_statement_element_json json_object json_object_content json_object_item json_array json_value json_array_content
 %type<node> function_params
-%type<node> function_definition
 %type<string> operator
 %start file
 
@@ -54,15 +51,9 @@ eol_required: Eol;
 file: definition eol_allowed {
 	registerRootNode(yylex, $1)
 }
-| function_definition eol_allowed {
-  	registerRootNode(yylex, $1)
-}
 | file eol_allowed
 | eol_allowed
 | file definition eol_allowed {
-	registerRootNode(yylex, $2)
-}
-| file function_definition eol_allowed {
 	registerRootNode(yylex, $2)
 }
 | // empty;
@@ -102,7 +93,7 @@ definition_statement: definition_statement_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_struct | definition_statement_element_json | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list | code_block;
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_struct | definition_statement_element_json | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list;
 
 definition_statement_element_identifier: token_identifier
 {
@@ -272,9 +263,9 @@ definition_statement_element_parameter_list_content: definition_statement_elemen
 	$$ = appendNodeTo(&$1, $4)
 };
 
-definition_statement_element_parameter_list_item: definition_statement
+definition_statement_element_parameter_list_item: expression
 {
-	$$ = newNode(NodeOpParameter, $1, yyDollar[1].token, yyDollar[1].location)
+	$$ = $1
 };
 
 
@@ -287,80 +278,24 @@ type_definition: token_identifier
 	$$ = newNode(NodeOpTypeDef, $1, yyDollar[1].token, yyDollar[1].location, $3)
 };
 
+// Expressions
 
-// ################################ CODE_BLOCK ############################
-
-code_block: BraceOpen eol_allowed code_block_statements eol_allowed BraceClose
+expression: binary_expression
 {
-	$$ = appendNode(NodeOpCodeBlock, $3)
-};
-
-code_block_statements: code_block_statement
-{
-	$$ = appendNode(NodeOpStatements, $1)
+	$$ = appendNode(NodeOpExpression, $1)
 }
-| code_block_statements eol_required code_block_statement
+| function_call
 {
-	$$ = appendNodeTo(&$1, $3)
+	$$ = appendNode(NodeOpExpression, $1)
 }
-| // empty
+| literal
 {
-	$$ = appendNode(NodeOpStatements)
+	$$ = appendNode(NodeOpExpression, $1)
 }
-;
-
-code_block_statement: function_call_statement | assignment_statement | expression_statement | if_statement | return_statement | variable_declaration_statement;
-
-// Statements
-function_call_statement: function_call
-{
-	$$ = appendNode(NodeOpFunctionCall, $1)
-};
-
-assignment_statement: expression Equal expression
-{
-	$$ = appendNode(NodeOpAssignment, $1, $3)
-};
-
-expression_statement: expression
+| variable
 {
 	$$ = appendNode(NodeOpExpression, $1)
 };
-
-if_statement: IfKeyword ParenOpen expression ParenClose code_block
-{
-	$$ = appendNode(NodeOpIf, $3, $5)
-}
-| IfKeyword ParenOpen expression ParenClose code_block ElseKeyword code_block
-{
-	$$ = appendNode(NodeOpIfElse, $3, $5, $7)
-}
-| IfKeyword expression code_block
-{
-	$$ = appendNode(NodeOpIf, $2, $3)
-}
-| IfKeyword expression code_block ElseKeyword code_block
-{
-	$$ = appendNode(NodeOpIfElse, $2, $3, $5)
-};
-
-return_statement: ReturnKeyword expression
-{
-	$$ = appendNode(NodeOpReturn, $2)
-};
-
-variable_declaration_statement: VarKeyword token_identifier type_definition
-{
-	$$ = appendNode(NodeOpVariableDeclaration, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location), $3)
-}
-| VarKeyword token_identifier type_definition Equal expression
-{
-	$$ = appendNode(NodeOpVariableDeclaration, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location), $3, $5)
-};
-
-// Expressions
-
-expression: binary_expression | function_call | literal | variable;
 
 literal: token_string
 {
@@ -458,12 +393,5 @@ function_params: expression
 	$$ = appendNode(NodeOpFunctionParams)
 }
 ;
-
-// ################################################################
-
-function_definition: FuncKeyword token_identifier definition_statement_element_argument_list code_block
-{
-	$$ = appendNode(NodeOpFunctionDefinition, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location), $3, $4)
-};
 
 %%

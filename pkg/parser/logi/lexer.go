@@ -224,36 +224,6 @@ func Tokens() []lexer.TokenConfig {
 			Equals: "func",
 		},
 		{
-			Id:     ElseKeyword,
-			Label:  "else",
-			Equals: "else",
-		},
-		{
-			Id:     VarKeyword,
-			Label:  "var",
-			Equals: "var",
-		},
-		{
-			Id:     IfKeyword,
-			Label:  "if",
-			Equals: "if",
-		},
-		{
-			Id:     ReturnKeyword,
-			Label:  "return",
-			Equals: "return",
-		},
-		{
-			Id:     SwitchKeyword,
-			Label:  "switch",
-			Equals: "switch",
-		},
-		{
-			Id:     CaseKeyword,
-			Label:  "case",
-			Equals: "case",
-		},
-		{
 			Id:       token_string,
 			Label:    "string",
 			IsString: true,

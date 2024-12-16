@@ -1,0 +1,32 @@
+[
+  {
+    "dynamic": {
+      "actions": {
+        "actions": [
+          {
+            "component": "yellowLed",
+            "name": "ledOn"
+          },
+          {
+            "ms": 3000,
+            "name": "delay"
+          },
+          {
+            "component": "yellowLed",
+            "name": "ledOff"
+          }
+        ]
+      },
+      "components": {
+        "components": {
+          "yellowLedLed": {
+            "component": "yellowLed",
+            "pin": 16
+          }
+        }
+      }
+    },
+    "macro": "circuit",
+    "name": "simple1"
+  }
+]

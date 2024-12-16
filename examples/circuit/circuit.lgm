@@ -1,0 +1,37 @@
+macro circuit {
+    kind Syntax
+
+    syntax {
+		components { components }
+		actions { command | handler }
+    }
+
+    scopes {
+        components {
+            <component Name> Led <pin int>
+            <component Name> Button <pin int>
+        }
+        command {
+            // Basic commands
+            on(<component Name>)
+            off(<component Name>)
+            blink(<component Name>, <count int>, <seconds float>)
+            wait(<seconds float>)
+            brightness(<component Name>, <value float>)
+            fade_in(<component Name>, <seconds float>)
+            fade_out(<component Name>, <seconds float>)
+            // Conditional commands
+            if (<condition bool>) { command | handler }
+            if (<condition bool>) { command | handler } else { command | handler }
+        }
+        handler {
+            // Event handlers
+            on_click(<component Name>) { command }
+            on_click(<component Name>, <count int>) { command }
+            on_press(<component Name>, <count int>) { command }
+            on_release(<component Name>, <count int>) { command }
+            while_held(<component Name>) { command }
+        }
+    }
+}
+

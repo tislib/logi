@@ -63,16 +63,6 @@ func prepareAst(plainAst plain.Ast, macroAst macroAst.Ast) (*logi.Ast, error) {
 		result.Definitions = append(result.Definitions, *definition)
 	}
 
-	for _, plainFunction := range plainAst.Functions {
-		function, err := prepareFunction(plainFunction)
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert function: %w", err)
-		}
-
-		result.Functions = append(result.Functions, *function)
-	}
-
 	return result, nil
 }
 
@@ -81,7 +71,6 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 
 	definition.MacroName = plainDefinition.MacroName
 	definition.Name = plainDefinition.Name
-	definition.Dynamic = make(map[string]map[string]interface{})
 	definition.PlainStatements = plainDefinition.Statements
 
 	for _, plainStatement := range plainDefinition.Statements {
@@ -89,7 +78,6 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 		rsp := recursiveStatementParser{
 			plainStatement:  plainStatement,
 			macroDefinition: macroDefinition,
-			definition:      definition,
 		}
 
 		err := rsp.parse()
@@ -97,22 +85,11 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse statement: %w", err)
 		}
+
+		definition.Statements = append(definition.Statements, rsp.statement)
 	}
 
 	return definition, nil
-}
-
-func prepareFunction(plainFunction plain.Function) (*logi.Function, error) {
-	function := new(logi.Function)
-
-	function.Name = plainFunction.Name
-	function.CodeBlock = plainFunction.CodeBlock
-
-	for _, argument := range plainFunction.Arguments {
-		function.Arguments = append(function.Arguments, logi.Argument{Name: argument.Name, Type: argument.Type})
-	}
-
-	return function, nil
 }
 
 func camelCaseFromNameParts(parts []string) string {

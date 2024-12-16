@@ -37,14 +37,6 @@ func tokens() []lexer.TokenConfig {
 			EqualOneOf: []string{"true", "false"},
 		},
 		{
-			Id:     CodeBlock,
-			Equals: "{ code }",
-		},
-		{
-			Id:     ExpressionBlock,
-			Equals: "{ expr }",
-		},
-		{
 			Id:     TypesKeyword,
 			Equals: "types",
 		},
@@ -55,6 +47,10 @@ func tokens() []lexer.TokenConfig {
 		{
 			Id:     MacroKeyword,
 			Equals: "macro",
+		},
+		{
+			Id:     ScopesKeyword,
+			Equals: "scopes",
 		},
 		{
 			Id:     BracketOpen,

@@ -7,55 +7,21 @@ import (
 
 type Ast struct {
 	Definitions []Definition `json:"definitions"`
-	Functions   []Function   `json:"functions"`
 }
 
 type Definition struct {
-	MacroName       string                            `json:"macroName"`
-	Name            string                            `json:"name"`
-	PlainStatements []plain.DefinitionStatement       `json:"plainStatements"`
-	Properties      []Property                        `json:"properties"`
-	MethodSignature []MethodSignature                 `json:"methodSignature"`
-	Methods         []Method                          `json:"methods"`
-	Parameters      []DefinitionParameter             `json:"parameters"`
-	Dynamic         map[string]map[string]interface{} `json:"dynamic"`
+	MacroName       string                      `json:"macroName"`
+	Name            string                      `json:"name"`
+	PlainStatements []plain.DefinitionStatement `json:"plainStatements"`
+	Statements      []Statement                 `json:"statements"`
 }
 
-type Function struct {
-	Name      string     `json:"name"`
-	Arguments []Argument `json:"arguments"`
-	CodeBlock common.CodeBlock
-}
-
-type Property struct {
-	Name       string                `json:"name"`
-	Type       common.TypeDefinition `json:"type"`
-	Attributes []Attribute           `json:"attributes"`
-	Parameters []Parameter           `json:"parameters"`
-}
-
-type DefinitionParameter struct {
-	Name       string      `json:"name"`
-	Attributes []Attribute `json:"attributes"`
-	Parameters []Parameter `json:"parameters"`
-	CodeBlock  *common.CodeBlock
-}
-
-type MethodSignature struct {
-	Name       string                `json:"name"`
-	Type       common.TypeDefinition `json:"type"`
-	Attributes []Attribute           `json:"attributes"`
-	Parameters []Parameter           `json:"parameters"`
-	Arguments  []Argument            `json:"arguments"`
-}
-
-type Method struct {
-	Name       string                `json:"name"`
-	Type       common.TypeDefinition `json:"type"`
-	Attributes []Attribute           `json:"attributes"`
-	Parameters []Parameter           `json:"parameters"`
-	Arguments  []Argument            `json:"arguments"`
-	CodeBlock  common.CodeBlock      `json:"codeBlock"`
+type Statement struct {
+	Command       string      `json:"command"`
+	Arguments     []Argument  `json:"arguments"`
+	Parameters    []Parameter `json:"parameters"`
+	Attributes    []Attribute `json:"attributes"`
+	SubStatements []Statement `json:"subStatements"`
 }
 
 type Attribute struct {
@@ -64,8 +30,9 @@ type Attribute struct {
 }
 
 type Parameter struct {
-	Name  string       `json:"name"`
-	Value common.Value `json:"value"`
+	Name       string             `json:"name"`
+	Value      common.Value       `json:"value"`
+	Expression *common.Expression `json:"expression"`
 }
 
 type Argument struct {

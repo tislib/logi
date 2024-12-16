@@ -114,20 +114,10 @@ func (a analyser) analyseStatement(macro macroAst.Macro, statement macroAst.Synt
 			}
 		case macroAst.SyntaxStatementElementKindCombination:
 			continue
-		case macroAst.SyntaxStatementElementKindCodeBlock:
-			asr.HasCodeBlock = true
 		case macroAst.SyntaxStatementElementKindArgumentList:
 			asr.HasArgumentList = true
 			for _, argument := range element.ArgumentList.Arguments {
 				asr.Arguments[argument.Name] = argument.Type
-			}
-		case macroAst.SyntaxStatementElementKindStructure:
-			for _, statement := range element.Structure.Statements {
-				err := a.analyseStatement(macro, statement, asr)
-
-				if err != nil {
-					return fmt.Errorf("error analysing structure statement: %v", err)
-				}
 			}
 		case macroAst.SyntaxStatementElementKindParameterList:
 			for _, parameter := range element.ParameterList.Parameters {
