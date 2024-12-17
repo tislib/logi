@@ -1,17 +1,16 @@
 package vm
 
 import (
+	"github.com/tislib/logi/pkg/ast/common"
 	logiAst "github.com/tislib/logi/pkg/ast/logi"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 )
 
-type Definition struct {
-	Macro string                            `json:"macro"`
-	Name  string                            `json:"name"`
-	Data  map[string]map[string]interface{} `json:"data"`
-}
+type ImplementerFunc func(vm VirtualMachine, statement logiAst.Statement, passNext func(statement logiAst.Statement) error) error
 
-type ExecutableFunc func(args ...interface{}) (interface{}, error)
+type Implementer interface {
+	Call(vm VirtualMachine, statement logiAst.Statement) error
+}
 
 type VirtualMachine interface {
 	// loads macro files from the given paths
@@ -20,18 +19,14 @@ type VirtualMachine interface {
 	LoadMacroAst(ast ...macroAst.Ast) error
 
 	// loads logi files from the given paths
-	LoadLogiFile(path ...string) ([]Definition, error)
-	LoadLogiContent(content ...string) ([]Definition, error)
-	LoadLogiAst(ast ...logiAst.Ast) ([]Definition, error)
-
-	MapToStruct(definition Definition) (string, error)
-
-	LocateCodeBlock(definition Definition, codeBlockPath string) (ExecutableFunc, error)
-	GetDefinitionByName(name string) (*Definition, error)
-	SetLocals(locals map[string]interface{})
-	GetLocals() map[string]interface{}
-	Execute(def *Definition, s string) (interface{}, error)
-	SetLocal(key string, value interface{})
+	LoadLogiFile(path ...string) ([]logiAst.Definition, error)
+	LoadLogiContent(content ...string) ([]logiAst.Definition, error)
+	LoadLogiAst(ast ...logiAst.Ast) ([]logiAst.Definition, error)
 	GetMacroContent(name string) string
 	GetMacros() []macroAst.Macro
+	GetDefinitionByName(name string) (*logiAst.Definition, error)
+
+	// VM functions
+	Execute(def *logiAst.Definition, implementer Implementer) error
+	Evaluate(expression common.Expression, vars map[string]common.Value, fns map[string]func(args ...common.Value) (common.Value, error)) (common.Value, error)
 }

@@ -82,24 +82,13 @@ var compileCmd = &cobra.Command{
 			}
 
 			switch *compileCmdKind {
-			case "full":
+			case "normal":
 				var result []interface{}
 
 				for _, definition := range definitions.Definitions {
+					definition.PlainStatements = nil
 					result = append(result, definition)
 				}
-				output = result
-			case "dynamic":
-				var result []interface{}
-
-				for _, definition := range definitions.Definitions {
-					result = append(result, map[string]interface{}{
-						"name":    definition.Name,
-						"macro":   definition.MacroName,
-						"dynamic": definition.Dynamic,
-					})
-				}
-
 				output = result
 			default:
 				return fmt.Errorf("unknown kind: %s", *compileCmdKind)
@@ -144,5 +133,5 @@ func init() {
 	compileCmd.PersistentFlags().StringVarP(compileCmdMacroDir, "macro-dir", "m", ".", "directory with macro files")
 	compileCmd.PersistentFlags().StringVarP(compileCmdInput, "input", "i", "", "directory with macro files")
 	compileCmd.PersistentFlags().StringVarP(compileCmdOutDir, "out", "o", "", "output directory")
-	compileCmd.PersistentFlags().StringVarP(compileCmdKind, "kind", "k", "dynamic", "kind of file to compile [`dynamic` for parsed json data, `plain` for plain logi data, `full` for full logi data, default is `dynamic`]")
+	compileCmd.PersistentFlags().StringVarP(compileCmdKind, "kind", "k", "normal", "kind of file to compile [`plain` for plain logi data, `normal` for logi data, default is `normal`]")
 }

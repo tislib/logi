@@ -1,6 +1,7 @@
 package logi
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/tislib/logi/pkg/ast/common"
 	"github.com/tislib/logi/pkg/ast/plain"
@@ -199,7 +200,7 @@ func TestSyntaxLogi(t *testing.T) {
 			input: `
 				service UserService {
 					createUser (name string, age int) int {
-						if age < 18 {
+						if (age < 18) {
 							return 0
 						}
 
@@ -246,71 +247,67 @@ func TestSyntaxLogi(t *testing.T) {
 											Identifier: "int",
 										},
 									},
-									//{
-									//	Kind: plain.DefinitionStatementElementKindCodeBlock,
-									//
-									//	CodeBlock: &plain.DefinitionStatementElementCodeBlock{
-									//		CodeBlock: common.CodeBlock{
-									//			Statements: []common.Statement{
-									//				{
-									//					Kind: common.IfStatementKind,
-									//					IfStmt: &common.IfStatement{
-									//						Condition: &common.Expression{
-									//							Kind: common.BinaryExprKind,
-									//							BinaryExpr: &common.BinaryExpression{
-									//								Left: &common.Expression{
-									//									Kind: common.VariableKind,
-									//									Variable: &common.Variable{
-									//										Name: "age",
-									//									},
-									//								},
-									//								Operator: "<",
-									//								Right: &common.Expression{
-									//									Kind: common.LiteralKind,
-									//
-									//									Literal: &common.Literal{
-									//										Value: common.IntegerValue(18),
-									//									},
-									//								},
-									//							},
-									//						},
-									//						ThenBlock: &common.CodeBlock{
-									//							Statements: []common.Statement{
-									//								{
-									//									Kind: common.ReturnStatementKind,
-									//
-									//									ReturnStmt: &common.ReturnStatement{
-									//										Result: &common.Expression{
-									//											Kind: common.LiteralKind,
-									//
-									//											Literal: &common.Literal{
-									//												Value: common.IntegerValue(0),
-									//											},
-									//										},
-									//									},
-									//								},
-									//							},
-									//						},
-									//					},
-									//				},
-									//
-									//				{
-									//					Kind: common.ReturnStatementKind,
-									//
-									//					ReturnStmt: &common.ReturnStatement{
-									//						Result: &common.Expression{
-									//							Kind: common.LiteralKind,
-									//
-									//							Literal: &common.Literal{
-									//								Value: common.IntegerValue(1),
-									//							},
-									//						},
-									//					},
-									//				},
-									//			},
-									//		},
-									//	},
-									//},
+									{
+										Kind: plain.DefinitionStatementElementKindStruct,
+
+										Struct: &plain.DefinitionStatementElementStruct{
+											Statements: []plain.DefinitionStatement{
+												{
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "if",
+															},
+														},
+														{
+															Kind: plain.DefinitionStatementElementKindParameterList,
+															ParameterList: &plain.DefinitionStatementElementParameterList{
+																Parameters: []common.Expression{
+																	common.BinaryExpr("<", common.Var("age"), common.Lit(common.IntegerValue(18))),
+																},
+															},
+														},
+														{
+															Kind: plain.DefinitionStatementElementKindStruct,
+															Struct: &plain.DefinitionStatementElementStruct{
+																Statements: []plain.DefinitionStatement{
+																	{
+																		Elements: []plain.DefinitionStatementElement{
+																			{
+																				Kind: plain.DefinitionStatementElementKindIdentifier,
+																				Identifier: &plain.DefinitionStatementElementIdentifier{
+																					Identifier: "return",
+																				},
+																			},
+																			{
+																				Kind:  plain.DefinitionStatementElementKindValue,
+																				Value: &plain.DefinitionStatementElementValue{Value: common.IntegerValue(0)},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+												{
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "return",
+															},
+														},
+														{
+															Kind:  plain.DefinitionStatementElementKindValue,
+															Value: &plain.DefinitionStatementElementValue{Value: common.IntegerValue(1)},
+														},
+													},
+												},
+											},
+										},
+									},
 								},
 							},
 						},
@@ -345,7 +342,10 @@ func TestSyntaxLogi(t *testing.T) {
 					assert.Fail(t, "expected non-nil, got nil")
 				}
 
-				assert.Equal(t, tt.expected, got)
+				expectedJson, _ := json.MarshalIndent(tt.expected, "", "  ")
+				gotJson, _ := json.MarshalIndent(got, "", "  ")
+
+				assert.Equal(t, string(expectedJson), string(gotJson))
 			}
 		})
 	}

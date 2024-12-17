@@ -10,8 +10,7 @@ import (
 type vm struct {
 	Macros          []macroAst.Macro
 	MacroContents   map[string]string
-	Logis           []logiAst.Ast
-	Definitions     []Definition
+	Definitions     []logiAst.Definition
 	locals          map[string]interface{}
 	vars            map[string]interface{}
 	types           map[string]common.TypeDefinition
@@ -36,54 +35,22 @@ func (v *vm) GetLocals() map[string]interface{} {
 	return v.locals
 }
 
-func (v *vm) prepareDefinition(ast logiAst.Definition) (Definition, error) {
-	var definition = Definition{}
-
-	definition.Name = ast.Name
-	definition.Macro = ast.MacroName
-	definition.Data = make(map[string]map[string]interface{})
-
-	for key, value := range ast.Dynamic {
-		definition.Data[key] = make(map[string]interface{})
-
-		for dk, dv := range value {
-			definition.Data[key][dk] = dv
-
-			if dk == "code" {
-				definition.Data[key]["exec"] = v.executableFunc(definition.Data[key][dk].(common.CodeBlock))
-			}
-		}
-	}
-
-	return definition, nil
-}
-
-func (v *vm) MapToStruct(definition Definition) (string, error) {
+func (v *vm) MapToStruct(definition logiAst.Definition) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (v *vm) GetDefinitionByName(name string) (*Definition, error) {
+func (v *vm) GetDefinitionByName(name string) (*logiAst.Definition, error) {
 	for _, definition := range v.Definitions {
 		if definition.Name == name {
 			return &definition, nil
 		}
 	}
 
-	return nil, fmt.Errorf("definition %s not found", name)
+	return nil, fmt.Errorf("logiAst.Definition %s not found", name)
 }
 
 type Option func(vm *vm) error
-
-func WithLocals(locals map[string]interface{}) Option {
-	return func(vm *vm) error {
-		for k, v := range locals {
-			vm.locals[k] = v
-		}
-
-		return nil
-	}
-}
 
 func New(option ...Option) (VirtualMachine, error) {
 	v := &vm{
@@ -99,8 +66,4 @@ func New(option ...Option) (VirtualMachine, error) {
 	}
 
 	return v, nil
-}
-
-func (v *vm) SetLocal(key string, value interface{}) {
-	v.locals[key] = value
 }

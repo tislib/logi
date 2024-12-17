@@ -53,8 +53,8 @@ func (v *vm) LoadMacroAst(ast ...macroAst.Ast) error {
 	return nil
 }
 
-func (v *vm) LoadLogiFile(path ...string) ([]Definition, error) {
-	var result []Definition
+func (v *vm) LoadLogiFile(path ...string) ([]logiAst.Definition, error) {
+	var result []logiAst.Definition
 
 	for _, p := range path {
 		data, err := os.ReadFile(p)
@@ -69,25 +69,14 @@ func (v *vm) LoadLogiFile(path ...string) ([]Definition, error) {
 			return nil, fmt.Errorf("error parsing logi content: %v", err)
 		}
 
-		v.Logis = append(v.Logis, *ast)
-
-		for _, astDefinition := range ast.Definitions {
-			definition, err := v.prepareDefinition(astDefinition)
-
-			if err != nil {
-				return nil, fmt.Errorf("error preparing definition: %v", err)
-			}
-
-			v.Definitions = append(v.Definitions, definition)
-			result = append(result, definition)
-		}
+		v.Definitions = append(v.Definitions, ast.Definitions...)
 	}
 
 	return result, nil
 }
 
-func (v *vm) LoadLogiContent(content ...string) ([]Definition, error) {
-	var result []Definition
+func (v *vm) LoadLogiContent(content ...string) ([]logiAst.Definition, error) {
+	var result []logiAst.Definition
 
 	for _, c := range content {
 		ast, err := logi.Parse(c, v.Macros, false)
@@ -96,39 +85,18 @@ func (v *vm) LoadLogiContent(content ...string) ([]Definition, error) {
 			return nil, fmt.Errorf("error parsing logi content: %v", err)
 		}
 
-		v.Logis = append(v.Logis, *ast)
-
-		for _, astDefinition := range ast.Definitions {
-			definition, err := v.prepareDefinition(astDefinition)
-
-			if err != nil {
-				return nil, fmt.Errorf("error preparing definition: %v", err)
-			}
-
-			v.Definitions = append(v.Definitions, definition)
-			result = append(result, definition)
-		}
+		v.Definitions = append(v.Definitions, ast.Definitions...)
+		result = append(result, ast.Definitions...)
 	}
 
 	return result, nil
 }
 
-func (v *vm) LoadLogiAst(ast ...logiAst.Ast) ([]Definition, error) {
-	var result []Definition
+func (v *vm) LoadLogiAst(ast ...logiAst.Ast) ([]logiAst.Definition, error) {
+	var result []logiAst.Definition
 
 	for _, item := range ast {
-		v.Logis = append(v.Logis, item)
-
-		for _, astDefinition := range item.Definitions {
-			definition, err := v.prepareDefinition(astDefinition)
-
-			if err != nil {
-				return nil, fmt.Errorf("error preparing definition: %v", err)
-			}
-
-			v.Definitions = append(v.Definitions, definition)
-			result = append(result, definition)
-		}
+		v.Definitions = append(v.Definitions, item.Definitions...)
 	}
 
 	return result, nil

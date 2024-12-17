@@ -23,7 +23,7 @@ type recursiveStatementParser struct {
 	statement logiAst.Statement
 }
 
-func (p *recursiveStatementParser) parse() error {
+func (p *recursiveStatementParser) parse(scope string) error {
 	var maxMatch = -1
 	var mismatchCause string
 
@@ -33,7 +33,9 @@ func (p *recursiveStatementParser) parse() error {
 		p.maxMatch = -1
 		p.mismatchCause = ""
 		p.syntaxStatement = syntaxStatement
-		p.statement = logiAst.Statement{}
+		p.statement = logiAst.Statement{
+			Scope: scope,
+		}
 
 		p.match()
 
@@ -104,7 +106,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			p.reportMismatch(fmt.Sprintf("expected keyword (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))
 			break
 		}
-		if p.statement.Command == "" {
+		if p.statement.Command == "" && p.pei == 0 {
 			p.statement.Command = syntaxStatementElement.KeywordDef.Name
 		}
 	case macroAst.SyntaxStatementElementKindTypeReference:
@@ -263,49 +265,73 @@ func (p *recursiveStatementParser) matchTypeStatement(name string, statement mac
 }
 
 func (p *recursiveStatementParser) matchScope(plainElement plain.DefinitionStatementElement, syntaxStatementElement macroAst.SyntaxStatementElement) {
-	var statements []macroAst.SyntaxStatement
-
-	for _, item := range syntaxStatementElement.ScopeDef.Scopes {
-		var scopeFound bool
-		for _, scope := range p.macroDefinition.Scopes.Scopes {
-			if scope.Name == item {
-				statements = append(statements, scope.Statements...)
-				scopeFound = true
-			}
-		}
-		if !scopeFound {
-			p.reportMismatch(fmt.Sprintf("scope %s not found", item))
-			return
-		}
-	}
-
 	if plainElement.Kind != plain.DefinitionStatementElementKindStruct {
 		p.reportMismatch(fmt.Sprintf("expected structure, got %s", plainElement.Kind))
 		return
 	}
 
-	for _, item := range plainElement.Struct.Statements {
-		sp := recursiveStatementParser{
-			macroDefinition: &macroAst.Macro{
-				Types: p.macroDefinition.Types,
-				Syntax: macroAst.Syntax{
-					Statements: statements,
-				},
-				Scopes: p.macroDefinition.Scopes,
-			},
+	var scopeMap = make(map[string]macroAst.ScopeItem)
+
+	for _, scope := range syntaxStatementElement.ScopeDef.Scopes {
+		var scopeFound = false
+		for _, item := range p.macroDefinition.Scopes.Scopes {
+			if item.Name == scope {
+				scopeMap[scope] = item
+				scopeFound = true
+			}
 		}
 
-		sp.plainStatement = item
-
-		err := sp.parse()
-
-		if err != nil {
-			p.reportMismatch(err.Error())
-			return // stop matching if a mismatch is found
+		if !scopeFound {
+			p.reportMismatch(fmt.Sprintf("scope %s not found", scope))
+			return
 		}
-
-		p.statement.SubStatements = append(p.statement.SubStatements, sp.statement)
 	}
+
+	var result = make([]logiAst.Statement, 0)
+
+MainLoop:
+	for _, item := range plainElement.Struct.Statements {
+		var maxMatch = -1
+		var mismatchCause string
+		var bestMatch *macroAst.SyntaxStatement
+
+		for _, scopName := range syntaxStatementElement.ScopeDef.Scopes {
+			scope := scopeMap[scopName]
+
+			sp := recursiveStatementParser{
+				macroDefinition: &macroAst.Macro{
+					Types: p.macroDefinition.Types,
+					Syntax: macroAst.Syntax{
+						Statements: scope.Statements,
+					},
+					Scopes: p.macroDefinition.Scopes,
+				},
+			}
+
+			sp.plainStatement = item
+
+			err := sp.parse(scope.Name)
+
+			if err != nil {
+				if sp.maxMatch > maxMatch {
+					maxMatch = sp.maxMatch
+					bestMatch = sp.bestMatch
+					mismatchCause = err.Error()
+				}
+				continue
+			}
+
+			result = append(result, sp.statement)
+
+			continue MainLoop
+		}
+
+		p.maxMatch = maxMatch
+		p.bestMatch = bestMatch
+		p.reportMismatch(mismatchCause)
+	}
+
+	p.statement.SubStatements = append(p.statement.SubStatements, result)
 }
 
 func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionStatementElement, syntaxElement macroAst.SyntaxStatementElement) {
@@ -326,7 +352,7 @@ func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionState
 		},
 	}
 
-	//var valueArr []common.Value
+	var result = make([]logiAst.Statement, 0)
 	for _, item := range plainElement.Array.Items {
 		sp := recursiveStatementParser{
 			plainStatement:  item,
@@ -340,7 +366,7 @@ func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionState
 			break
 		}
 
-		//valueArr = append(valueArr, sp.statement.parameters[syntaxElement.VariableKeyword.Name])
+		result = append(result, sp.statement)
 
 		if sp.pei+1 < len(sp.plainStatement.Elements) {
 			p.reportMismatch("type has more elements than syntax")
@@ -348,10 +374,7 @@ func (p *recursiveStatementParser) matchArray(plainElement plain.DefinitionState
 		}
 	}
 
-	//p.statement.parameters[syntaxElement.VariableKeyword.Name] = common.Value{
-	//	Kind:  common.ValueKindArray,
-	//	Array: valueArr,
-	//}
+	p.statement.SubStatements = append(p.statement.SubStatements, result)
 	return
 }
 

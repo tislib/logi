@@ -69,3 +69,32 @@ type FunctionCall struct {
 	Name      string        `json:"name"`
 	Arguments []*Expression `json:"arguments"`
 }
+
+func BinaryExpr(operator string, a Expression, b Expression) Expression {
+	return Expression{
+		Kind: BinaryExprKind,
+		BinaryExpr: &BinaryExpression{
+			Left:     &a,
+			Operator: operator,
+			Right:    &b,
+		},
+	}
+}
+
+func Var(name string) Expression {
+	return Expression{
+		Kind: VariableKind,
+		Variable: &Variable{
+			Name: name,
+		},
+	}
+}
+
+func Lit(value Value) Expression {
+	return Expression{
+		Kind: LiteralKind,
+		Literal: &Literal{
+			Value: value,
+		},
+	}
+}

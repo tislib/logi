@@ -6,7 +6,6 @@ import (
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/ast/plain"
 	"github.com/tislib/logi/pkg/parser/macro"
-	"strings"
 )
 
 func ParseFullWithMacro(logiInput string, macroInput string, enableSourceMap bool) (*logi.Ast, error) {
@@ -80,7 +79,7 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 			macroDefinition: macroDefinition,
 		}
 
-		err := rsp.parse()
+		err := rsp.parse("")
 
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse statement: %w", err)
@@ -90,18 +89,4 @@ func prepareDefinition(plainDefinition plain.Definition, macroDefinition *macroA
 	}
 
 	return definition, nil
-}
-
-func camelCaseFromNameParts(parts []string) string {
-	var result string
-
-	for i, part := range parts {
-		if i == 0 {
-			result += strings.ToLower(part[:1]) + part[1:]
-		} else {
-			result += strings.ToUpper(part[:1]) + part[1:]
-		}
-	}
-
-	return result
 }

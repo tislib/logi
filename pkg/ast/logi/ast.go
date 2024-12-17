@@ -17,11 +17,22 @@ type Definition struct {
 }
 
 type Statement struct {
-	Command       string      `json:"command"`
-	Arguments     []Argument  `json:"arguments"`
-	Parameters    []Parameter `json:"parameters"`
-	Attributes    []Attribute `json:"attributes"`
-	SubStatements []Statement `json:"subStatements"`
+	Scope         string        `json:"scope"`
+	Command       string        `json:"command"`
+	Arguments     []Argument    `json:"arguments"`
+	Parameters    []Parameter   `json:"parameters"`
+	Attributes    []Attribute   `json:"attributes"`
+	SubStatements [][]Statement `json:"subStatements"`
+}
+
+func (s Statement) GetParameter(name string) common.Value {
+	for _, p := range s.Parameters {
+		if p.Name == name {
+			return p.Value
+		}
+	}
+
+	return common.NullValue()
 }
 
 type Attribute struct {

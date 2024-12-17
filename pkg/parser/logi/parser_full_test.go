@@ -109,6 +109,49 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("id"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
+									},
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "primary",
+									},
+									{
+										Name: "autoincrement",
+									},
+								},
+							},
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("name"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
+									},
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "required",
+									},
+									{
+										Name:  "default",
+										Value: common.PointerValue(common.StringValue("John Doe")),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -133,6 +176,34 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Hello",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("id"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
+									},
+								},
+							},
+							{
+								Command: "World",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("name"),
+									},
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -163,6 +234,40 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param1"),
+									},
+									{
+										Name:  "value1",
+										Value: common.StringValue("11"),
+									},
+									{
+										Name:  "value2",
+										Value: common.StringValue("22"),
+									},
+								},
+							},
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("param2"),
+									},
+									{
+										Name:  "value3",
+										Value: common.IntegerValue(1),
+									},
+									{
+										Name:  "value4",
+										Value: common.IntegerValue(2),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -174,7 +279,14 @@ func TestParserFull(t *testing.T) {
 
 					syntax {
 						Main { code }
-						Auth {
+						Auth { auth }
+					}
+
+					scopes { 
+						code {
+							return <value int>
+						}
+						auth {
 							Username <username string>
 							Password <password string>
 						}
@@ -197,6 +309,52 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "simple",
 						Name:      "User1",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Main",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Scope:   "code",
+											Command: "return",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value",
+													Value: common.IntegerValue(123),
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Command: "Auth",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Scope:   "auth",
+											Command: "Username",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "username",
+													Value: common.StringValue("user1"),
+												},
+											},
+										},
+										{
+											Scope:   "auth",
+											Command: "Password",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "password",
+													Value: common.StringValue("password1"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -224,6 +382,25 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Hello",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "value1",
+										Value: common.StringValue("from the other side"),
+									},
+									{
+										Name:  "value2",
+										Value: common.StringValue("hello"),
+									},
+									{
+										Name:  "value3",
+										Value: common.StringValue("world"),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -249,6 +426,49 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "entity",
 						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("int"),
+									},
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("id"),
+									},
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "primary",
+									},
+									{
+										Name: "autoincrement",
+									},
+								},
+							},
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "propertyType",
+										Value: common.StringValue("string"),
+									},
+									{
+										Name:  "propertyName",
+										Value: common.StringValue("name"),
+									},
+								},
+								Attributes: []logiAst.Attribute{
+									{
+										Name: "required",
+									},
+									{
+										Name:  "default",
+										Value: common.PointerValue(common.StringValue("John Doe")),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -273,6 +493,34 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "interface",
 						Name:      "UserService",
+						Statements: []logiAst.Statement{
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "methodName",
+										Value: common.StringValue("createUser"),
+									},
+									{
+										Name:  "returnType",
+										Value: common.StringValue("User"),
+									},
+								},
+								Arguments: []logiAst.Argument{
+									{
+										Name: "name",
+										Type: common.TypeDefinition{
+											Name: "string",
+										},
+									},
+									{
+										Name: "age",
+										Type: common.TypeDefinition{
+											Name: "int",
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -284,6 +532,12 @@ func TestParserFull(t *testing.T) {
 
 					syntax {
 						<methodName Name> (...[<args Type<string>>]) <returnType Type> { code }
+					}
+
+					scopes {
+						code {
+							return <value int>
+						}
 					}
 				}
 `,
@@ -299,6 +553,48 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "implementation",
 						Name:      "UserServiceImpl",
+						Statements: []logiAst.Statement{
+							{
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "methodName",
+										Value: common.StringValue("createUser"),
+									},
+									{
+										Name:  "returnType",
+										Value: common.StringValue("User"),
+									},
+								},
+								Arguments: []logiAst.Argument{
+									{
+										Name: "name",
+										Type: common.TypeDefinition{
+											Name: "string",
+										},
+									},
+									{
+										Name: "age",
+										Type: common.TypeDefinition{
+											Name: "int",
+										},
+									},
+								},
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Scope:   "code",
+											Command: "return",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value",
+													Value: common.IntegerValue(0),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -326,6 +622,21 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "complexArray",
 						Name:      "ComplexArray1",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Param1",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "value11",
+										Value: common.StringValue("value1"),
+									},
+									{
+										Name:  "value21",
+										Value: common.StringValue("value2"),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -353,6 +664,39 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "complexArray",
 						Name:      "ComplexArray1",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Param1",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value11",
+													Value: common.StringValue("value1"),
+												},
+												{
+													Name:  "value21",
+													Value: common.StringValue("value2"),
+												},
+											},
+										},
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value11",
+													Value: common.StringValue("value3"),
+												},
+												{
+													Name:  "value21",
+													Value: common.StringValue("value4"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -383,6 +727,39 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "complexArray",
 						Name:      "ComplexArray1",
+						Statements: []logiAst.Statement{
+							{
+								Command: "Param1",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value11",
+													Value: common.StringValue("value1"),
+												},
+												{
+													Name:  "value21",
+													Value: common.StringValue("value2"),
+												},
+											},
+										},
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "value11",
+													Value: common.StringValue("value3"),
+												},
+												{
+													Name:  "value21",
+													Value: common.StringValue("value4"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -401,7 +778,16 @@ func TestParserFull(t *testing.T) {
 						StartTime <startTime string>
 						EndTime <endTime string>
 						Indicators <indicators array<Indicator>>
-						Strategy { code }
+						Strategy { strategy }
+					}
+
+					scopes { 
+						strategy {
+							if (<condition bool>) { strategy }
+
+							Buy(<symbol string>, <quantity int>)	
+							Sell(<symbol string>, <quantity int>)	
+						}
 					}
 				}`,
 			input: `
@@ -423,6 +809,177 @@ func TestParserFull(t *testing.T) {
 					{
 						MacroName: "backtest",
 						Name:      "VariableHoldUntil4",
+						Statements: []logiAst.Statement{
+							{
+								Command: "InitialCapital",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "initialCapital",
+										Value: common.IntegerValue(10000),
+									},
+								},
+							},
+							{
+								Command: "StartTime",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "startTime",
+										Value: common.StringValue("2010-01-01"),
+									},
+								},
+							},
+							{
+								Command: "EndTime",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "endTime",
+										Value: common.StringValue("2010-12-31"),
+									},
+								},
+							},
+							{
+								Command: "Indicators",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "indicatorName",
+													Value: common.StringValue("sma"),
+												},
+												{
+													Name:  "period",
+													Value: common.IntegerValue(20),
+													Expression: &common.Expression{
+														Kind: common.LiteralKind,
+														Literal: &common.Literal{
+															Value: common.IntegerValue(20),
+														},
+													},
+												},
+												{
+													Name:  "alias",
+													Value: common.StringValue("sma20"),
+												},
+											},
+										},
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "indicatorName",
+													Value: common.StringValue("sma"),
+												},
+												{
+													Name:  "period",
+													Value: common.IntegerValue(50),
+													Expression: &common.Expression{
+														Kind: common.LiteralKind,
+														Literal: &common.Literal{
+															Value: common.IntegerValue(50),
+														},
+													},
+												},
+												{
+													Name:  "alias",
+													Value: common.StringValue("sma50"),
+												},
+											},
+										},
+										{
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "indicatorName",
+													Value: common.StringValue("sma"),
+												},
+												{
+													Name:  "period",
+													Value: common.IntegerValue(200),
+													Expression: &common.Expression{
+														Kind: common.LiteralKind,
+														Literal: &common.Literal{
+															Value: common.IntegerValue(200),
+														},
+													},
+												},
+												{
+													Name:  "alias",
+													Value: common.StringValue("sma200"),
+												},
+											},
+										},
+									},
+								},
+							},
+							{
+								Command: "Strategy",
+								SubStatements: [][]logiAst.Statement{
+									{
+										{
+											Scope:   "strategy",
+											Command: "if",
+											Parameters: []logiAst.Parameter{
+												{
+													Name: "condition",
+													Value: common.MapValue(map[string]common.Value{
+														"left":     common.StringValue("sma20"),
+														"operator": common.StringValue("<"),
+														"right":    common.StringValue("sma50"),
+													}),
+													Expression: &common.Expression{
+														Kind: common.BinaryExprKind,
+														BinaryExpr: &common.BinaryExpression{
+															Left: &common.Expression{
+																Kind: common.VariableKind,
+																Variable: &common.Variable{
+																	Name: "sma20",
+																},
+															},
+															Operator: "<",
+															Right: &common.Expression{
+																Kind: common.VariableKind,
+																Variable: &common.Variable{
+																	Name: "sma50",
+																},
+															},
+														},
+													},
+												},
+											},
+											SubStatements: [][]logiAst.Statement{
+												{
+													{
+														Scope:   "strategy",
+														Command: "Buy",
+														Parameters: []logiAst.Parameter{
+															{
+																Name:  "symbol",
+																Value: common.StringValue("SPY"),
+																Expression: &common.Expression{
+																	Kind: common.LiteralKind,
+																	Literal: &common.Literal{
+																		Value: common.StringValue("SPY"),
+																	},
+																},
+															},
+															{
+																Name:  "quantity",
+																Value: common.IntegerValue(100),
+																Expression: &common.Expression{
+																	Kind: common.LiteralKind,
+																	Literal: &common.Literal{
+																		Value: common.IntegerValue(100),
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -439,8 +996,8 @@ func TestParserFull(t *testing.T) {
 				
 					scopes {
 						components {
-							<component Name> Led <pin int>
-							<component Name> Button <pin int>
+							Led 	<component Name> <pin int>
+							Button 	<component Name> <pin int>
 						}
 						command {
 							// Basic commands
@@ -469,11 +1026,11 @@ func TestParserFull(t *testing.T) {
 			input: `
 				circuit simple1 {
 					components {
-						yellowLed Led 5
-						redLed Led 6
-						blueLed Led 13
-						button1 Button 17
-						button2 Button 17
+						Led 	yellowLed 5
+						Led 	redLed 6
+						Led 	blueLed 13
+						Button 	button1 17
+						Button 	button2 17
 					}
 				
 					actions {
@@ -485,6 +1042,8 @@ func TestParserFull(t *testing.T) {
 								on(blueLed)
 								on(yellowLed)
 								on(redLed)
+							} else {
+								off(blueLed)
 							}
 						}
 				
@@ -504,69 +1063,76 @@ func TestParserFull(t *testing.T) {
 						Statements: []logiAst.Statement{
 							{
 								Command: "components",
-								SubStatements: []logiAst.Statement{
+								SubStatements: [][]logiAst.Statement{
 									{
-										Command: "Led",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("yellowLed"),
-											},
-											{
-												Name:  "pin",
-												Value: common.IntegerValue(5),
+										{
+											Scope:   "components",
+											Command: "Led",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("yellowLed"),
+												},
+												{
+													Name:  "pin",
+													Value: common.IntegerValue(5),
+												},
 											},
 										},
-									},
-									{
-										Command: "Led",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("redLed"),
-											},
-											{
-												Name:  "pin",
-												Value: common.IntegerValue(6),
-											},
-										},
-									},
-									{
-										Command: "Led",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("blueLed"),
-											},
-											{
-												Name:  "pin",
-												Value: common.IntegerValue(13),
+										{
+											Scope:   "components",
+											Command: "Led",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("redLed"),
+												},
+												{
+													Name:  "pin",
+													Value: common.IntegerValue(6),
+												},
 											},
 										},
-									},
-									{
-										Command: "Button",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("button1"),
-											},
-											{
-												Name:  "pin",
-												Value: common.IntegerValue(17),
+										{
+											Scope:   "components",
+											Command: "Led",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("blueLed"),
+												},
+												{
+													Name:  "pin",
+													Value: common.IntegerValue(13),
+												},
 											},
 										},
-									},
-									{
-										Command: "Button",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("button2"),
+										{
+											Scope:   "components",
+											Command: "Button",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("button1"),
+												},
+												{
+													Name:  "pin",
+													Value: common.IntegerValue(17),
+												},
 											},
-											{
-												Name:  "pin",
-												Value: common.IntegerValue(17),
+										},
+										{
+											Scope:   "components",
+											Command: "Button",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("button2"),
+												},
+												{
+													Name:  "pin",
+													Value: common.IntegerValue(17),
+												},
 											},
 										},
 									},
@@ -574,99 +1140,201 @@ func TestParserFull(t *testing.T) {
 							},
 							{
 								Command: "actions",
-								SubStatements: []logiAst.Statement{
+								SubStatements: [][]logiAst.Statement{
 									{
-										Command: "on",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("yellowLed"),
-												Expression: &common.Expression{
-													Kind: common.VariableKind,
+										{
+											Scope:   "command",
+											Command: "on",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("yellowLed"),
+													Expression: &common.Expression{
+														Kind: common.VariableKind,
 
-													Variable: &common.Variable{
-														Name: "yellowLed",
+														Variable: &common.Variable{
+															Name: "yellowLed",
+														},
 													},
 												},
 											},
 										},
-									},
-									{
-										Command: "on",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("redLed"),
-												Expression: &common.Expression{
-													Kind: common.VariableKind,
+										{
+											Scope:   "command",
+											Command: "on",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("redLed"),
+													Expression: &common.Expression{
+														Kind: common.VariableKind,
 
-													Variable: &common.Variable{
-														Name: "redLed",
+														Variable: &common.Variable{
+															Name: "redLed",
+														},
 													},
 												},
 											},
 										},
-									},
-									{
-										Command: "on_click",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("button1"),
-												Expression: &common.Expression{
-													Kind: common.VariableKind,
+										{
+											Scope:   "handler",
+											Command: "on_click",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("button1"),
+													Expression: &common.Expression{
+														Kind: common.VariableKind,
 
-													Variable: &common.Variable{
-														Name: "button1",
+														Variable: &common.Variable{
+															Name: "button1",
+														},
 													},
 												},
 											},
-										},
-										SubStatements: []logiAst.Statement{
-											{
-												Command: "if",
-												Parameters: []logiAst.Parameter{
+											SubStatements: [][]logiAst.Statement{
+												{
 													{
-														Name: "condition",
-														Value: common.MapValue(map[string]common.Value{
-															"left": common.MapValue(map[string]common.Value{
-																"name":      common.StringValue("status"),
-																"arguments": common.ArrayValue(common.StringValue("button2")),
-															}),
-															"operator": common.StringValue("=="),
-															"right":    common.StringValue("on"),
-														}),
-														Expression: &common.Expression{
-															Kind: common.BinaryExprKind,
-															BinaryExpr: &common.BinaryExpression{
-																Left: &common.Expression{
-																	Kind: common.FuncCallKind,
-																	FuncCall: &common.FunctionCall{
-																		Name: "status",
-																		Arguments: []*common.Expression{
-																			{
+														Scope:   "command",
+														Command: "if",
+														Parameters: []logiAst.Parameter{
+															{
+																Name: "condition",
+																Value: common.MapValue(map[string]common.Value{
+																	"left": common.MapValue(map[string]common.Value{
+																		"name":      common.StringValue("status"),
+																		"arguments": common.ArrayValue(common.StringValue("button2")),
+																	}),
+																	"operator": common.StringValue("=="),
+																	"right":    common.StringValue("on"),
+																}),
+																Expression: &common.Expression{
+																	Kind: common.BinaryExprKind,
+																	BinaryExpr: &common.BinaryExpression{
+																		Left: &common.Expression{
+																			Kind: common.FuncCallKind,
+																			FuncCall: &common.FunctionCall{
+																				Name: "status",
+																				Arguments: []*common.Expression{
+																					{
+																						Kind: common.VariableKind,
+																						Variable: &common.Variable{
+																							Name: "button2",
+																						},
+																					},
+																				},
+																			},
+																		},
+																		Operator: "==",
+																		Right: &common.Expression{
+																			Kind: common.LiteralKind,
+																			Literal: &common.Literal{
+																				Value: common.StringValue("on"),
+																			},
+																		},
+																	},
+																},
+															},
+														},
+														SubStatements: [][]logiAst.Statement{
+															{
+																{
+																	Scope:   "command",
+																	Command: "on",
+																	Parameters: []logiAst.Parameter{
+																		{
+																			Name:  "component",
+																			Value: common.StringValue("blueLed"),
+																			Expression: &common.Expression{
 																				Kind: common.VariableKind,
+
 																				Variable: &common.Variable{
-																					Name: "button2",
+																					Name: "blueLed",
 																				},
 																			},
 																		},
 																	},
 																},
-																Operator: "==",
-																Right: &common.Expression{
-																	Kind: common.LiteralKind,
-																	Literal: &common.Literal{
-																		Value: common.StringValue("on"),
+																{
+																	Scope:   "command",
+																	Command: "on",
+																	Parameters: []logiAst.Parameter{
+																		{
+																			Name:  "component",
+																			Value: common.StringValue("yellowLed"),
+																			Expression: &common.Expression{
+																				Kind: common.VariableKind,
+
+																				Variable: &common.Variable{
+																					Name: "yellowLed",
+																				},
+																			},
+																		},
+																	},
+																},
+																{
+																	Scope:   "command",
+																	Command: "on",
+																	Parameters: []logiAst.Parameter{
+																		{
+																			Name:  "component",
+																			Value: common.StringValue("redLed"),
+																			Expression: &common.Expression{
+																				Kind: common.VariableKind,
+
+																				Variable: &common.Variable{
+																					Name: "redLed",
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+															{
+																{
+																	Scope:   "command",
+																	Command: "off",
+																	Parameters: []logiAst.Parameter{
+																		{
+																			Name:  "component",
+																			Value: common.StringValue("blueLed"),
+																			Expression: &common.Expression{
+																				Kind: common.VariableKind,
+
+																				Variable: &common.Variable{
+																					Name: "blueLed",
+																				},
+																			},
+																		},
 																	},
 																},
 															},
 														},
 													},
 												},
-												SubStatements: []logiAst.Statement{
+											},
+										},
+										{
+											Scope:   "handler",
+											Command: "on_click",
+											Parameters: []logiAst.Parameter{
+												{
+													Name:  "component",
+													Value: common.StringValue("button2"),
+													Expression: &common.Expression{
+														Kind: common.VariableKind,
+
+														Variable: &common.Variable{
+															Name: "button2",
+														},
+													},
+												},
+											},
+											SubStatements: [][]logiAst.Statement{
+												{
 													{
-														Command: "on",
+														Scope:   "command",
+														Command: "off",
 														Parameters: []logiAst.Parameter{
 															{
 																Name:  "component",
@@ -682,6 +1350,7 @@ func TestParserFull(t *testing.T) {
 														},
 													},
 													{
+														Scope:   "command",
 														Command: "on",
 														Parameters: []logiAst.Parameter{
 															{
@@ -698,6 +1367,7 @@ func TestParserFull(t *testing.T) {
 														},
 													},
 													{
+														Scope:   "command",
 														Command: "on",
 														Parameters: []logiAst.Parameter{
 															{
@@ -710,72 +1380,6 @@ func TestParserFull(t *testing.T) {
 																		Name: "redLed",
 																	},
 																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-									{
-										Command: "on_click",
-										Parameters: []logiAst.Parameter{
-											{
-												Name:  "component",
-												Value: common.StringValue("button2"),
-												Expression: &common.Expression{
-													Kind: common.VariableKind,
-
-													Variable: &common.Variable{
-														Name: "button2",
-													},
-												},
-											},
-										},
-										SubStatements: []logiAst.Statement{
-											{
-												Command: "off",
-												Parameters: []logiAst.Parameter{
-													{
-														Name:  "component",
-														Value: common.StringValue("blueLed"),
-														Expression: &common.Expression{
-															Kind: common.VariableKind,
-
-															Variable: &common.Variable{
-																Name: "blueLed",
-															},
-														},
-													},
-												},
-											},
-											{
-												Command: "on",
-												Parameters: []logiAst.Parameter{
-													{
-														Name:  "component",
-														Value: common.StringValue("yellowLed"),
-														Expression: &common.Expression{
-															Kind: common.VariableKind,
-
-															Variable: &common.Variable{
-																Name: "yellowLed",
-															},
-														},
-													},
-												},
-											},
-											{
-												Command: "on",
-												Parameters: []logiAst.Parameter{
-													{
-														Name:  "component",
-														Value: common.StringValue("redLed"),
-														Expression: &common.Expression{
-															Kind: common.VariableKind,
-
-															Variable: &common.Variable{
-																Name: "redLed",
 															},
 														},
 													},

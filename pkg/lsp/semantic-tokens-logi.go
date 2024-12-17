@@ -103,7 +103,6 @@ func (h *handler) tokenizeStatementElements(element plain.DefinitionStatementEle
 	case plain.DefinitionStatementElementKindAttributeList:
 	case plain.DefinitionStatementElementKindArgumentList:
 	case plain.DefinitionStatementElementKindParameterList:
-	case plain.DefinitionStatementElementKindCodeBlock:
 	}
 
 	tl = append(tl, Token{
