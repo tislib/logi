@@ -17,6 +17,7 @@ You can download binaries from release page, or you can build from source.
 ## Example 1. Define a DSL for a credit rules
 
 credit-rule.lgm
+
 ```logi
 macro creditRule {
     kind Syntax
@@ -32,6 +33,7 @@ macro creditRule {
 Now let's define a credit rule using the macro:
 
 credit-rule.lg
+
 ```logi
 creditRule Rule1 {
     creditScore 500 600
@@ -54,46 +56,7 @@ logi compile -i engine-config.lg
 
 This will parse macro and logi definition file, and will compile it to json, which can be used by your application.
 
-```json
-[
-   {
-      "macro": "creditRule",
-      "name": "Rule1",
-      "data": {
-         "age": {
-            "max": 65,
-            "min": 18
-         },
-         "creditScore": {
-            "max": 600,
-            "min": 500
-         },
-         "income": {
-            "max": 30000,
-            "min": 20000
-         }
-      }
-   },
-   {
-      "macro": "creditRule",
-      "name": "Rule2",
-      "data": {
-         "age": {
-            "max": 65,
-            "min": 18
-         },
-         "creditScore": {
-            "max": 700,
-            "min": 600
-         },
-         "income": {
-            "max": 40000,
-            "min": 30000
-         }
-      }
-   }
-]
-```
+[see result](examples/credit-rule/credit-rule.json)
 
 See examples folder for all examples.
 
@@ -130,51 +93,7 @@ chatbot MyChatbot {
 
 Logi language also have Virtual Machine where you can load, read, execute the Logi content.
 
-A sample in golang:
-```go
-package main
-
-import "github.com/tislib/logi/pkg/vm"
-
-func main() {
-   var v, err = vm.New()
-
-   if err != nil {
-      panic(err)
-   }
-
-   // load Macro, which will be used to parse actual logi content
-   _ = v.LoadMacroContent(`
-		macro conversation {
-			kind Syntax
-			
-			syntax {
-				greeting { expr }
-				farewell { expr }
-			}
-		}`)
-
-   // load Logi content, based on given Macro DSL
-   def, err := v.LoadLogiContent(`
-		conversation SimpleOp {
-			greeting { "Hello, " + name }
-			farewell { "Goodbye, " + name }
-		}
-`)
-
-   // execute the loaded Logi content
-   v.SetLocal("name", "John Doe")
-   result, err := v.Execute(&def[0], "greeting")
-
-   println("Greeting: " + result.(string))
-
-   result, _ = v.Execute(&def[0], "farewell")
-
-   println("Farewell: " + result.(string))
-
-}
-
-```
+[see main.go](examples/chat-bot/main.go)
 
 # Syntax
 
@@ -254,12 +173,12 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-   "age": {
-      "age": 30
-   },
-   "name": {
-      "name": "John"
-   }
+  "age": {
+    "age": 30
+  },
+  "name": {
+    "name": "John"
+  }
 }
 ```
 
@@ -360,24 +279,21 @@ person JohnDoe {
 
 ### Syntax Elements
 
-There are different type of syntax elements in Logi:
+There are different types of syntax elements in Logi:
 
 1. **Keyword**: A keyword is an identifier that is used to define a syntax element.
 2. **VariableKeyword**: A variable keyword is a keyword that can be used as a variable in the syntax. It is for matching
    dynamic information in definition
 3. **ParameterList**: A parameter list is a list of parameters. It is used to define a list of parameters in a syntax
    element.
-4. **ArgumentList**: An argument list is a list of arguments. It is used to define a list of arguments in a syntax
+4. Scope: A scope is a block of code enclosed in curly braces. It is used to define a block of code in a syntax element.
+5. **ArgumentList**: An argument list is a list of arguments. It is used to define a list of arguments in a syntax
    element.
-5. **CodeBlock**: A code block is a block of code. It is used to define a block of code in a syntax element.
-6. **ExpressionBlock**: An expression block is a block of expression. It is used to define a block of expression in a
    syntax element.
-7. **AttributeList**: An attribute list is a list of attributes. It is used to define a list of attributes in a syntax
+6. **AttributeList**: An attribute list is a list of attributes. It is used to define a list of attributes in a syntax
    element.
-8. **TypeReference**: A type reference is to include a statement from *types* section into syntax.
-9. **Combination**: A combination is a combination of multiple syntax elements. It is like Or statement
-10. **Structure**: A structure is a combination of multiple syntax elements. It is for making nested definition
-    statements.
+7. **TypeReference**: A type reference is to include a statement from *types* section into syntax.
+8. **Combination**: A combination is a combination of multiple syntax elements. It is like Or statement
 
 #### Keyword
 
@@ -409,13 +325,13 @@ it will be translated as:
 
 ```json
 {
-   "name": {
-      "name": "John",
-      "knownAs": "Johnny"
-   },
-   "age": {
-      "age": 30
-   }
+  "name": {
+    "name": "John",
+    "knownAs": "Johnny"
+  },
+  "age": {
+    "age": 30
+  }
 }
 ```
 
@@ -502,14 +418,14 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-   "paramLogLevel": {
-      "paramName": "LogLevel",
-      "paramValue": "info"
-   },
-   "paramPort": {
-      "paramName": "Port",
-      "paramValue": "8080"
-   }
+  "paramLogLevel": {
+    "paramName": "LogLevel",
+    "paramValue": "info"
+  },
+  "paramPort": {
+    "paramName": "Port",
+    "paramValue": "8080"
+  }
 }
 ```
 
@@ -541,14 +457,14 @@ It will be matched by **_Logi engine_** and will be translated into a definition
 
 ```json
 {
-   "propertyAge": {
-      "fieldName": "age",
-      "fieldType": "int"
-   },
-   "propertyName": {
-      "fieldName": "name",
-      "fieldType": "string"
-   }
+  "propertyAge": {
+    "fieldName": "age",
+    "fieldType": "int"
+  },
+  "propertyName": {
+    "fieldName": "name",
+    "fieldType": "string"
+  }
 }
 ```
 
@@ -717,6 +633,104 @@ This will be translated as:
 }
 ```
 
+#### Scope
+Scopes are for defining syntax for nested blocks of code. And reusing them in syntax.
+
+An example of scope is:
+
+```logi
+circuit simple1 {
+    components {
+        Led 	yellowLed 5
+        Led 	redLed 6
+        Led 	blueLed 13
+        Button 	button1 17
+        Button 	button2 19
+    }
+
+    actions {
+        on(yellowLed)
+        on(redLed)
+
+        on_click(button1) {
+            if (status(button2) == 'on') {
+                on(blueLed)
+                on(yellowLed)
+                on(redLed)
+            } else {
+                off(blueLed)
+            }
+        }
+
+        on_click(button2) {
+            off(blueLed)
+            on(yellowLed)
+            on(redLed)
+        }
+    }
+}
+```
+In this logi file, you can see nested blocks of code. `components` and `actions` are scopes. 
+Now, let's define macro file for it.
+
+```logi
+macro circuit {
+    kind Syntax
+
+    syntax {
+        components { components }
+        actions { command | handler }
+    }
+
+    scopes {
+        components {
+            Led 	<component Name> <pin int>
+            Button 	<component Name> <pin int>
+        }
+        command {
+            // Basic commands
+            on(<component Name>)
+            off(<component Name>)
+            blink(<component Name>, <count int>, <seconds float>)
+            wait(<seconds float>)
+            brightness(<component Name>, <value float>)
+            fade_in(<component Name>, <seconds float>)
+            fade_out(<component Name>, <seconds float>)
+            // Conditional commands
+            if (<condition bool>) { command | handler }
+            if (<condition bool>) { command | handler } else { command | handler }
+        }
+        handler {
+            // Event handlers
+            on_click(<component Name>) { command }
+            on_click(<component Name>, <count int>) { command }
+            on_press(<component Name>, <count int>) { command }
+            on_release(<component Name>, <count int>) { command }
+            while_held(<component Name>) { command }
+        }
+    }
+}
+```
+As you can see from this code, scopes are defined in scopes block.
+```logi
+...
+syntax {
+   {command} { scopeName }
+}
+scopes {
+   {scopeName} {
+       {Statement1}
+       {Statement2}
+       ...  
+   }
+}
+```
+And it can be used in anyplace with { scopeName } syntax element.
+
+Later to execute this code, you either need to execute it from its json compiled form: [see result](examples/circuit/circuit-1.json)
+Or in golang, you can use virtual machine and implementer: [see main.go](pkg/vm/vm_test.go)
+
+
 #### ArgumentList
 
 Argument list is used to define a list of arguments inside parentheses.
@@ -806,74 +820,6 @@ This will be translated as:
   }
 }
 ```
-
-#### CodeBlock
-
-Code block is used to define a block of code inside curly braces.
-
-Example: `{ code }` will match with `{return "Hello"}`
-
-Macro
-
-```logi
-macro person {
-    kind Syntax
-    
-    syntax {
-        name <name string>
-        age <age int>
-        greet { code }
-    }
-}
-```
-
-Definition
-
-```logi
-person John {
-    name "John"
-    age 30
-    greet {
-      return "Hello"
-    }
-}
-```
-
-This will be translated as:
-
-code block will not be translated to definition immediately, but you can execute them inside VM.
-
-#### ExpressionBlock
-
-Expression block is used to define a block of expression inside curly braces.
-
-Example: `{ expression }` will match with `{1 + 2}`
-
-Macro
-
-```logi
-macro person {
-    kind Syntax
-    
-    syntax {
-        name <name string>
-        age <age int>
-        greet { expr }
-    }
-}
-```
-
-Definition
-
-```logi
-person John {
-    name "John"
-    age 30
-    greet {1 + 2}
-}
-```
-
-The difference between code block and expression is, inside expression no need to write `return` keyword.
 
 #### TypeReference
 
@@ -970,89 +916,12 @@ Both will be translated as:
 }
 ```
 
-#### Structure
-
-Structure is used to define nested statements.
-
-Example: `{<name string> <age int> Nested2 { <nestedName string> <nestedAge int> }}` will match with
-`{"John" 30 { "Jane" 25 }}`
-
-Macro
-
-```logi
-macro user {
-    kind Syntax
-    
-    syntax {
-        name <name string>
-        age <age int>
-        Auth {
-            username <username string>
-            password <password string>
-            Token {
-                accessToken <accessToken string>
-                refreshToken <refreshToken string>
-            }
-        }
-    }
-}
-```
-
-Definition
-
-```logi
-user JohnDoe {
-    name "John"
-    age 30
-    Auth {
-        username "john.doe"
-        password "password"
-        Token {
-            accessToken "access token"
-            refreshToken "refresh token"
-        }
-    }
-}
-```
-
-This will be translated as:
-
-```json
- {
-   "age": {
-      "age": 30
-   },
-   "auth": {
-      "auth": {
-         "password": {
-            "password": "password"
-         },
-         "token": {
-            "token": {
-               "accessToken": {
-                  "accessToken": "access token"
-               },
-               "refreshToken": {
-                  "refreshToken": "refresh token"
-               }
-            }
-         },
-         "username": {
-            "username": "john.doe"
-         }
-      }
-   },
-   "name": {
-      "name": "John"
-   }
-}
-```
-
 ### Comments
 
 Comments are used to write notes in the code. They are not executed by the engine.
 
 There are two types of comments in Logi:
+
 1. Single line comment: It starts with `//` and ends with the end of the line.
 2. Multi-line comment: It starts with `/*` and ends with `*/`.
 

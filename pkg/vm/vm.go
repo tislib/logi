@@ -50,20 +50,10 @@ func (v *vm) GetDefinitionByName(name string) (*logiAst.Definition, error) {
 	return nil, fmt.Errorf("logiAst.Definition %s not found", name)
 }
 
-type Option func(vm *vm) error
-
-func New(option ...Option) (VirtualMachine, error) {
-	v := &vm{
+func New() VirtualMachine {
+	return &vm{
 		locals:        make(map[string]interface{}),
 		vars:          make(map[string]interface{}),
 		MacroContents: make(map[string]string),
 	}
-
-	for _, o := range option {
-		if err := o(v); err != nil {
-			return nil, fmt.Errorf("failed to apply option: %w", err)
-		}
-	}
-
-	return v, nil
 }

@@ -1,0 +1,226 @@
+[
+  {
+    "macroName": "creditRule",
+    "name": "Rule1",
+    "plainStatements": null,
+    "statements": [
+      {
+        "scope": "",
+        "command": "creditScore",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 500,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 600,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      },
+      {
+        "scope": "",
+        "command": "income",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 20000,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 30000,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      },
+      {
+        "scope": "",
+        "command": "age",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 18,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 65,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      }
+    ]
+  },
+  {
+    "macroName": "creditRule",
+    "name": "Rule2",
+    "plainStatements": null,
+    "statements": [
+      {
+        "scope": "",
+        "command": "creditScore",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 600,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 700,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      },
+      {
+        "scope": "",
+        "command": "income",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 30000,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 40000,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      },
+      {
+        "scope": "",
+        "command": "age",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "min",
+            "value": {
+              "kind": "Integer",
+              "integer": 18,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          },
+          {
+            "name": "max",
+            "value": {
+              "kind": "Integer",
+              "integer": 65,
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": null
+      }
+    ]
+  }
+]

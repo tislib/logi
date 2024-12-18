@@ -2,7 +2,11 @@ macro chatbot {
     kind Syntax
 
     syntax {
-        intent <name Name> {
+        intent <name Name> { conversation }
+    }
+
+    scopes {
+        conversation {
             pattern <pattern string>
             response <response string>
         }
