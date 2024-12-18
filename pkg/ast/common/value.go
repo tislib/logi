@@ -86,6 +86,54 @@ func (v Value) AsInterface() interface{} {
 	}
 }
 
+func (v Value) AsString() string {
+	if v.Kind == ValueKindString {
+		return *v.String
+	} else {
+		return ""
+	}
+}
+
+func (v Value) AsBoolean() bool {
+	if v.Kind == ValueKindBoolean {
+		return *v.Boolean
+	} else {
+		return false
+	}
+}
+
+func (v Value) AsFloat() float64 {
+	if v.Kind == ValueKindFloat {
+		return *v.Float
+	} else {
+		return 0
+	}
+}
+
+func (v Value) AsInteger() int64 {
+	if v.Kind == ValueKindInteger {
+		return *v.Integer
+	} else {
+		return 0
+	}
+}
+
+func (v Value) AsArray() []Value {
+	if v.Kind == ValueKindArray {
+		return v.Array
+	} else {
+		return nil
+	}
+}
+
+func (v Value) AsMap() map[string]Value {
+	if v.Kind == ValueKindMap {
+		return v.Map
+	} else {
+		return nil
+	}
+}
+
 func StringValue(s string) Value {
 	return Value{
 		Kind:   ValueKindString,

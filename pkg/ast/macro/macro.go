@@ -33,11 +33,22 @@ type Macro struct {
 	// The Syntax of the macro, used to define the syntax of the macro, it will be used in the syntax section
 	Syntax Syntax `json:"syntax,omitempty"`
 
+	Scopes Scopes `json:"scopes,omitempty"`
+
 	SourceMap map[string]common.SourceLocation `json:"sourceMap,omitempty"`
 }
 
 type Types struct {
 	Types []TypeStatement `json:"types,omitempty"`
+}
+
+type Scopes struct {
+	Scopes []ScopeItem `json:"scopes,omitempty"`
+}
+
+type ScopeItem struct {
+	Name       string            `json:"name,omitempty"`
+	Statements []SyntaxStatement `json:"statements,omitempty"`
 }
 
 type Syntax struct {
@@ -61,12 +72,10 @@ const (
 	SyntaxStatementElementKindTypeReference   SyntaxStatementElementKind = "TypeReference"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
 	SyntaxStatementElementKindCombination     SyntaxStatementElementKind = "Combination"
-	SyntaxStatementElementKindStructure       SyntaxStatementElementKind = "Structure"
 	SyntaxStatementElementKindParameterList   SyntaxStatementElementKind = "ParameterList"
 	SyntaxStatementElementKindArgumentList    SyntaxStatementElementKind = "ArgumentList"
-	SyntaxStatementElementKindCodeBlock       SyntaxStatementElementKind = "CodeBlock"
-	SyntaxStatementElementKindExpressionBlock SyntaxStatementElementKind = "ExpressionBlock"
 	SyntaxStatementElementKindAttributeList   SyntaxStatementElementKind = "AttributeList"
+	SyntaxStatementElementKindScope           SyntaxStatementElementKind = "Scope"
 )
 
 type SyntaxStatementElement struct {
@@ -76,20 +85,14 @@ type SyntaxStatementElement struct {
 	TypeReference   *SyntaxStatementElementTypeReference   `json:"typeReference,omitempty"`
 	VariableKeyword *SyntaxStatementElementVariableKeyword `json:"variableKeyword,omitempty"`
 	Combination     *SyntaxStatementElementCombination     `json:"combination,omitempty"`
-	Structure       *SyntaxStatementElementStructure       `json:"structure,omitempty"`
 	ParameterList   *SyntaxStatementElementParameterList   `json:"parameterList,omitempty"`
 	ArgumentList    *SyntaxStatementElementArgumentList    `json:"argumentList,omitempty"`
-	CodeBlock       *SyntaxStatementElementCodeBlock       `json:"codeBlock,omitempty"`
-	ExpressionBlock *SyntaxStatementElementExpressionBlock `json:"expressionBlock,omitempty"`
 	AttributeList   *SyntaxStatementElementAttributeList   `json:"attributeList,omitempty"`
+	ScopeDef        *SyntaxStatementElementScopeDef        `json:"scopeDef,omitempty"`
 }
 
 type SyntaxStatementElementCombination struct {
 	Elements []SyntaxStatementElement `json:"elements,omitempty"`
-}
-
-type SyntaxStatementElementStructure struct {
-	Statements []SyntaxStatement `json:"statements,omitempty"`
 }
 
 type SyntaxStatementElementParameterList struct {
@@ -128,13 +131,11 @@ type SyntaxStatementElementArgument struct {
 	Type common.TypeDefinition `json:"type,omitempty"`
 }
 
-type SyntaxStatementElementCodeBlock struct {
-}
-
-type SyntaxStatementElementExpressionBlock struct {
-}
-
 type SyntaxStatementElementAttribute struct {
 	Name string                `json:"name,omitempty"`
 	Type common.TypeDefinition `json:"type,omitempty"`
+}
+
+type SyntaxStatementElementScopeDef struct {
+	Scopes []string `json:"name,omitempty"`
 }

@@ -1,480 +1,252 @@
 package vm
 
 import (
-	"encoding/json"
+	_ "embed"
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"log"
+	"github.com/tislib/logi/pkg/ast/common"
+	logiAst "github.com/tislib/logi/pkg/ast/logi"
 	"testing"
 )
 
+type TestLedImplementor struct {
+	leds        map[string]int64
+	buttons     map[string]int64
+	ledState    map[string]bool
+	buttonState map[string]bool
+
+	buttonHandlers map[string]func() error
+}
+
+func (t *TestLedImplementor) Call(vm VirtualMachine, statement logiAst.Statement) error {
+	var funcs = map[string]func(args ...common.Value) (common.Value, error){
+		"status": func(args ...common.Value) (common.Value, error) {
+			if len(args) != 1 {
+				return common.Value{}, fmt.Errorf("expected 1 argument")
+			}
+
+			var buttonName = args[0].AsMap()["name"].AsString()
+
+			if _, ok := t.buttons[buttonName]; !ok {
+				return common.Value{}, fmt.Errorf("unknown button %s", buttonName)
+			}
+
+			if t.buttonState[buttonName] {
+				return common.StringValue("on"), nil
+			} else {
+				return common.StringValue("off"), nil
+			}
+		},
+	}
+
+	var vars = map[string]common.Value{}
+
+	for ledName := range t.leds {
+		vars[ledName] = common.MapValue(map[string]common.Value{
+			"kind": common.StringValue("led"),
+			"name": common.StringValue(ledName),
+		})
+	}
+
+	for buttonName := range t.buttons {
+		vars[buttonName] = common.MapValue(map[string]common.Value{
+			"kind": common.StringValue("button"),
+			"name": common.StringValue(buttonName),
+		})
+	}
+
+	switch statement.Scope {
+	case "components":
+		switch statement.Command {
+		case "Led":
+			t.leds[statement.GetParameter("component").AsString()] = statement.GetParameter("pin").AsInteger()
+			return nil
+		case "Button":
+			t.buttons[statement.GetParameter("component").AsString()] = statement.GetParameter("pin").AsInteger()
+			return nil
+		default:
+			return fmt.Errorf("unknown command %s", statement.Command)
+		}
+	case "command":
+		switch statement.Command {
+		case "on":
+			var component = statement.GetParameter("component").AsString()
+			if _, ok := t.leds[component]; !ok {
+				return fmt.Errorf("unknown led %s", component)
+			}
+			t.ledState[component] = true
+			return nil
+		case "off":
+			var component = statement.GetParameter("component").AsString()
+			if _, ok := t.leds[component]; !ok {
+				return fmt.Errorf("unknown led %s", component)
+			}
+			t.ledState[component] = false
+			return nil
+		case "if":
+			var condition *common.Expression
+			for _, parameter := range statement.Parameters {
+				if parameter.Name == "condition" {
+					condition = parameter.Expression
+				}
+			}
+
+			if condition == nil {
+				return fmt.Errorf("condition is required")
+			}
+
+			conditionRes, err := vm.Evaluate(*condition, vars, funcs)
+
+			if err != nil {
+				return err
+			}
+
+			if conditionRes.Kind != common.ValueKindBoolean {
+				return fmt.Errorf("condition must be boolean")
+			}
+
+			var ifPass = conditionRes.AsBoolean()
+			if ifPass {
+				for _, subStatement := range statement.SubStatements[0] {
+					err := t.Call(vm, subStatement)
+					if err != nil {
+						return err
+					}
+				}
+			} else if len(statement.SubStatements) > 1 {
+				for _, subStatement := range statement.SubStatements[1] {
+					err := t.Call(vm, subStatement)
+					if err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		default:
+			return fmt.Errorf("unknown command %s", statement.Command)
+		}
+	case "handler":
+		switch statement.Command {
+		case "on_click":
+			var component = statement.GetParameter("component").AsString()
+			if _, ok := t.buttons[component]; !ok {
+				return fmt.Errorf("unknown button %s", component)
+			}
+
+			t.buttonHandlers[component] = func() error {
+				for _, subStatement := range statement.SubStatements[0] {
+					err := t.Call(vm, subStatement)
+					if err != nil {
+						return err
+					}
+				}
+
+				return nil
+			}
+
+			return nil
+		default:
+			return fmt.Errorf("unknown command %s", statement.Command)
+		}
+	case "":
+		for _, statement := range statement.SubStatements[0] {
+			err := t.Call(vm, statement)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return fmt.Errorf("unknown scope %s", statement.Scope)
+	}
+}
+
+//go:embed test_data/circuit.lgm
+var circuitLgm string
+
+//go:embed test_data/circuit.lg
+var circuitLg string
+
 func TestVmDynamic(t *testing.T) {
 	tests := map[string]struct {
-		macro                     string
-		input                     string
-		calls                     []func(t *testing.T, vm VirtualMachine) error
-		expectedDefinitions       []Definition
-		expectedDefinitionsAsJson string
-		options                   []Option
+		macro       string
+		input       string
+		Implementer Implementer
+		Assert      func(t *testing.T, implementer Implementer)
 	}{
 		"simple macro": {
-			macro: `
-				macro test {
-					kind Syntax
-					syntax {
-						Hello <hello string>
-						World <world number>
-					}
-				}`,
-			input: `
-				test test1 {
-					Hello "hello"
-					World 42
-				}`,
-			expectedDefinitions: []Definition{
-				{
-					Macro: "test",
-					Name:  "test1",
-					Data: map[string]map[string]interface{}{
-						"hello": {
-							"hello": "hello",
-						},
-						"world": {
-							"world": int64(42),
-						},
-					},
-				},
+			macro: circuitLgm,
+			input: circuitLg,
+			Implementer: &TestLedImplementor{
+				leds:           make(map[string]int64),
+				buttons:        make(map[string]int64),
+				ledState:       make(map[string]bool),
+				buttonState:    make(map[string]bool),
+				buttonHandlers: make(map[string]func() error),
+			},
+			Assert: func(t *testing.T, implementer Implementer) {
+				ledImplementor := implementer.(*TestLedImplementor)
+
+				assert.Equal(t, ledImplementor.leds, map[string]int64{
+					"blueLed":   13,
+					"redLed":    6,
+					"yellowLed": 5,
+				})
+
+				assert.Equal(t, ledImplementor.buttons, map[string]int64{
+					"button1": 17,
+					"button2": 19,
+				})
+
+				assert.Equal(t, ledImplementor.ledState, map[string]bool{
+					"redLed":    true,
+					"yellowLed": true,
+				})
 			},
 		},
-		"complex macro execution": {
-			macro: `
-				macro backtest {
-					kind Syntax
-				
-					types {
-						Indicator <indicatorName Name> (<period int>) as <alias Name>
-					}
-				
-					syntax {
-						InitialCapital <initialCapital int>
-						StartTime <startTime string>
-						EndTime <endTime string>
-						Indicators <indicators array<Indicator>>
-						Strategy { code }
-					}
-				}`,
-			input: `
-				backtest VariableHoldUntil4 {
-					InitialCapital  10000
-					StartTime       "2010-01-01"
-					EndTime         "2010-12-31"
-					Indicators       [sma(20) as sma20, sma(50) as sma50, sma(200) as sma200]
-				
-					Strategy {
-						if (sma20 < sma50) {
-							return Sell("SPY", 100)
-						}
-						return Buy("SPY", 200)
-					}
-				}
-				`,
-			options: []Option{
-				WithLocals(map[string]interface{}{
-					"Buy": func(symbol string, quantity int64) int64 {
-						return quantity
-					},
-					"Sell": func(symbol string, quantity int64) int64 {
-						return -quantity
-					},
-				}),
+		"simple macro, button click": {
+			macro: circuitLgm,
+			input: circuitLg,
+			Implementer: &TestLedImplementor{
+				leds:           make(map[string]int64),
+				buttons:        make(map[string]int64),
+				ledState:       make(map[string]bool),
+				buttonState:    make(map[string]bool),
+				buttonHandlers: make(map[string]func() error),
 			},
-			calls: []func(t *testing.T, vm VirtualMachine) error{
-				func(t *testing.T, vm VirtualMachine) error {
-					definition, err := vm.GetDefinitionByName("VariableHoldUntil4")
+			Assert: func(t *testing.T, implementer Implementer) {
+				ledImplementor := implementer.(*TestLedImplementor)
 
-					if err != nil {
-						return err
-					}
+				ledImplementor.buttonState["button2"] = true
 
-					newLocals := map[string]interface{}{}
+				var err = ledImplementor.buttonHandlers["button1"]()
+				assert.NoErrorf(t, err, fmt.Sprintf("error: %v", err))
 
-					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
-						indicatorMap := indicator.(map[string]interface{})
-						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
-					}
+				assert.Equal(t, ledImplementor.ledState, map[string]bool{
+					"blueLed":   true,
+					"redLed":    true,
+					"yellowLed": true,
+				})
 
-					vm.SetLocals(newLocals)
+				ledImplementor.buttonState["button2"] = false
 
-					f, err := vm.LocateCodeBlock(*definition, "strategy")
+				err = ledImplementor.buttonHandlers["button1"]()
+				assert.NoErrorf(t, err, fmt.Sprintf("error: %v", err))
 
-					if err != nil {
-						return err
-					}
-
-					result, err := f()
-
-					if err != nil {
-						return err
-					}
-
-					assert.Equal(t, result, int64(200))
-
-					return nil
-				},
-			},
-		},
-		"complex macro execution with call chain": {
-			macro: `
-				macro backtest {
-					kind Syntax
-				
-					types {
-						Indicator <indicatorName Name> ((<period int>)|(<period int>, <period2 int>)) as <alias Name>
-					}
-				
-					syntax {
-						InitialCapital <initialCapital int>
-						StartTime <startTime string>
-						EndTime <endTime string>
-						Indicators <indicators array<Indicator>>
-						Strategy { code }
-					}
-				}`,
-			input: `
-				backtest VariableHoldUntil4 {
-					InitialCapital  10000
-					StartTime       "2010-01-01"
-					EndTime         "2010-12-31"
-					Indicators       [sma(20) as sma20, sma(50) as sma50, sma(200, 300) as sma200]
-				
-					Strategy {
-						return Sub(Add(Add(Add(Add(1, 2), 3), 4), 5), 6)
-					}
-				}
-				`,
-			options: []Option{
-				WithLocals(map[string]interface{}{
-					"Add": func(a, b int64) int64 {
-						return a + b
-					},
-					"Sub": func(a, b int64) int64 {
-						return a - b
-					},
-				}),
-			},
-			calls: []func(t *testing.T, vm VirtualMachine) error{
-				func(t *testing.T, vm VirtualMachine) error {
-					definition, err := vm.GetDefinitionByName("VariableHoldUntil4")
-
-					if err != nil {
-						return err
-					}
-
-					newLocals := map[string]interface{}{}
-
-					for _, indicator := range definition.Data["indicators"]["indicators"].([]interface{}) {
-						indicatorMap := indicator.(map[string]interface{})
-						newLocals[indicatorMap["alias"].(string)] = indicatorMap["period"].(int64)
-					}
-
-					vm.SetLocals(newLocals)
-
-					f, err := vm.LocateCodeBlock(*definition, "strategy")
-
-					if err != nil {
-						return err
-					}
-
-					result, err := f()
-
-					if err != nil {
-						return err
-					}
-
-					assert.Equal(t, result, int64(9))
-
-					return nil
-				},
-			},
-		},
-		"creditRule": {
-			macro: `
-				macro creditRule {
-					kind Syntax
-					
-					syntax {
-					  	creditScore <min int> <max int>
-						income <min int> <max int>
-						age <min int> <max int>
-					}
-				}`,
-			input: `
-				creditRule Rule1 {
-					creditScore 500 600
-					income 20000 30000
-					age 18 65
-				}
-				
-				creditRule Rule2 {
-					creditScore 600 700
-					income 30000 40000
-					age 18 65
-				}`,
-			expectedDefinitions: []Definition{
-				{
-					Macro: "creditRule",
-					Name:  "Rule1",
-					Data: map[string]map[string]interface{}{
-						"creditScore": {
-							"min": int64(500),
-							"max": int64(600),
-						},
-						"income": {
-							"min": int64(20000),
-							"max": int64(30000),
-						},
-						"age": {
-							"min": int64(18),
-							"max": int64(65),
-						},
-					},
-				},
-				{
-					Macro: "creditRule",
-					Name:  "Rule2",
-					Data: map[string]map[string]interface{}{
-						"creditScore": {
-							"min": int64(600),
-							"max": int64(700),
-						},
-						"income": {
-							"min": int64(30000),
-							"max": int64(40000),
-						},
-						"age": {
-							"min": int64(18),
-							"max": int64(65),
-						},
-					},
-				},
-			},
-		},
-		"chatbot": {
-			macro: `
-				macro chatbot {
-					kind Syntax
-					
-					syntax {
-						intent <name Name> {
-							pattern <pattern string>
-							response <response string>
-						}
-					}
-				}`,
-			input: `
-				chatbot MyChatbot {
-					intent Greeting {
-						pattern "Hello"
-						response "Hi there!"
-					}
-					
-					intent Farewell {
-						pattern "Goodbye"
-						response "See you later!"
-					}
-				}`,
-			expectedDefinitions: []Definition{
-				{
-					Macro: "chatbot",
-					Name:  "MyChatbot",
-					Data: map[string]map[string]interface{}{
-						"intentGreeting": {
-							"name": "Greeting",
-							"intentGreeting": map[string]interface{}{
-								"pattern": map[string]interface{}{
-									"pattern": "Hello",
-								},
-								"response": map[string]interface{}{
-									"response": "Hi there!",
-								},
-							},
-						},
-						"intentFarewell": {
-							"name": "Farewell",
-							"intentFarewell": map[string]interface{}{
-								"pattern": map[string]interface{}{
-									"pattern": "Goodbye",
-								},
-								"response": map[string]interface{}{
-									"response": "See you later!",
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		"person1": {
-			macro: `
-				macro person {
-					kind Syntax
-					
-					syntax {
-						name <name string> as known as <knownAs string>
-						age <age int> years old
-					}
-				}`,
-			input: `
-				person John {
-					name "John" as known as "Johnny"
-					age 30 years old
-				}`,
-			expectedDefinitionsAsJson: `
-				[
-					{
-						"macro": "person",
-						"name": "John",
-						"data": {
-							"name": {
-								"name": "John",
-								"knownAs": "Johnny"
-							},
-							"age": {
-								"age": 30
-							}
-						}
-					}
-				]
-`,
-		},
-		"config": {
-			macro: `
-				macro config {
-					kind Syntax
-					
-					syntax {
-						Param <paramName Name> <paramValue string>
-					}
-				}`,
-			input: `
-				config EngineConfig {
-					Param LogLevel "info"
-					Param Port "8080"
-				}`,
-			expectedDefinitionsAsJson: `
-				[
-					{
-						"macro": "config",
-						"name": "EngineConfig",
-						"data": {
-						  	"paramLogLevel": {
-								"paramName": "LogLevel",
-								"paramValue": "info"
-							},
-							"paramPort": {
-								"paramName": "Port",
-								"paramValue": "8080"
-							}
-						}
-					}
-				]
-`,
-		},
-		"userEntity": {
-			macro: `
-				macro entity {
-					kind Syntax
-					
-					syntax {
-						property <fieldName Name> <fieldType Type>
-					}
-				}`,
-			input: `
-				entity User {
-					property name string
-					property age int
-				}`,
-			expectedDefinitionsAsJson: `
-				[
-					  {
-						"macro": "entity",
-						"name": "User",
-						"data": {
-						  "propertyAge": {
-							"fieldName": "age",
-							"fieldType": "int"
-						  },
-						  "propertyName": {
-							"fieldName": "name",
-							"fieldType": "string"
-						  }
-						}
-					  }
-				]
-`,
-		},
-		"simple expressions": {
-			macro: `
-				macro simple {
-					kind Syntax
-					
-					syntax {
-						entry { expr }
-						exit  { expr }
-					}
-				}`,
-			input: `
-				simple SimpleOp {
-					entry { 1 + d() }
-					exit  { 2 - c }
-				}`,
-			options: []Option{
-				WithLocals(map[string]interface{}{
-					"c": 5,
-					"d": func() int64 {
-						return 2
-					},
-				}),
-			},
-			calls: []func(t *testing.T, v VirtualMachine) error{
-				func(t *testing.T, v VirtualMachine) error {
-					def, err := v.GetDefinitionByName("SimpleOp")
-
-					if err != nil {
-						return err
-					}
-
-					result, err := v.Execute(def, "entry")
-
-					if err != nil {
-						return err
-					}
-
-					assert.Equal(t, int64(3), result)
-
-					result, err = v.Execute(def, "exit")
-
-					if err != nil {
-						return err
-					}
-
-					assert.Equal(t, int64(-3), result)
-
-					return nil
-				},
+				assert.Equal(t, ledImplementor.ledState, map[string]bool{
+					"blueLed":   false,
+					"redLed":    true,
+					"yellowLed": true,
+				})
 			},
 		},
 	}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			var g, err = New(tt.options...)
+			var g = New()
 
-			if err != nil {
-				t.Errorf("error: %v", err)
-				return
-			}
-
-			err = g.LoadMacroContent(tt.macro)
+			err := g.LoadMacroContent(tt.macro)
 
 			if err != nil {
 				t.Errorf("error: %v", err)
@@ -488,32 +260,17 @@ func TestVmDynamic(t *testing.T) {
 				return
 			}
 
-			actual, _ := json.MarshalIndent(definitions, "", "  ")
-
-			log.Print(string(actual))
-
-			if tt.expectedDefinitionsAsJson != "" {
-				var defs []Definition
-				err = json.Unmarshal([]byte(tt.expectedDefinitionsAsJson), &defs)
+			for _, definition := range definitions {
+				err := g.Execute(&definition, tt.Implementer)
 
 				if err != nil {
 					t.Errorf("error: %v", err)
 					return
 				}
-
-				expected, _ := json.MarshalIndent(defs, "", "  ")
-
-				assert.Equal(t, string(expected), string(actual))
 			}
 
-			if tt.expectedDefinitions != nil {
-				assert.Equal(t, tt.expectedDefinitions, definitions)
-			}
-
-			for _, call := range tt.calls {
-				if err := call(t, g); err != nil {
-					t.Errorf("error: %v", err)
-				}
+			if tt.Assert != nil {
+				tt.Assert(t, tt.Implementer)
 			}
 		})
 	}

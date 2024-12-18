@@ -8,7 +8,6 @@ type Ast struct {
 	SourceFile common.SourceFile `json:"sourceFile"`
 	// The Macros of the package
 	Definitions []Definition `json:"definitions"`
-	Functions   []Function   `json:"functions"`
 }
 
 type Definition struct {
@@ -19,12 +18,6 @@ type Definition struct {
 
 	MacroNameSourceLocation common.SourceLocation `json:"macroNameSourceLocation"`
 	NameSourceLocation      common.SourceLocation `json:"nameSourceLocation"`
-}
-
-type Function struct {
-	Name      string                               `json:"name"`
-	Arguments []DefinitionStatementElementArgument `json:"arguments"`
-	CodeBlock common.CodeBlock
 }
 
 type DefinitionStatement struct {
@@ -61,7 +54,7 @@ const (
 	DefinitionStatementElementKindAttributeList DefinitionStatementElementKind = "AttributeList"
 	DefinitionStatementElementKindArgumentList  DefinitionStatementElementKind = "ArgumentList"
 	DefinitionStatementElementKindParameterList DefinitionStatementElementKind = "ParameterList"
-	DefinitionStatementElementKindCodeBlock     DefinitionStatementElementKind = "CodeBlock"
+	DefinitionStatementElementKindExpression    DefinitionStatementElementKind = "Expression"
 )
 
 type DefinitionStatementElement struct {
@@ -74,7 +67,7 @@ type DefinitionStatementElement struct {
 	AttributeList *DefinitionStatementElementAttributeList `json:"attributeList,omitempty"`
 	ArgumentList  *DefinitionStatementElementArgumentList  `json:"argumentList,omitempty"`
 	ParameterList *DefinitionStatementElementParameterList `json:"parameterList,omitempty"`
-	CodeBlock     *DefinitionStatementElementCodeBlock     `json:"codeBlock,omitempty"`
+	Expression    *common.Expression                       `json:"expression,omitempty"`
 
 	SourceLocation common.SourceLocation `json:"sourceLocation"`
 }
@@ -93,8 +86,6 @@ func (e DefinitionStatementElement) AsValue() common.Value {
 		return e.ArgumentList.AsValue()
 	case DefinitionStatementElementKindParameterList:
 		return e.ParameterList.AsValue()
-	case DefinitionStatementElementKindCodeBlock:
-		return common.NullValue()
 	}
 
 	return common.NullValue()
@@ -173,23 +164,15 @@ type DefinitionStatementElementArgument struct {
 }
 
 type DefinitionStatementElementParameterList struct {
-	Parameters []DefinitionStatementElementParameter `json:"parameters"`
+	Parameters []common.Expression `json:"parameters"`
 }
 
 func (l DefinitionStatementElementParameterList) AsValue() common.Value {
 	var arr []common.Value
 
-	for _, a := range l.Parameters {
-		arr = append(arr, a.Value)
+	for _, e := range l.Parameters {
+		arr = append(arr, e.AsValue())
 	}
 
 	return common.ArrayValue(arr...)
-}
-
-type DefinitionStatementElementParameter struct {
-	Value common.Value `json:"value"`
-}
-
-type DefinitionStatementElementCodeBlock struct {
-	CodeBlock common.CodeBlock `json:"codeBlock"`
 }

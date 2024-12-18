@@ -1,0 +1,147 @@
+[
+  {
+    "macroName": "chatbot",
+    "name": "MyChatbot",
+    "plainStatements": null,
+    "statements": [
+      {
+        "scope": "",
+        "command": "intent",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "name",
+            "value": {
+              "kind": "String",
+              "string": "Greeting",
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": [
+          [
+            {
+              "scope": "conversation",
+              "command": "pattern",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "pattern",
+                  "value": {
+                    "kind": "String",
+                    "string": "Hello",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "conversation",
+              "command": "response",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "response",
+                  "value": {
+                    "kind": "String",
+                    "string": "Hi there!",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            }
+          ]
+        ]
+      },
+      {
+        "scope": "",
+        "command": "intent",
+        "arguments": null,
+        "parameters": [
+          {
+            "name": "name",
+            "value": {
+              "kind": "String",
+              "string": "Farewell",
+              "Map": null,
+              "sourceLocation": {
+                "line": 0,
+                "column": 0
+              }
+            },
+            "expression": null
+          }
+        ],
+        "attributes": null,
+        "subStatements": [
+          [
+            {
+              "scope": "conversation",
+              "command": "pattern",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "pattern",
+                  "value": {
+                    "kind": "String",
+                    "string": "Goodbye",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "conversation",
+              "command": "response",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "response",
+                  "value": {
+                    "kind": "String",
+                    "string": "See you later!",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/logi/pkg/ast/logi"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/vm"
 	"google.golang.org/api/option"
@@ -37,13 +38,15 @@ func (g *generator) AddExamples() {
 }
 
 func (g *generator) generateExample(macro macroAst.Macro, defName string) string {
-	body := g.generateStatementsExample(macro.Syntax.Statements)
+	body := g.generateStatementsExample(macro.Syntax.Statements, 0)
 
-	return fmt.Sprintf("%s %s {\n%s}\n", macro.Name, defName, body)
+	return fmt.Sprintf("%s %s %s\n", macro.Name, defName, body)
 }
 
-func (g *generator) generateStatementsExample(statements []macroAst.SyntaxStatement) string {
-	var body = ``
+func (g *generator) generateStatementsExample(statements []macroAst.SyntaxStatement, depth int) string {
+	var padding = strings.Repeat(" ", depth*4)
+
+	var body = "{\n"
 
 	for _, syntax := range statements {
 		var examples []string
@@ -51,28 +54,28 @@ func (g *generator) generateStatementsExample(statements []macroAst.SyntaxStatem
 		if len(syntax.Examples) > 0 {
 			examples = syntax.Examples
 		} else {
-			examples = []string{g.generateStatementExample(syntax), g.generateStatementExample(syntax), g.generateStatementExample(syntax)}
+			examples = []string{g.generateStatementExample(syntax, depth), g.generateStatementExample(syntax, depth), g.generateStatementExample(syntax, depth)}
 		}
 
-		for _, example := range examples {
-			body += fmt.Sprintf("    %s\n", example)
-		}
+		var selectedExample = examples[rand.Int31()%int32(len(examples))]
+
+		body += fmt.Sprintf(padding+"    %s\n", selectedExample)
 	}
 
-	return body
+	return body + padding + "}"
 }
 
-func (g *generator) generateStatementExample(syntax macroAst.SyntaxStatement) string {
+func (g *generator) generateStatementExample(syntax macroAst.SyntaxStatement, depth int) string {
 	var parts []string
 
 	for _, part := range syntax.Elements {
-		parts = append(parts, g.generateStatementElementExample(part))
+		parts = append(parts, g.generateStatementElementExample(part, depth))
 	}
 
-	return strings.Join(parts, ", ")
+	return strings.Join(parts, " ")
 }
 
-func (g *generator) generateStatementElementExample(element macroAst.SyntaxStatementElement) string {
+func (g *generator) generateStatementElementExample(element macroAst.SyntaxStatementElement, depth int) string {
 	switch element.Kind {
 	case macroAst.SyntaxStatementElementKindKeyword:
 		return element.KeywordDef.Name
@@ -82,25 +85,11 @@ func (g *generator) generateStatementElementExample(element macroAst.SyntaxState
 		return g.generateExampleValue(element.VariableKeyword.Type.Name)
 	case macroAst.SyntaxStatementElementKindCombination:
 		var l = int32(len(element.Combination.Elements))
-		return g.generateStatementElementExample(element.Combination.Elements[rand.Int31()%l])
-	case macroAst.SyntaxStatementElementKindStructure:
-		return g.generateStatementsExample(element.Structure.Statements)
+		return g.generateStatementElementExample(element.Combination.Elements[rand.Int31()%l], 0)
 	case macroAst.SyntaxStatementElementKindParameterList:
 		panic("not supported yet")
 	case macroAst.SyntaxStatementElementKindArgumentList:
 		panic("not supported yet")
-	case macroAst.SyntaxStatementElementKindCodeBlock:
-		return `
-{
-	if (a > b) {
-		return a
-	} else {
-		return b
-	}
-}
-`
-	case macroAst.SyntaxStatementElementKindExpressionBlock:
-		return `{ a + b }`
 	case macroAst.SyntaxStatementElementKindAttributeList:
 		panic("not supported yet")
 	}
@@ -129,7 +118,7 @@ func (g *generator) generateExampleValue(typeName string) string {
 	}
 }
 
-func (g *generator) GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error) {
+func (g *generator) GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]logi.Definition, error) {
 	// locate macro
 
 	macroContent := g.vm.GetMacroContent(macroName)
@@ -229,15 +218,15 @@ FeedbackLoop:
 func (g *generator) prepareSystemInstructions(macroContent string) *genai.Content {
 	return &genai.Content{
 		Parts: []genai.Part{
-			genai.Text("Readme: \n" + generatorReadme),
+			//genai.Text("Readme: \n" + generatorReadme),
 			genai.Text(`According to given documentation, you have given a macro, you need to create definition according to following macro:`),
 			genai.Text(macroContent),
 			genai.Text("Examples: \n" + strings.Join(g.examples, "\n")),
 			genai.Text(`Additional Rules:
 - Logi content should not be enclosed in triple quotes or any other quotes.
 - A statement cannot be divided to two lines
-- Do not send macro in response or alongside with logi content
-- DON'T SEND MACRO IN RESPONSE!!
+- Statements 
+- Statements must be in scope of the logi block
 `),
 		},
 	}
@@ -247,11 +236,11 @@ func (g *generator) AddExample(examples string) {
 	g.examples = append(g.examples, examples)
 }
 
-func (g *generator) validate(logiContent string) ([]vm.Definition, error) {
+func (g *generator) validate(logiContent string) ([]logi.Definition, error) {
 	logiContent = clean(logiContent)
 
 	fmt.Printf("Validating logi content:")
-	fmt.Println(logiContent)
+	fmt.Print(logiContent)
 
 	return g.vm.LoadLogiContent(logiContent)
 }
@@ -293,6 +282,15 @@ func clean(content string) string {
 			continue
 		}
 
+		content = strings.TrimPrefix(content, "\"")
+		content = strings.TrimPrefix(content, "'")
+		content = strings.TrimSuffix(content, "\"")
+		content = strings.TrimSuffix(content, "'")
+		content = strings.ReplaceAll(content, `\\\\n`, "\n")
+		content = strings.ReplaceAll(content, `\\\\t`, "\t")
+		content = strings.ReplaceAll(content, `\\n`, "\n")
+		content = strings.ReplaceAll(content, `\\t`, "\t")
+
 		break
 	}
 
@@ -302,7 +300,7 @@ func clean(content string) string {
 type Generator interface {
 	AddExample(examples string)
 	AddExamples()
-	GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error)
+	GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]logi.Definition, error)
 }
 
 type GeneratorOption func(*generator)

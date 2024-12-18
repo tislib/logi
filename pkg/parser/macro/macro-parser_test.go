@@ -295,96 +295,6 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
-		"syntax macro with code block and expression statement": {
-			input: `
-				macro simple {
-					kind Syntax
-					
-					syntax {
-						hello (...[<args Type<string>>]) { code }
-						hello (...[<args Type<string>>]) { expr }
-					}
-				}
-			`,
-			expected: &astMacro.Ast{
-				Macros: []astMacro.Macro{
-					{
-						Name: "simple",
-						Kind: astMacro.KindSyntax,
-						Syntax: astMacro.Syntax{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "hello",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindArgumentList,
-											ArgumentList: &astMacro.SyntaxStatementElementArgumentList{
-												VarArgs: true,
-												Arguments: []astMacro.SyntaxStatementElementArgument{
-													{
-														Name: "args",
-														Type: common.TypeDefinition{
-															Name: "Type",
-															SubTypes: []common.TypeDefinition{
-																{
-																	Name: "string",
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-										{
-											Kind:      astMacro.SyntaxStatementElementKindCodeBlock,
-											CodeBlock: &astMacro.SyntaxStatementElementCodeBlock{},
-										},
-									},
-								},
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "hello",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindArgumentList,
-											ArgumentList: &astMacro.SyntaxStatementElementArgumentList{
-												VarArgs: true,
-												Arguments: []astMacro.SyntaxStatementElementArgument{
-													{
-														Name: "args",
-														Type: common.TypeDefinition{
-															Name: "Type",
-															SubTypes: []common.TypeDefinition{
-																{
-																	Name: "string",
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-										{
-											Kind:            astMacro.SyntaxStatementElementKindExpressionBlock,
-											ExpressionBlock: &astMacro.SyntaxStatementElementExpressionBlock{},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
 		"syntax macro with attributes statement": {
 			input: `
 				macro simple {
@@ -557,301 +467,6 @@ func TestSyntaxMacro(t *testing.T) {
 												Name: "name",
 												Type: common.TypeDefinition{
 													Name: "string",
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		"simple syntax with nested structure": {
-			input: `
-				macro simple {
-					kind Syntax
-
-					syntax {
-						Auth {
-							Username <username string>
-							Password <password string>
-						}
-					}
-				}
-			`,
-			expected: &astMacro.Ast{
-				Macros: []astMacro.Macro{
-					{
-						Name: "simple",
-						Kind: astMacro.KindSyntax,
-						Syntax: astMacro.Syntax{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Auth",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindStructure,
-											Structure: &astMacro.SyntaxStatementElementStructure{
-												Statements: []astMacro.SyntaxStatement{
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindKeyword,
-																KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																	Name: "Username",
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																	Name: "username",
-																	Type: common.TypeDefinition{
-																		Name: "string",
-																	},
-																},
-															},
-														},
-													},
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindKeyword,
-																KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																	Name: "Password",
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																	Name: "password",
-																	Type: common.TypeDefinition{
-																		Name: "string",
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		"simple syntax with double nested structure": {
-			input: `
-				macro simple {
-					kind Syntax
-
-					syntax {
-						Auth {
-							Credentials {
-								Username <username string>
-								Password <password string>
-							}
-						}
-					}
-				}
-			`,
-			expected: &astMacro.Ast{
-				Macros: []astMacro.Macro{
-					{
-						Name: "simple",
-						Kind: astMacro.KindSyntax,
-						Syntax: astMacro.Syntax{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Auth",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindStructure,
-											Structure: &astMacro.SyntaxStatementElementStructure{
-												Statements: []astMacro.SyntaxStatement{
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindKeyword,
-																KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																	Name: "Credentials",
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindStructure,
-																Structure: &astMacro.SyntaxStatementElementStructure{
-																	Statements: []astMacro.SyntaxStatement{
-																		{
-																			Elements: []astMacro.SyntaxStatementElement{
-																				{
-																					Kind: astMacro.SyntaxStatementElementKindKeyword,
-																					KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																						Name: "Username",
-																					},
-																				},
-																				{
-																					Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																					VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																						Name: "username",
-																						Type: common.TypeDefinition{
-																							Name: "string",
-																						},
-																					},
-																				},
-																			},
-																		},
-																		{
-																			Elements: []astMacro.SyntaxStatementElement{
-																				{
-																					Kind: astMacro.SyntaxStatementElementKindKeyword,
-																					KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																						Name: "Password",
-																					},
-																				},
-																				{
-																					Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																					VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																						Name: "password",
-																						Type: common.TypeDefinition{
-																							Name: "string",
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		"simple syntax with nested structure with or": {
-			input: `
-				macro simple {
-					kind Syntax
-
-					syntax {
-						Auth {
-							(Hello | World) <name string>
-							Username <username string>
-							Password <password string>
-						}
-					}
-				}
-			`,
-			expected: &astMacro.Ast{
-				Macros: []astMacro.Macro{
-					{
-						Name: "simple",
-						Kind: astMacro.KindSyntax,
-						Syntax: astMacro.Syntax{
-							Statements: []astMacro.SyntaxStatement{
-								{
-									Elements: []astMacro.SyntaxStatementElement{
-										{
-											Kind: astMacro.SyntaxStatementElementKindKeyword,
-											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-												Name: "Auth",
-											},
-										},
-										{
-											Kind: astMacro.SyntaxStatementElementKindStructure,
-											Structure: &astMacro.SyntaxStatementElementStructure{
-												Statements: []astMacro.SyntaxStatement{
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindCombination,
-																Combination: &astMacro.SyntaxStatementElementCombination{
-																	Elements: []astMacro.SyntaxStatementElement{
-																		{
-																			Kind: astMacro.SyntaxStatementElementKindKeyword,
-																			KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																				Name: "Hello",
-																			},
-																		},
-																		{
-																			Kind: astMacro.SyntaxStatementElementKindKeyword,
-																			KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																				Name: "World",
-																			},
-																		},
-																	},
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																	Name: "name",
-																	Type: common.TypeDefinition{
-																		Name: "string",
-																	},
-																},
-															},
-														},
-													},
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindKeyword,
-																KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																	Name: "Username",
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																	Name: "username",
-																	Type: common.TypeDefinition{
-																		Name: "string",
-																	},
-																},
-															},
-														},
-													},
-													{
-														Elements: []astMacro.SyntaxStatementElement{
-															{
-																Kind: astMacro.SyntaxStatementElementKindKeyword,
-																KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
-																	Name: "Password",
-																},
-															},
-															{
-																Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
-																VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
-																	Name: "password",
-																	Type: common.TypeDefinition{
-																		Name: "string",
-																	},
-																},
-															},
-														},
-													},
 												},
 											},
 										},
@@ -1045,6 +660,577 @@ func TestSyntaxMacro(t *testing.T) {
 									},
 									Examples: []string{
 										`[Hello "World", Hello "World2"]`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"simple syntax with scopes": {
+			input: `
+				macro circuit {
+					kind Syntax
+				
+					syntax {
+						components { components }
+						actions { command | handler }
+					}
+				
+					scopes {
+						components {
+							<component Name> Led <pin int>
+							<component Name> Button <pin int>
+						}
+						command {
+							// Basic commands
+							on(<component Name>)
+							off(<component Name>)
+							blink(<component Name>, <count int>, <seconds float>)
+							wait(<seconds float>)
+							brightness(<component Name>, <value float>)
+							fade_in(<component Name>, <seconds float>)
+							fade_out(<component Name>, <seconds float>)
+							// Conditional commands
+							if (<condition bool>) { command | handler }
+							if (<condition bool>) { command | handler } else { command | handler }
+						}
+						handler {
+							// Event handlers
+							on_click(<component Name>) { command }
+							on_click(<component Name>, <count int>) { command }
+							on_press(<component Name>) { command }
+							on_release(<component Name>) { command }
+							while_held(<component Name>) { command }
+						}
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "circuit",
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "components",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindScope,
+											ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+												Scopes: []string{"components"},
+											},
+										},
+									},
+								},
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "actions",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindScope,
+											ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+												Scopes: []string{"command", "handler"},
+											},
+										},
+									},
+								},
+							},
+						},
+						Scopes: astMacro.Scopes{
+							Scopes: []astMacro.ScopeItem{
+								{
+									Name: "components",
+									Statements: []astMacro.SyntaxStatement{
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+													VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+														Name: "component",
+														Type: common.TypeDefinition{
+															Name: "Name",
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "Led",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+													VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+														Name: "pin",
+														Type: common.TypeDefinition{
+															Name: "int",
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+													VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+														Name: "component",
+														Type: common.TypeDefinition{
+															Name: "Name",
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "Button",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindVariableKeyword,
+													VariableKeyword: &astMacro.SyntaxStatementElementVariableKeyword{
+														Name: "pin",
+														Type: common.TypeDefinition{
+															Name: "int",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Name: "command",
+									Statements: []astMacro.SyntaxStatement{
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "on",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "off",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "blink",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+															{
+																Name: "count",
+																Type: common.TypeDefinition{
+																	Name: "int",
+																},
+															},
+															{
+																Name: "seconds",
+																Type: common.TypeDefinition{
+																	Name: "float",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "wait",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "seconds",
+																Type: common.TypeDefinition{
+																	Name: "float",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "brightness",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+															{
+																Name: "value",
+																Type: common.TypeDefinition{
+																	Name: "float",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "fade_in",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+															{
+																Name: "seconds",
+																Type: common.TypeDefinition{
+																	Name: "float",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "fade_out",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+															{
+																Name: "seconds",
+																Type: common.TypeDefinition{
+																	Name: "float",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "if",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "condition",
+																Type: common.TypeDefinition{
+																	Name: "bool",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command", "handler"},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "if",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "condition",
+																Type: common.TypeDefinition{
+																	Name: "bool",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command", "handler"},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "else",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command", "handler"},
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									Name: "handler",
+									Statements: []astMacro.SyntaxStatement{
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "on_click",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command"},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "on_click",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+															{
+																Name: "count",
+																Type: common.TypeDefinition{
+																	Name: "int",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command"},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "on_press",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command"},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "on_release",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command"},
+													},
+												},
+											},
+										},
+										{
+											Elements: []astMacro.SyntaxStatementElement{
+												{
+													Kind: astMacro.SyntaxStatementElementKindKeyword,
+													KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+														Name: "while_held",
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindParameterList,
+													ParameterList: &astMacro.SyntaxStatementElementParameterList{
+														Parameters: []astMacro.SyntaxStatementElementParameter{
+															{
+																Name: "component",
+																Type: common.TypeDefinition{
+																	Name: "Name",
+																},
+															},
+														},
+													},
+												},
+												{
+													Kind: astMacro.SyntaxStatementElementKindScope,
+													ScopeDef: &astMacro.SyntaxStatementElementScopeDef{
+														Scopes: []string{"command"},
+													},
+												},
+											},
+										},
 									},
 								},
 							},

@@ -29,12 +29,12 @@ const (
 	NodeOpTypesStatement               = "types_statement"
 	NodeOpSyntaxParameterListElement   = "syntax_parameter_list_element"
 	NodeOpSyntaxArgumentListElement    = "syntax_argument_list_element"
-	NodeOpSyntaxCodeBlockElement       = "syntax_code_block_element"
-	NodeOpSyntaxExpressionBlockElement = "syntax_expression_block_element"
 	NodeOpSyntaxAttributeListElement   = "syntax_attribute_list_element"
 	NodeOpSyntaxCombinationElement     = "syntax_combination_element"
 	NodeOpSyntaxTypeReferenceElement   = "syntax_type_reference_element"
-	NodeOpSyntaxStructureElement       = "syntax_structure_element"
+	NodeOpScopes                       = "scopes"
+	NodeOpScopesItem                   = "scopes_item"
+	NodeOpSyntaxScopeElement           = "syntax_scope_element"
 )
 
 var emptyToken = lexer.Token{}
@@ -49,6 +49,9 @@ type yaccNode struct {
 }
 
 func appendNode(nodeOp NodeOp, children ...yaccNode) yaccNode {
+	return yaccNode{op: nodeOp, children: children}
+}
+func appendNodeX(nodeOp NodeOp, children ...yaccNode) yaccNode {
 	return yaccNode{op: nodeOp, children: children}
 }
 

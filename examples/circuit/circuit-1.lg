@@ -1,0 +1,30 @@
+circuit simple1 {
+    components {
+        Led 	yellowLed 5
+        Led 	redLed 6
+        Led 	blueLed 13
+        Button 	button1 17
+        Button 	button2 19
+    }
+
+    actions {
+        on(yellowLed)
+        on(redLed)
+
+        on_click(button1) {
+            if (status(button2) == 'on') {
+                on(blueLed)
+                on(yellowLed)
+                on(redLed)
+            } else {
+                off(blueLed)
+            }
+        }
+
+        on_click(button2) {
+            off(blueLed)
+            on(yellowLed)
+            on(redLed)
+        }
+    }
+}

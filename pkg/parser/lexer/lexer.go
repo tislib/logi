@@ -76,7 +76,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 		if config.IsEol {
 			if isEol(startingChar) {
 				s.discardUntil(func(ch rune) bool {
-					return !isEol(ch)
+					return !isWhitespace(ch) && !isEol(ch)
 				})
 
 				return &Token{Id: config.Id, Value: string(startingChar)}, true
@@ -217,7 +217,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 			var value = string(startingChar)
 
 			valueRight := s.peekUntil(func(ch rune) bool {
-				return !isAlphaNum(ch)
+				return !isIdentifierChar(ch)
 			})
 
 			value += valueRight
@@ -255,6 +255,19 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 			for {
 				r := s.read()
 				if r == '"' || r == 0 {
+					break
+				}
+				data += string(r)
+			}
+
+			return &Token{Id: config.Id, Value: data}, true
+		}
+		if startingChar == '\'' {
+			var data = ""
+
+			for {
+				r := s.read()
+				if r == '\'' || r == 0 {
 					break
 				}
 				data += string(r)

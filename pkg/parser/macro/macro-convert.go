@@ -93,6 +93,22 @@ func (c *converter) convertMacro(macroNode yaccNode) (*astMacro.Macro, error) {
 
 				result.Types = *types
 			}
+		case NodeOpScopes:
+			if c.enableSourceMap {
+				result.SourceMap["scopes"] = child.location.AsSourceLocation()
+			}
+			if result.Kind != astMacro.KindSyntax {
+				return result, fmt.Errorf("scopes defined for macro of kind %s; but expected Syntax", result.Kind)
+			}
+			if len(child.children) != 0 {
+				scopes, err := c.convertScopes(child.children[0])
+
+				if err != nil {
+					return result, err
+				}
+
+				result.Scopes = *scopes
+			}
 		}
 	}
 
@@ -141,6 +157,42 @@ func (c *converter) convertTypes(typesNode yaccNode) (*astMacro.Types, error) {
 	}
 
 	return &astMacro.Types{Types: result}, nil
+}
+
+func (c *converter) convertScopes(scopeNode yaccNode) (*astMacro.Scopes, error) {
+	if scopeNode.children == nil {
+		return nil, nil
+	}
+
+	var result []astMacro.ScopeItem
+
+	for _, child := range scopeNode.children {
+		statement, err := c.convertScopeItem(child)
+
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, *statement)
+	}
+
+	return &astMacro.Scopes{Scopes: result}, nil
+}
+
+func (c *converter) convertScopeItem(node yaccNode) (*astMacro.ScopeItem, error) {
+	var result = new(astMacro.ScopeItem)
+	var name = node.children[0].value.(string)
+
+	body, err := c.convertSyntaxBody(node.children[1])
+
+	if err != nil {
+		return nil, fmt.Errorf("unexpected scope item op: %s", node.op)
+	}
+
+	result.Name = name
+	result.Statements = body
+
+	return result, nil
 }
 
 func (c *converter) convertTypeStatement(node yaccNode) (*astMacro.TypeStatement, error) {
@@ -261,21 +313,6 @@ func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.Synt
 		}
 
 		result.Combination = &astMacro.SyntaxStatementElementCombination{Elements: elements}
-	case NodeOpSyntaxStructureElement:
-		result.Kind = astMacro.SyntaxStatementElementKindStructure
-
-		var statements []astMacro.SyntaxStatement
-		for _, elementNode := range node.children {
-			statement, err := c.convertSyntaxStatement(elementNode)
-
-			if err != nil {
-				return nil, err
-			}
-
-			statements = append(statements, *statement)
-		}
-
-		result.Structure = &astMacro.SyntaxStatementElementStructure{Statements: statements}
 	case NodeOpSyntaxParameterListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindParameterList
 
@@ -308,12 +345,6 @@ func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.Synt
 		}
 
 		result.ArgumentList = &astMacro.SyntaxStatementElementArgumentList{Arguments: arguments, VarArgs: true}
-	case NodeOpSyntaxCodeBlockElement:
-		result.Kind = astMacro.SyntaxStatementElementKindCodeBlock
-		result.CodeBlock = &astMacro.SyntaxStatementElementCodeBlock{}
-	case NodeOpSyntaxExpressionBlockElement:
-		result.Kind = astMacro.SyntaxStatementElementKindExpressionBlock
-		result.ExpressionBlock = &astMacro.SyntaxStatementElementExpressionBlock{}
 	case NodeOpSyntaxAttributeListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindAttributeList
 
@@ -330,6 +361,13 @@ func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.Synt
 		}
 
 		result.AttributeList = &astMacro.SyntaxStatementElementAttributeList{Attributes: attributes}
+	case NodeOpSyntaxScopeElement:
+		result.Kind = astMacro.SyntaxStatementElementKindScope
+		result.ScopeDef = &astMacro.SyntaxStatementElementScopeDef{}
+
+		for _, scopeNode := range node.children {
+			result.ScopeDef.Scopes = append(result.ScopeDef.Scopes, scopeNode.value.(string))
+		}
 	default:
 		return nil, fmt.Errorf("unexpected syntax statement element op: %s", node.op)
 	}

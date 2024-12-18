@@ -1,0 +1,624 @@
+[
+  {
+    "macroName": "circuit",
+    "name": "simple1",
+    "plainStatements": null,
+    "statements": [
+      {
+        "scope": "",
+        "command": "components",
+        "arguments": null,
+        "parameters": null,
+        "attributes": null,
+        "subStatements": [
+          [
+            {
+              "scope": "components",
+              "command": "Led",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "yellowLed",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                },
+                {
+                  "name": "pin",
+                  "value": {
+                    "kind": "Integer",
+                    "integer": 5,
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "components",
+              "command": "Led",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "redLed",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                },
+                {
+                  "name": "pin",
+                  "value": {
+                    "kind": "Integer",
+                    "integer": 6,
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "components",
+              "command": "Led",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "blueLed",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                },
+                {
+                  "name": "pin",
+                  "value": {
+                    "kind": "Integer",
+                    "integer": 13,
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "components",
+              "command": "Button",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "button1",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                },
+                {
+                  "name": "pin",
+                  "value": {
+                    "kind": "Integer",
+                    "integer": 17,
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "components",
+              "command": "Button",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "button2",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                },
+                {
+                  "name": "pin",
+                  "value": {
+                    "kind": "Integer",
+                    "integer": 19,
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": null
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            }
+          ]
+        ]
+      },
+      {
+        "scope": "",
+        "command": "actions",
+        "arguments": null,
+        "parameters": null,
+        "attributes": null,
+        "subStatements": [
+          [
+            {
+              "scope": "command",
+              "command": "on",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "yellowLed",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "yellowLed"
+                    }
+                  }
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "command",
+              "command": "on",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "redLed",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "redLed"
+                    }
+                  }
+                }
+              ],
+              "attributes": null,
+              "subStatements": null
+            },
+            {
+              "scope": "handler",
+              "command": "on_click",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "button1",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "button1"
+                    }
+                  }
+                }
+              ],
+              "attributes": null,
+              "subStatements": [
+                [
+                  {
+                    "scope": "command",
+                    "command": "if",
+                    "arguments": null,
+                    "parameters": [
+                      {
+                        "name": "condition",
+                        "value": {
+                          "kind": "Map",
+                          "Map": {
+                            "left": {
+                              "kind": "Map",
+                              "Map": {
+                                "arguments": {
+                                  "kind": "Array",
+                                  "array": [
+                                    {
+                                      "kind": "String",
+                                      "string": "button2",
+                                      "Map": null,
+                                      "sourceLocation": {
+                                        "line": 0,
+                                        "column": 0
+                                      }
+                                    }
+                                  ],
+                                  "Map": null,
+                                  "sourceLocation": {
+                                    "line": 0,
+                                    "column": 0
+                                  }
+                                },
+                                "name": {
+                                  "kind": "String",
+                                  "string": "status",
+                                  "Map": null,
+                                  "sourceLocation": {
+                                    "line": 0,
+                                    "column": 0
+                                  }
+                                }
+                              },
+                              "sourceLocation": {
+                                "line": 0,
+                                "column": 0
+                              }
+                            },
+                            "operator": {
+                              "kind": "String",
+                              "string": "==",
+                              "Map": null,
+                              "sourceLocation": {
+                                "line": 0,
+                                "column": 0
+                              }
+                            },
+                            "right": {
+                              "kind": "String",
+                              "string": "on",
+                              "Map": null,
+                              "sourceLocation": {
+                                "line": 0,
+                                "column": 0
+                              }
+                            }
+                          },
+                          "sourceLocation": {
+                            "line": 0,
+                            "column": 0
+                          }
+                        },
+                        "expression": {
+                          "kind": "binary_expression",
+                          "binaryExpr": {
+                            "left": {
+                              "kind": "function_call",
+                              "funcCall": {
+                                "name": "status",
+                                "arguments": [
+                                  {
+                                    "kind": "variable",
+                                    "variable": {
+                                      "name": "button2"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "operator": "==",
+                            "right": {
+                              "kind": "literal",
+                              "literal": {
+                                "value": {
+                                  "kind": "String",
+                                  "string": "on",
+                                  "Map": null,
+                                  "sourceLocation": {
+                                    "line": 0,
+                                    "column": 0
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "attributes": null,
+                    "subStatements": [
+                      [
+                        {
+                          "scope": "command",
+                          "command": "on",
+                          "arguments": null,
+                          "parameters": [
+                            {
+                              "name": "component",
+                              "value": {
+                                "kind": "String",
+                                "string": "blueLed",
+                                "Map": null,
+                                "sourceLocation": {
+                                  "line": 0,
+                                  "column": 0
+                                }
+                              },
+                              "expression": {
+                                "kind": "variable",
+                                "variable": {
+                                  "name": "blueLed"
+                                }
+                              }
+                            }
+                          ],
+                          "attributes": null,
+                          "subStatements": null
+                        },
+                        {
+                          "scope": "command",
+                          "command": "on",
+                          "arguments": null,
+                          "parameters": [
+                            {
+                              "name": "component",
+                              "value": {
+                                "kind": "String",
+                                "string": "yellowLed",
+                                "Map": null,
+                                "sourceLocation": {
+                                  "line": 0,
+                                  "column": 0
+                                }
+                              },
+                              "expression": {
+                                "kind": "variable",
+                                "variable": {
+                                  "name": "yellowLed"
+                                }
+                              }
+                            }
+                          ],
+                          "attributes": null,
+                          "subStatements": null
+                        },
+                        {
+                          "scope": "command",
+                          "command": "on",
+                          "arguments": null,
+                          "parameters": [
+                            {
+                              "name": "component",
+                              "value": {
+                                "kind": "String",
+                                "string": "redLed",
+                                "Map": null,
+                                "sourceLocation": {
+                                  "line": 0,
+                                  "column": 0
+                                }
+                              },
+                              "expression": {
+                                "kind": "variable",
+                                "variable": {
+                                  "name": "redLed"
+                                }
+                              }
+                            }
+                          ],
+                          "attributes": null,
+                          "subStatements": null
+                        }
+                      ],
+                      [
+                        {
+                          "scope": "command",
+                          "command": "off",
+                          "arguments": null,
+                          "parameters": [
+                            {
+                              "name": "component",
+                              "value": {
+                                "kind": "String",
+                                "string": "blueLed",
+                                "Map": null,
+                                "sourceLocation": {
+                                  "line": 0,
+                                  "column": 0
+                                }
+                              },
+                              "expression": {
+                                "kind": "variable",
+                                "variable": {
+                                  "name": "blueLed"
+                                }
+                              }
+                            }
+                          ],
+                          "attributes": null,
+                          "subStatements": null
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "scope": "handler",
+              "command": "on_click",
+              "arguments": null,
+              "parameters": [
+                {
+                  "name": "component",
+                  "value": {
+                    "kind": "String",
+                    "string": "button2",
+                    "Map": null,
+                    "sourceLocation": {
+                      "line": 0,
+                      "column": 0
+                    }
+                  },
+                  "expression": {
+                    "kind": "variable",
+                    "variable": {
+                      "name": "button2"
+                    }
+                  }
+                }
+              ],
+              "attributes": null,
+              "subStatements": [
+                [
+                  {
+                    "scope": "command",
+                    "command": "off",
+                    "arguments": null,
+                    "parameters": [
+                      {
+                        "name": "component",
+                        "value": {
+                          "kind": "String",
+                          "string": "blueLed",
+                          "Map": null,
+                          "sourceLocation": {
+                            "line": 0,
+                            "column": 0
+                          }
+                        },
+                        "expression": {
+                          "kind": "variable",
+                          "variable": {
+                            "name": "blueLed"
+                          }
+                        }
+                      }
+                    ],
+                    "attributes": null,
+                    "subStatements": null
+                  },
+                  {
+                    "scope": "command",
+                    "command": "on",
+                    "arguments": null,
+                    "parameters": [
+                      {
+                        "name": "component",
+                        "value": {
+                          "kind": "String",
+                          "string": "yellowLed",
+                          "Map": null,
+                          "sourceLocation": {
+                            "line": 0,
+                            "column": 0
+                          }
+                        },
+                        "expression": {
+                          "kind": "variable",
+                          "variable": {
+                            "name": "yellowLed"
+                          }
+                        }
+                      }
+                    ],
+                    "attributes": null,
+                    "subStatements": null
+                  },
+                  {
+                    "scope": "command",
+                    "command": "on",
+                    "arguments": null,
+                    "parameters": [
+                      {
+                        "name": "component",
+                        "value": {
+                          "kind": "String",
+                          "string": "redLed",
+                          "Map": null,
+                          "sourceLocation": {
+                            "line": 0,
+                            "column": 0
+                          }
+                        },
+                        "expression": {
+                          "kind": "variable",
+                          "variable": {
+                            "name": "redLed"
+                          }
+                        }
+                      }
+                    ],
+                    "attributes": null,
+                    "subStatements": null
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

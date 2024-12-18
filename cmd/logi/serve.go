@@ -16,11 +16,7 @@ var serveCmd = &cobra.Command{
 	Short: "serve - serve logi file",
 	Long:  `serve logi file and generate definitions`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		vm, err := vm.New()
-
-		if err != nil {
-			return fmt.Errorf("failed to create vm: %w", err)
-		}
+		vm := vm.New()
 
 		if strings.HasSuffix(*serveCmdMacroDir, "/") == false {
 			*serveCmdMacroDir = *serveCmdMacroDir + "/"

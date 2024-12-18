@@ -22,19 +22,20 @@ import (
 %token<bool> token_bool
 
 // Keywords
-%token TypesKeyword SyntaxKeyword MacroKeyword
+%token TypesKeyword SyntaxKeyword MacroKeyword ScopesKeyword
 
 // Braces
-%token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon ParenOpen ParenClose Eol CodeBlock ExpressionBlock
+%token BracketOpen BracketClose BraceOpen BraceClose Comma Colon Semicolon ParenOpen ParenClose Eol
 
 // Opeartors
 %token Equal GreaterThan LessThan Dash Dot Arrow Or Hash
 
 %type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
 %type<node> types_definition types_definition_body types_definition_content types_definition_statement
-%type<node> syntax_statement syntax_example syntax_examples syntax_elements syntax_element syntax_element_combination syntax_element_structure syntax_element_structure_content syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content
-%type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_code_block syntax_element_attribute_list
-%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item syntax_element_expression_block value
+%type<node> syntax_statement syntax_example syntax_examples syntax_elements syntax_element syntax_element_combination syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content scope_element scope_element_content
+%type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_attribute_list
+%type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item value
+%type<node> scopes_definition scopes_definition_body scopes_definition_content scopes_definition_item
 %type<node> value_array value_array_content value_array_item
 
 %start file
@@ -81,10 +82,40 @@ macro_body: BraceOpen eol_allowed
 
 	syntax_definition eol_allowed
 
+	scopes_definition eol_allowed
+
 	BraceClose eol_allowed
 {
 	assertEqual(yylex, $3, "kind", "First identifier in macro body must be 'kind'")
-	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4, yyDollar[4].token, yyDollar[4].location), $6, $8)
+	$$ = appendNode(NodeOpBody, newNode(NodeOpKind, $4, yyDollar[4].token, yyDollar[4].location), $6, $8, $10)
+};
+
+scopes_definition: ScopesKeyword scopes_definition_body eol_required
+{
+	$$ = newNode(NodeOpScopes, nil, yyDollar[1].token, yyDollar[1].location, $2)
+}
+| // empty
+{
+	$$ = newNode(NodeOpScopes, nil, emptyToken, emptyLocation)
+};
+
+scopes_definition_body: BraceOpen eol_allowed scopes_definition_content eol_allowed BraceClose
+{
+$$ = $3
+};
+
+scopes_definition_content: scopes_definition_item eol_required {
+	$$ = appendNodeX(NodeOpBody, $1)
+} | scopes_definition_content scopes_definition_item eol_required {
+	$$ = appendNodeTo(&$1, $2)
+} | // empty
+{
+	$$ = newNode(NodeOpBody, nil, emptyToken, emptyLocation)
+};
+
+scopes_definition_item: token_identifier syntax_body
+{
+	$$ = appendNode(NodeOpScopesItem, newNode(NodeOpName, $1, yyDollar[1].token, yyDollar[1].location), $2)
 };
 
 types_definition: TypesKeyword types_definition_body eol_required
@@ -214,7 +245,21 @@ syntax_elements: syntax_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element:syntax_element_code_block | syntax_element_expression_block | syntax_element_combination | syntax_element_structure | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+syntax_element: scope_element | syntax_element_combination | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+
+scope_element: BraceOpen scope_element_content BraceClose
+{
+	$$ = $2
+};
+
+scope_element_content: token_identifier
+{
+	$$ = appendNode(NodeOpSyntaxScopeElement, newNode(NodeOpName, $1, yyDollar[1].token, yyDollar[1].location))
+} | scope_element_content Or token_identifier
+{
+	$$ = appendNodeTo(&$1, newNode(NodeOpName, $3, yyDollar[3].token, yyDollar[3].location))
+};
+
 
 syntax_element_type_reference: LessThan token_identifier GreaterThan
 {
@@ -233,20 +278,6 @@ syntax_element_combination_content: syntax_element Or syntax_element
 | syntax_element_combination_content Or syntax_element
 {
 	$$ = appendNodeTo(&$1, $3)
-};
-
-syntax_element_structure: BraceOpen eol_required syntax_element_structure_content BraceClose
-{
-	$$ = $3
-};
-
-syntax_element_structure_content: syntax_statement eol_required
-{
-	$$ = appendNode(NodeOpSyntaxStructureElement, $1)
-}
-| syntax_element_structure_content syntax_statement eol_required
-{
-	$$ = appendNodeTo(&$1, $2)
 };
 
 syntax_element_keyword: token_identifier
@@ -308,16 +339,6 @@ syntax_element_argument_list_content: syntax_element_variable_keyword
 | syntax_element_argument_list_content Comma eol_allowed syntax_element_variable_keyword
 {
 	$$ = appendNodeTo(&$1, $4);
-};
-
-syntax_element_code_block: CodeBlock
-{
-	$$ = newNode(NodeOpSyntaxCodeBlockElement, nil, yyDollar[1].token, yyDollar[1].location)
-};
-
-syntax_element_expression_block: ExpressionBlock
-{
-	$$ = newNode(NodeOpSyntaxExpressionBlockElement, nil, yyDollar[1].token, yyDollar[1].location)
 };
 
 type_definition: token_identifier
