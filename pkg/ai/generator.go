@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	log "github.com/sirupsen/logrus"
+	"github.com/tislib/logi/pkg/ast/logi"
 	macroAst "github.com/tislib/logi/pkg/ast/macro"
 	"github.com/tislib/logi/pkg/vm"
 	"google.golang.org/api/option"
@@ -85,24 +86,10 @@ func (g *generator) generateStatementElementExample(element macroAst.SyntaxState
 	case macroAst.SyntaxStatementElementKindCombination:
 		var l = int32(len(element.Combination.Elements))
 		return g.generateStatementElementExample(element.Combination.Elements[rand.Int31()%l], 0)
-	case macroAst.SyntaxStatementElementKindStructure:
-		return g.generateStatementsExample(element.Structure.Statements, depth+1)
 	case macroAst.SyntaxStatementElementKindParameterList:
 		panic("not supported yet")
 	case macroAst.SyntaxStatementElementKindArgumentList:
 		panic("not supported yet")
-	case macroAst.SyntaxStatementElementKindCodeBlock:
-		return `
-{
-	if (a > b) {
-		return a
-	} else {
-		return b
-	}
-}
-`
-	case macroAst.SyntaxStatementElementKindExpressionBlock:
-		return `{ a + b }`
 	case macroAst.SyntaxStatementElementKindAttributeList:
 		panic("not supported yet")
 	}
@@ -131,7 +118,7 @@ func (g *generator) generateExampleValue(typeName string) string {
 	}
 }
 
-func (g *generator) GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error) {
+func (g *generator) GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]logi.Definition, error) {
 	// locate macro
 
 	macroContent := g.vm.GetMacroContent(macroName)
@@ -249,7 +236,7 @@ func (g *generator) AddExample(examples string) {
 	g.examples = append(g.examples, examples)
 }
 
-func (g *generator) validate(logiContent string) ([]vm.Definition, error) {
+func (g *generator) validate(logiContent string) ([]logi.Definition, error) {
 	logiContent = clean(logiContent)
 
 	fmt.Printf("Validating logi content:")
@@ -313,7 +300,7 @@ func clean(content string) string {
 type Generator interface {
 	AddExample(examples string)
 	AddExamples()
-	GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]vm.Definition, error)
+	GenerateLogiContentSimple(ctx context.Context, macroName string, description string) ([]logi.Definition, error)
 }
 
 type GeneratorOption func(*generator)

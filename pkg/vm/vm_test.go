@@ -244,14 +244,9 @@ func TestVmDynamic(t *testing.T) {
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			var g, err = New()
+			var g = New()
 
-			if err != nil {
-				t.Errorf("error: %v", err)
-				return
-			}
-
-			err = g.LoadMacroContent(tt.macro)
+			err := g.LoadMacroContent(tt.macro)
 
 			if err != nil {
 				t.Errorf("error: %v", err)
