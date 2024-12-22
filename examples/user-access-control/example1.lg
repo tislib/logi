@@ -1,0 +1,24 @@
+ user user1 {
+    username "Taleh"
+    password "taleh123"
+    roles [Role1, Role2]
+ }
+
+ role Role1 {
+    description "Role1 description"
+
+    permissions {
+        WRITE object1
+        READ object2
+        CRUD object4 <[owner]>
+        WRITE object1 properties [prop1, prop2]
+
+        when (isHoliday()) {
+            WRITE object1
+        }
+
+        when (isNotHoliday()) {
+            DENY_WRITE object2
+        }
+    }
+ }

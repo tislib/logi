@@ -54,7 +54,7 @@ func (p *recursiveStatementParser) parse(scope string) error {
 }
 
 func (p *recursiveStatementParser) reportMismatch(reason string) {
-	if p.pei >= p.maxMatch {
+	if p.pei >= p.maxMatch || p.mismatchCause == "" {
 		p.maxMatch = p.pei
 		p.bestMatch = &p.syntaxStatement
 		p.mismatchCause = reason
@@ -212,7 +212,17 @@ func (p *recursiveStatementParser) matchValue(syntaxStatementElement macroAst.Sy
 	}
 
 	currentElement := p.plainStatement.Elements[p.pei]
-	currentElementKind := currentElement.Value.Value.Kind
+	var value common.Value
+	if currentElement.Kind == plain.DefinitionStatementElementKindValue {
+		value = currentElement.Value.Value
+	} else if currentElement.Kind == plain.DefinitionStatementElementKindIdentifier {
+		value = common.StringValue(currentElement.Identifier.Identifier)
+	} else {
+		p.reportMismatch(fmt.Sprintf("expected value, got %s", currentElement.Kind))
+		return
+
+	}
+	currentElementKind := value.Kind
 
 	switch syntaxStatementElement.VariableKeyword.Type.Name {
 	case "int":
@@ -239,7 +249,7 @@ func (p *recursiveStatementParser) matchValue(syntaxStatementElement macroAst.Sy
 
 	p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
 		Name:  syntaxStatementElement.VariableKeyword.Name,
-		Value: currentElement.Value.Value,
+		Value: value,
 	})
 }
 
@@ -329,6 +339,7 @@ MainLoop:
 		p.maxMatch = maxMatch
 		p.bestMatch = bestMatch
 		p.reportMismatch(mismatchCause)
+		return
 	}
 
 	p.statement.SubStatements = append(p.statement.SubStatements, result)
