@@ -799,7 +799,7 @@ func TestParserFull(t *testing.T) {
 				
 					Strategy {
 						if (sma20 < sma50) {
-							Buy("SPY", 100)
+							Buy(quantity: 100, symbol: "SPY")
 						}
 					}
 				}

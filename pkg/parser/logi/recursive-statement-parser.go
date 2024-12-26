@@ -179,19 +179,50 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			break
 		}
 
-		// check if the parameter list is valid
-		if len(currentElement.ParameterList.Parameters) != len(syntaxStatementElement.ParameterList.Parameters) {
-			p.reportMismatch(fmt.Sprintf("expected %d parameters, got %d", len(syntaxStatementElement.ParameterList.Parameters), len(currentElement.ParameterList.Parameters)))
+		if len(currentElement.ParameterList.Names) != 0 {
+			parameterNameIdx := make(map[string]int)
+			parameterChecked := make(map[string]bool)
 
-			break
-		}
-		for idx, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
-			var param = currentElement.ParameterList.Parameters[idx]
-			p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
-				Name:       syntaxStatementElementParameter.Name,
-				Value:      param.AsValue(),
-				Expression: &param,
-			})
+			for idx, name := range currentElement.ParameterList.Names {
+				parameterNameIdx[name] = idx
+			}
+
+			for _, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
+				idx, ok := parameterNameIdx[syntaxStatementElementParameter.Name]
+
+				if !ok {
+					continue
+				}
+
+				var param = currentElement.ParameterList.Parameters[idx]
+
+				p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
+					Name:       syntaxStatementElementParameter.Name,
+					Value:      param.AsValue(),
+					Expression: &param,
+				})
+
+				parameterChecked[syntaxStatementElementParameter.Name] = true
+			}
+
+			for name := range parameterNameIdx {
+				if !parameterChecked[name] {
+					p.reportMismatch(fmt.Sprintf("parameter %s not found", name))
+					break
+				}
+			}
+		} else {
+			for idx, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
+				if idx >= len(currentElement.ParameterList.Parameters) {
+					break
+				}
+				var param = currentElement.ParameterList.Parameters[idx]
+				p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
+					Name:       syntaxStatementElementParameter.Name,
+					Value:      param.AsValue(),
+					Expression: &param,
+				})
+			}
 		}
 	case macroAst.SyntaxStatementElementKindCombination:
 		p.matchCombination(syntaxStatementElement)

@@ -164,6 +164,7 @@ type DefinitionStatementElementArgument struct {
 }
 
 type DefinitionStatementElementParameterList struct {
+	Names      []string            `json:"names"` // if the parameters are named parameters
 	Parameters []common.Expression `json:"parameters"`
 }
 
