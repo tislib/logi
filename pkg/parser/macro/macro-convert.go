@@ -285,6 +285,9 @@ func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.Synt
 	case NodeOpSyntaxKeywordElement:
 		result.Kind = astMacro.SyntaxStatementElementKindKeyword
 		result.KeywordDef = &astMacro.SyntaxStatementElementKeywordDef{Name: node.value.(string)}
+	case NodeOpSyntaxSymbolElement:
+		result.Kind = astMacro.SyntaxStatementElementKindSymbol
+		result.SymbolDef = &astMacro.SyntaxStatementElementSymbolDef{Name: node.value.(string)}
 	case NodeOpSyntaxTypeReferenceElement:
 		result.Kind = astMacro.SyntaxStatementElementKindTypeReference
 		result.TypeReference = &astMacro.SyntaxStatementElementTypeReference{Name: node.value.(string)}
@@ -315,6 +318,11 @@ func (c *converter) convertSyntaxStatementElement(node yaccNode) (*astMacro.Synt
 		result.Combination = &astMacro.SyntaxStatementElementCombination{Elements: elements}
 	case NodeOpSyntaxParameterListElement:
 		result.Kind = astMacro.SyntaxStatementElementKindParameterList
+
+		if node.value == true {
+			result.ParameterList = &astMacro.SyntaxStatementElementParameterList{Dynamic: true}
+			break
+		}
 
 		var parameters []astMacro.SyntaxStatementElementParameter
 

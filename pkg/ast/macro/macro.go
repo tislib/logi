@@ -69,6 +69,7 @@ type SyntaxStatementElementKind string
 
 const (
 	SyntaxStatementElementKindKeyword         SyntaxStatementElementKind = "Keyword"
+	SyntaxStatementElementKindSymbol          SyntaxStatementElementKind = "Symbol"
 	SyntaxStatementElementKindTypeReference   SyntaxStatementElementKind = "TypeReference"
 	SyntaxStatementElementKindVariableKeyword SyntaxStatementElementKind = "VariableKeyword"
 	SyntaxStatementElementKindCombination     SyntaxStatementElementKind = "Combination"
@@ -82,6 +83,7 @@ type SyntaxStatementElement struct {
 	Kind SyntaxStatementElementKind `json:"kind,omitempty"`
 
 	KeywordDef      *SyntaxStatementElementKeywordDef      `json:"keywordDef,omitempty"`
+	SymbolDef       *SyntaxStatementElementSymbolDef       `json:"symbolDef,omitempty"`
 	TypeReference   *SyntaxStatementElementTypeReference   `json:"typeReference,omitempty"`
 	VariableKeyword *SyntaxStatementElementVariableKeyword `json:"variableKeyword,omitempty"`
 	Combination     *SyntaxStatementElementCombination     `json:"combination,omitempty"`
@@ -96,6 +98,7 @@ type SyntaxStatementElementCombination struct {
 }
 
 type SyntaxStatementElementParameterList struct {
+	Dynamic    bool                              `json:"dynamic,omitempty"`
 	Parameters []SyntaxStatementElementParameter `json:"parameters,omitempty"`
 }
 
@@ -109,6 +112,10 @@ type SyntaxStatementElementArgumentList struct {
 }
 
 type SyntaxStatementElementKeywordDef struct {
+	Name string `json:"name,omitempty"`
+}
+
+type SyntaxStatementElementSymbolDef struct {
 	Name string `json:"name,omitempty"`
 }
 

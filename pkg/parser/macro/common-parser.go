@@ -35,6 +35,7 @@ const (
 	NodeOpScopes                       = "scopes"
 	NodeOpScopesItem                   = "scopes_item"
 	NodeOpSyntaxScopeElement           = "syntax_scope_element"
+	NodeOpSyntaxSymbolElement          = "syntax_symbol_element"
 )
 
 var emptyToken = lexer.Token{}

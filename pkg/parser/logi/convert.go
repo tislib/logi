@@ -101,6 +101,13 @@ func (c *converter) convertStatementElement(element yaccNode) (*plain.Definition
 		}
 		statementElement.Kind = plain.DefinitionStatementElementKindIdentifier
 		statementElement.Identifier = identifier
+	case NodeOpSyntaxSymbolElement:
+		symbol, err := c.convertSymbol(element)
+		if err != nil {
+			return statementElement, fmt.Errorf("failed to convert identifier: %w", err)
+		}
+		statementElement.Kind = plain.DefinitionStatementElementKindSymbol
+		statementElement.Symbol = symbol
 	case NodeOpValue:
 		value, err := c.convertValue(element)
 		if err != nil {
@@ -117,13 +124,6 @@ func (c *converter) convertStatementElement(element yaccNode) (*plain.Definition
 
 		statementElement.Kind = plain.DefinitionStatementElementKindArray
 		statementElement.Array = array
-	case NodeOpAttributeList:
-		attributeList, err := c.convertAttributeList(element)
-		if err != nil {
-			return statementElement, err
-		}
-		statementElement.Kind = plain.DefinitionStatementElementKindAttributeList
-		statementElement.AttributeList = attributeList
 	case NodeOpArgumentList:
 		argumentList, err := c.convertArgumentList(element)
 
@@ -364,22 +364,12 @@ func (c *converter) convertIdentifier(element yaccNode) (*plain.DefinitionStatem
 	return identifier, nil
 }
 
-func (c *converter) convertAttributeList(element yaccNode) (*plain.DefinitionStatementElementAttributeList, error) {
-	attributeList := new(plain.DefinitionStatementElementAttributeList)
+func (c *converter) convertSymbol(element yaccNode) (*plain.DefinitionStatementElementSymbol, error) {
+	identifier := new(plain.DefinitionStatementElementSymbol)
 
-	for _, child := range element.children {
-		switch child.op {
-		case NodeOpAttribute:
-			attribute, err := c.convertAttribute(child)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert attribute: %w", err)
-			}
-			attributeList.Attributes = append(attributeList.Attributes, *attribute)
-		}
-	}
+	identifier.Symbol = element.value.(string)
 
-	return attributeList, nil
-
+	return identifier, nil
 }
 
 func (c *converter) convertAttribute(element yaccNode) (*plain.DefinitionStatementElementAttribute, error) {

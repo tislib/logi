@@ -37,6 +37,7 @@ const (
 	NodeOpJsonObjectItemValue = "json_object_item_value"
 	NodeOpJsonArray           = "json_array"
 	NodeOpJsonIdentifier      = "json_identifier"
+	NodeOpSyntaxSymbolElement = "syntax_symbol_element"
 )
 
 type yaccNode struct {

@@ -32,7 +32,7 @@ import (
 
 %type<node> macro macro_signature macro_body syntax_definition syntax_body syntax_content type_definition types_definition_content
 %type<node> types_definition types_definition_body types_definition_content types_definition_statement
-%type<node> syntax_statement syntax_example syntax_examples syntax_elements syntax_element syntax_element_combination syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_parameter_list syntax_element_parameter_list_content scope_element scope_element_content
+%type<node> syntax_statement syntax_example syntax_examples syntax_elements syntax_element syntax_element_combination syntax_element_type_reference syntax_element_combination_content syntax_element_variable_keyword syntax_element_keyword syntax_element_symbol syntax_element_parameter_list syntax_element_parameter_list_content scope_element scope_element_content
 %type<node> syntax_element_argument_list syntax_element_argument_list_content syntax_element_attribute_list
 %type<node> syntax_element_attribute_list_content syntax_element_attribute_list_item value
 %type<node> scopes_definition scopes_definition_body scopes_definition_content scopes_definition_item
@@ -245,7 +245,7 @@ syntax_elements: syntax_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-syntax_element: scope_element | syntax_element_combination | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list ;
+syntax_element: scope_element | syntax_element_combination | syntax_element_type_reference | syntax_element_keyword | syntax_element_variable_keyword | syntax_element_parameter_list | syntax_element_argument_list | syntax_element_attribute_list | syntax_element_symbol ;
 
 scope_element: BraceOpen scope_element_content BraceClose
 {
@@ -285,6 +285,17 @@ syntax_element_keyword: token_identifier
 	$$ = newNode(NodeOpSyntaxKeywordElement, $1, yyDollar[1].token, yyDollar[1].location)
 };
 
+syntax_element_symbol: GreaterThan
+{
+	$$ = newNode(NodeOpSyntaxSymbolElement, ">", yyDollar[1].token, yyDollar[1].location)
+}
+| LessThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "<", yyDollar[1].token, yyDollar[1].location)
+}
+| Colon {
+	$$ = newNode(NodeOpSyntaxSymbolElement, ":", yyDollar[1].token, yyDollar[1].location)
+};
+
 syntax_element_variable_keyword: LessThan token_identifier type_definition GreaterThan
 {
 	$$ = appendNode(NodeOpSyntaxVariableKeywordElement, newNode(NodeOpName, $2, yyDollar[2].token, yyDollar[2].location), $3)
@@ -293,6 +304,10 @@ syntax_element_variable_keyword: LessThan token_identifier type_definition Great
 syntax_element_parameter_list: ParenOpen syntax_element_parameter_list_content ParenClose
 {
 	$$ = $2
+}
+| ParenOpen three_dots ParenClose
+{
+	$$ = newNode(NodeOpSyntaxParameterListElement, true, emptyToken, emptyLocation)
 };
 
 syntax_element_parameter_list_content: syntax_element_variable_keyword
@@ -302,6 +317,10 @@ syntax_element_parameter_list_content: syntax_element_variable_keyword
 | syntax_element_parameter_list_content Comma eol_allowed syntax_element_variable_keyword
 {
 	$$ = appendNodeTo(&$1, $4);
+}
+|
+{
+	$$ = newNode(NodeOpSyntaxParameterListElement, nil, emptyToken, emptyLocation)
 };
 
 syntax_element_attribute_list: BracketOpen eol_allowed syntax_element_attribute_list_content eol_allowed BracketClose

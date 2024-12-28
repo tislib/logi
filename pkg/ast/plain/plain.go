@@ -48,10 +48,10 @@ type DefinitionStatementElementKind string
 
 const (
 	DefinitionStatementElementKindIdentifier    DefinitionStatementElementKind = "Identifier"
+	DefinitionStatementElementKindSymbol        DefinitionStatementElementKind = "Symbol"
 	DefinitionStatementElementKindValue         DefinitionStatementElementKind = "Value"
 	DefinitionStatementElementKindArray         DefinitionStatementElementKind = "Array"
 	DefinitionStatementElementKindStruct        DefinitionStatementElementKind = "Struct"
-	DefinitionStatementElementKindAttributeList DefinitionStatementElementKind = "AttributeList"
 	DefinitionStatementElementKindArgumentList  DefinitionStatementElementKind = "ArgumentList"
 	DefinitionStatementElementKindParameterList DefinitionStatementElementKind = "ParameterList"
 	DefinitionStatementElementKindExpression    DefinitionStatementElementKind = "Expression"
@@ -61,10 +61,10 @@ type DefinitionStatementElement struct {
 	Kind DefinitionStatementElementKind `json:"kind"`
 
 	Identifier    *DefinitionStatementElementIdentifier    `json:"identifier,omitempty"`
+	Symbol        *DefinitionStatementElementSymbol        `json:"symbol,omitempty"`
 	Value         *DefinitionStatementElementValue         `json:"value,omitempty"`
 	Array         *DefinitionStatementElementArray         `json:"array,omitempty"`
 	Struct        *DefinitionStatementElementStruct        `json:"struct,omitempty"`
-	AttributeList *DefinitionStatementElementAttributeList `json:"attributeList,omitempty"`
 	ArgumentList  *DefinitionStatementElementArgumentList  `json:"argumentList,omitempty"`
 	ParameterList *DefinitionStatementElementParameterList `json:"parameterList,omitempty"`
 	Expression    *common.Expression                       `json:"expression,omitempty"`
@@ -80,8 +80,6 @@ func (e DefinitionStatementElement) AsValue() common.Value {
 		return e.Value.Value
 	case DefinitionStatementElementKindArray:
 		return e.Array.AsValue()
-	case DefinitionStatementElementKindAttributeList:
-		return e.AttributeList.AsValue()
 	case DefinitionStatementElementKindArgumentList:
 		return e.ArgumentList.AsValue()
 	case DefinitionStatementElementKindParameterList:
@@ -93,6 +91,10 @@ func (e DefinitionStatementElement) AsValue() common.Value {
 
 type DefinitionStatementElementIdentifier struct {
 	Identifier string `json:"identifier"`
+}
+
+type DefinitionStatementElementSymbol struct {
+	Symbol string `json:"symbol"`
 }
 
 func (i DefinitionStatementElementIdentifier) AsValue() common.Value {
@@ -119,24 +121,6 @@ func (l DefinitionStatementElementArray) AsValue() common.Value {
 	}
 
 	return common.ArrayValue(arr...)
-}
-
-type DefinitionStatementElementAttributeList struct {
-	Attributes []DefinitionStatementElementAttribute `json:"attributes"`
-}
-
-func (l DefinitionStatementElementAttributeList) AsValue() common.Value {
-	var valueMap = make(map[string]common.Value)
-
-	for _, a := range l.Attributes {
-		if a.Value != nil {
-			valueMap[a.Name] = *a.Value
-		} else {
-			valueMap[a.Name] = common.BooleanValue(true)
-		}
-	}
-
-	return common.MapValue(valueMap)
 }
 
 type DefinitionStatementElementAttribute struct {
