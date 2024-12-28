@@ -111,7 +111,7 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		}
 	case macroAst.SyntaxStatementElementKindSymbol:
 		if currentElement.Kind != plain.DefinitionStatementElementKindSymbol {
-			p.reportMismatch(fmt.Sprintf("expected keyword (%s), got %s (%v)", syntaxStatementElement.KeywordDef.Name, currentElement.Kind, currentElement))
+			p.reportMismatch(fmt.Sprintf("expected keyword (%s), got %s (%v)", syntaxStatementElement.SymbolDef.Name, currentElement.Kind, currentElement))
 			break
 		} else if currentElement.Symbol.Symbol != syntaxStatementElement.SymbolDef.Name {
 			p.reportMismatch(fmt.Sprintf("expected symbol (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))

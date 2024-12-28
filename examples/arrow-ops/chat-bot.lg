@@ -1,0 +1,11 @@
+chatbot MyChatbot {
+    intent Greeting {
+        pattern => "Hello"
+        response => "Hi there!"
+    }
+
+    intent Farewell {
+        pattern => "Goodbye"
+        response => "See you later!"
+    }
+}
