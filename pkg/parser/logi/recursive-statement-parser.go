@@ -54,7 +54,7 @@ func (p *recursiveStatementParser) parse(scope string) error {
 }
 
 func (p *recursiveStatementParser) reportMismatch(reason string) {
-	if p.pei >= p.maxMatch {
+	if p.pei >= p.maxMatch || p.mismatchCause == "" {
 		p.maxMatch = p.pei
 		p.bestMatch = &p.syntaxStatement
 		p.mismatchCause = reason
@@ -109,6 +109,14 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 		if p.statement.Command == "" && p.pei == 0 {
 			p.statement.Command = syntaxStatementElement.KeywordDef.Name
 		}
+	case macroAst.SyntaxStatementElementKindSymbol:
+		if currentElement.Kind != plain.DefinitionStatementElementKindSymbol {
+			p.reportMismatch(fmt.Sprintf("expected keyword (%s), got %s (%v)", syntaxStatementElement.KeywordDef.Name, currentElement.Kind, currentElement))
+			break
+		} else if currentElement.Symbol.Symbol != syntaxStatementElement.SymbolDef.Name {
+			p.reportMismatch(fmt.Sprintf("expected symbol (%s), got %s", syntaxStatementElement.KeywordDef.Name, currentElement.Identifier.Identifier))
+			break
+		}
 	case macroAst.SyntaxStatementElementKindTypeReference:
 		p.matchTypeReference(syntaxStatementElement, currentElement)
 	case macroAst.SyntaxStatementElementKindVariableKeyword:
@@ -131,25 +139,65 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			p.reportMismatch(fmt.Sprintf("expected variable keyword (%s), got %s", syntaxStatementElement.VariableKeyword.Name, currentElement.Kind))
 		}
 	case macroAst.SyntaxStatementElementKindAttributeList:
-		if currentElement.Kind != plain.DefinitionStatementElementKindAttributeList {
+		if currentElement.Kind != plain.DefinitionStatementElementKindArray {
 			p.reportMismatch(fmt.Sprintf("expected attribute list, got %s", currentElement.Kind))
 
 			break
 		}
 
-		// check if the attribute list is valid
-		err := isValidAttributeList(currentElement.AttributeList, syntaxStatementElement.AttributeList)
-
-		if err != nil {
-			p.reportMismatch(fmt.Sprintf(err.Error()))
-			break
+		var attributeMap = make(map[string]macroAst.SyntaxStatementElementAttribute)
+		for _, attr := range syntaxStatementElement.AttributeList.Attributes {
+			attributeMap[attr.Name] = attr
 		}
 
-		for _, attribute := range currentElement.AttributeList.Attributes {
-			p.statement.Attributes = append(p.statement.Attributes, logiAst.Attribute{
-				Name:  attribute.Name,
-				Value: attribute.Value,
-			})
+		for _, item := range currentElement.Array.Items {
+			if len(item.Elements) == 1 {
+				var elem0 = item.Elements[0]
+
+				if elem0.Kind != plain.DefinitionStatementElementKindIdentifier {
+					p.reportMismatch(fmt.Sprintf("expected attribute list, got %v", currentElement.AsValue().AsInterface()))
+					break
+				}
+
+				attr, ok := attributeMap[elem0.Identifier.Identifier]
+
+				if !ok {
+					p.reportMismatch(fmt.Sprintf("attribute %s not found", elem0.Identifier.Identifier))
+					break
+				}
+
+				if attr.Type.Name != "bool" {
+					p.reportMismatch(fmt.Sprintf("expected bool attribute got %s", attr.Type.Name))
+					break
+				}
+
+				p.statement.Attributes = append(p.statement.Attributes, logiAst.Attribute{
+					Name: elem0.Identifier.Identifier,
+				})
+			} else if len(item.Elements) == 2 {
+				var elem0 = item.Elements[0]
+				var elem1 = item.Elements[1]
+
+				if elem0.Kind != plain.DefinitionStatementElementKindIdentifier {
+					p.reportMismatch(fmt.Sprintf("expected attribute list, got %v", currentElement.AsValue().AsInterface()))
+					break
+				}
+
+				_, ok := attributeMap[elem0.Identifier.Identifier]
+
+				if !ok {
+					p.reportMismatch(fmt.Sprintf("attribute %s not found", elem0.Identifier.Identifier))
+					break
+				}
+
+				p.statement.Attributes = append(p.statement.Attributes, logiAst.Attribute{
+					Name:  elem0.Identifier.Identifier,
+					Value: common.PointerValue(elem1.AsValue()),
+				})
+			} else {
+				p.reportMismatch(fmt.Sprintf("expected attribute list, got %v", currentElement.AsValue().AsInterface()))
+				break
+			}
 		}
 	case macroAst.SyntaxStatementElementKindArgumentList:
 		if currentElement.Kind != plain.DefinitionStatementElementKindArgumentList {
@@ -179,19 +227,66 @@ func (p *recursiveStatementParser) matchNextElement(syntaxStatementElement macro
 			break
 		}
 
-		// check if the parameter list is valid
-		if len(currentElement.ParameterList.Parameters) != len(syntaxStatementElement.ParameterList.Parameters) {
-			p.reportMismatch(fmt.Sprintf("expected %d parameters, got %d", len(syntaxStatementElement.ParameterList.Parameters), len(currentElement.ParameterList.Parameters)))
+		if len(currentElement.ParameterList.Names) != 0 {
+			parameterNameIdx := make(map[string]int)
+			parameterChecked := make(map[string]bool)
 
-			break
-		}
-		for idx, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
-			var param = currentElement.ParameterList.Parameters[idx]
-			p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
-				Name:       syntaxStatementElementParameter.Name,
-				Value:      param.AsValue(),
-				Expression: &param,
-			})
+			if !syntaxStatementElement.ParameterList.Dynamic {
+				for idx, name := range currentElement.ParameterList.Names {
+					parameterNameIdx[name] = idx
+				}
+
+				for _, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
+					idx, ok := parameterNameIdx[syntaxStatementElementParameter.Name]
+
+					if !ok {
+						continue
+					}
+
+					var param = currentElement.ParameterList.Parameters[idx]
+
+					p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
+						Name:       syntaxStatementElementParameter.Name,
+						Value:      param.AsValue(),
+						Expression: &param,
+					})
+
+					parameterChecked[syntaxStatementElementParameter.Name] = true
+				}
+
+				for name := range parameterNameIdx {
+					if !parameterChecked[name] {
+						p.reportMismatch(fmt.Sprintf("parameter %s not found", name))
+						break
+					}
+				}
+			} else {
+				for idx, name := range currentElement.ParameterList.Names {
+					var param = currentElement.ParameterList.Parameters[idx]
+
+					p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
+						Name:       name,
+						Value:      param.AsValue(),
+						Expression: &param,
+					})
+				}
+			}
+		} else {
+			if len(syntaxStatementElement.ParameterList.Parameters) > 0 && syntaxStatementElement.ParameterList.Dynamic {
+				p.reportMismatch(fmt.Sprintf("positional parameters are not allowed in dynamic parameter list"))
+				break
+			}
+			for idx, syntaxStatementElementParameter := range syntaxStatementElement.ParameterList.Parameters {
+				if idx >= len(currentElement.ParameterList.Parameters) {
+					break
+				}
+				var param = currentElement.ParameterList.Parameters[idx]
+				p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
+					Name:       syntaxStatementElementParameter.Name,
+					Value:      param.AsValue(),
+					Expression: &param,
+				})
+			}
 		}
 	case macroAst.SyntaxStatementElementKindCombination:
 		p.matchCombination(syntaxStatementElement)
@@ -212,7 +307,17 @@ func (p *recursiveStatementParser) matchValue(syntaxStatementElement macroAst.Sy
 	}
 
 	currentElement := p.plainStatement.Elements[p.pei]
-	currentElementKind := currentElement.Value.Value.Kind
+	var value common.Value
+	if currentElement.Kind == plain.DefinitionStatementElementKindValue {
+		value = currentElement.Value.Value
+	} else if currentElement.Kind == plain.DefinitionStatementElementKindIdentifier {
+		value = common.StringValue(currentElement.Identifier.Identifier)
+	} else {
+		p.reportMismatch(fmt.Sprintf("expected value, got %s", currentElement.Kind))
+		return
+
+	}
+	currentElementKind := value.Kind
 
 	switch syntaxStatementElement.VariableKeyword.Type.Name {
 	case "int":
@@ -239,7 +344,7 @@ func (p *recursiveStatementParser) matchValue(syntaxStatementElement macroAst.Sy
 
 	p.statement.Parameters = append(p.statement.Parameters, logiAst.Parameter{
 		Name:  syntaxStatementElement.VariableKeyword.Name,
-		Value: currentElement.Value.Value,
+		Value: value,
 	})
 }
 
@@ -329,6 +434,7 @@ MainLoop:
 		p.maxMatch = maxMatch
 		p.bestMatch = bestMatch
 		p.reportMismatch(mismatchCause)
+		return
 	}
 
 	p.statement.SubStatements = append(p.statement.SubStatements, result)

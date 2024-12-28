@@ -33,6 +33,7 @@ import (
 %type<node> definition_statement_element_identifier definition_statement_element_array definition_statement_element_array_content definition_statement_element_struct definition_statement_element_value definition_statement_element_attribute_list definition_statement_element_attribute_list_content definition_statement_element_attribute_list_item
 %type<node> definition_statement_element_argument_list definition_statement_element_argument_list_content definition_statement_element_argument_list_item
 %type<node> definition_statement_element_parameter_list definition_statement_element_parameter_list_content definition_statement_element_parameter_list_item
+%type<node> definition_statement_element_named_parameter_list definition_statement_element_named_parameter_list_content definition_statement_element_named_parameter_list_item definition_statement_element_symbol
 %type<node> expression literal variable binary_expression function_call
 %type<node> definition_statement_element_json json_object json_object_content json_object_item json_array json_value json_array_content
 %type<node> function_params
@@ -93,7 +94,7 @@ definition_statement: definition_statement_element
 	$$ = appendNodeTo(&$1, $2)
 };
 
-definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_struct | definition_statement_element_json | definition_statement_element_parameter_list | definition_statement_element_attribute_list | definition_statement_element_argument_list;
+definition_statement_element: definition_statement_element_identifier | definition_statement_element_value | definition_statement_element_array | definition_statement_element_struct | definition_statement_element_json | definition_statement_element_parameter_list | definition_statement_element_named_parameter_list | definition_statement_element_argument_list | definition_statement_element_symbol;
 
 definition_statement_element_identifier: token_identifier
 {
@@ -222,9 +223,9 @@ definition_statement_element_attribute_list_item: token_identifier
 	$$ = newNode(NodeOpAttribute, $1, yyDollar[1].token, yyDollar[1].location, $2)
 };
 
-definition_statement_element_argument_list: ParenOpen definition_statement_element_argument_list_content ParenClose
+definition_statement_element_argument_list: ParenOpen ParenOpen definition_statement_element_argument_list_content ParenClose ParenClose
 {
-	$$ = $2
+	$$ = $3
 }
 | ParenOpen ParenClose
 {
@@ -266,6 +267,46 @@ definition_statement_element_parameter_list_content: definition_statement_elemen
 definition_statement_element_parameter_list_item: expression
 {
 	$$ = $1
+};
+
+definition_statement_element_named_parameter_list: ParenOpen definition_statement_element_named_parameter_list_content ParenClose
+{
+	$$ = $2
+}
+| ParenOpen ParenClose
+{
+	$$ = appendNode(NodeOpNamedParameterList)
+};
+
+definition_statement_element_named_parameter_list_content: definition_statement_element_named_parameter_list_item
+{
+	$$ = appendNode(NodeOpNamedParameterList, $1)
+}
+| definition_statement_element_named_parameter_list_content Comma eol_allowed definition_statement_element_named_parameter_list_item
+{
+	$$ = appendNodeTo(&$1, $4)
+};
+
+definition_statement_element_named_parameter_list_item: token_identifier Colon expression
+{
+	$$ = newNode(NodeOpNamedParameter, $1, yyDollar[1].token, yyDollar[1].location, $3)
+};
+
+definition_statement_element_symbol: GreaterThan
+{
+	$$ = newNode(NodeOpSyntaxSymbolElement, ">", yyDollar[1].token, yyDollar[1].location)
+}
+| LessThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "<", yyDollar[1].token, yyDollar[1].location)
+}
+| Equal GreaterThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "=>", yyDollar[1].token, yyDollar[1].location)
+}
+| Minus GreaterThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "->", yyDollar[1].token, yyDollar[1].location)
+}
+| Colon {
+	$$ = newNode(NodeOpSyntaxSymbolElement, ":", yyDollar[1].token, yyDollar[1].location)
 };
 
 

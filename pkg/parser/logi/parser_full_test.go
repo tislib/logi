@@ -29,8 +29,8 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				entity User {
-					id int <[primary, autoincrement]>
-					name string <[required, default "John Doe"]>
+					id int [primary, autoincrement]
+					name string [required, default "John Doe"]
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -85,6 +85,47 @@ func TestParserFull(t *testing.T) {
 				},
 			},
 		},
+		"simple symbol parse": {
+			macroInput: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello: (...)
+					}
+				}
+`,
+			input: `
+				simple User {
+					hello: (a: b)
+				}
+			`,
+			expected: &logiAst.Ast{
+				Definitions: []logiAst.Definition{
+					{
+						MacroName: "simple",
+						Name:      "User",
+						Statements: []logiAst.Statement{
+							{
+								Command: "hello",
+								Parameters: []logiAst.Parameter{
+									{
+										Name:  "a",
+										Value: common.StringValue("b"),
+										Expression: &common.Expression{
+											Kind: common.VariableKind,
+											Variable: &common.Variable{
+												Name: "b",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"simple parse comments": {
 			macroInput: `
 				macro entity {
@@ -100,8 +141,8 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				entity User {
-					id int <[primary, autoincrement]>
-					name string <[required, default "John Doe"]>
+					id int [primary, autoincrement]
+					name string [required, default "John Doe"]
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -417,8 +458,8 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				entity User {
-					int id <[primary, autoincrement]>
-					string name <[required, default "John Doe"]>
+					int id [primary, autoincrement]
+					string name [required, default "John Doe"]
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -485,7 +526,7 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				interface UserService {
-					createUser (name string, age int) User
+					createUser ((name string, age int)) User
 				}
 			`,
 			expected: &logiAst.Ast{
@@ -543,7 +584,7 @@ func TestParserFull(t *testing.T) {
 `,
 			input: `
 				implementation UserServiceImpl {
-					createUser (name string, age int) User {
+					createUser ((name string, age int)) User {
 						return 0
 					}
 				}
@@ -784,7 +825,6 @@ func TestParserFull(t *testing.T) {
 					scopes { 
 						strategy {
 							if (<condition bool>) { strategy }
-
 							Buy(<symbol string>, <quantity int>)	
 							Sell(<symbol string>, <quantity int>)	
 						}
@@ -799,7 +839,7 @@ func TestParserFull(t *testing.T) {
 				
 					Strategy {
 						if (sma20 < sma50) {
-							Buy("SPY", 100)
+							Buy(quantity: 100, symbol: "SPY")
 						}
 					}
 				}

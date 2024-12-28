@@ -18,8 +18,8 @@ func TestSyntaxLogi(t *testing.T) {
 		"simple syntax logi": {
 			input: `
 				entity User {
-					id int <[primary, autoincrement]>
-					name string <[required, default "John Doe"]>
+					id int [primary, autoincrement]
+					name string [required, default "John Doe"]
 				}
 			`,
 			expected: &plain.Ast{
@@ -43,14 +43,28 @@ func TestSyntaxLogi(t *testing.T) {
 										},
 									},
 									{
-										Kind: plain.DefinitionStatementElementKindAttributeList,
-										AttributeList: &plain.DefinitionStatementElementAttributeList{
-											Attributes: []plain.DefinitionStatementElementAttribute{
+										Kind: plain.DefinitionStatementElementKindArray,
+										Array: &plain.DefinitionStatementElementArray{
+											Items: []plain.DefinitionStatement{
 												{
-													Name: "primary",
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "primary",
+															},
+														},
+													},
 												},
 												{
-													Name: "autoincrement",
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "autoincrement",
+															},
+														},
+													},
 												},
 											},
 										},
@@ -72,15 +86,34 @@ func TestSyntaxLogi(t *testing.T) {
 										},
 									},
 									{
-										Kind: plain.DefinitionStatementElementKindAttributeList,
-										AttributeList: &plain.DefinitionStatementElementAttributeList{
-											Attributes: []plain.DefinitionStatementElementAttribute{
+										Kind: plain.DefinitionStatementElementKindArray,
+										Array: &plain.DefinitionStatementElementArray{
+											Items: []plain.DefinitionStatement{
 												{
-													Name: "required",
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "required",
+															},
+														},
+													},
 												},
 												{
-													Name:  "default",
-													Value: common.PointerValue(common.StringValue("John Doe")),
+													Elements: []plain.DefinitionStatementElement{
+														{
+															Kind: plain.DefinitionStatementElementKindIdentifier,
+															Identifier: &plain.DefinitionStatementElementIdentifier{
+																Identifier: "default",
+															},
+														},
+														{
+															Kind: plain.DefinitionStatementElementKindValue,
+															Value: &plain.DefinitionStatementElementValue{
+																Value: common.StringValue("John Doe"),
+															},
+														},
+													},
 												},
 											},
 										},
@@ -153,7 +186,7 @@ func TestSyntaxLogi(t *testing.T) {
 		"definition with arguments": {
 			input: `
 				service UserService {
-					createUser (name string, age int)
+					createUser ((name string, age int))
 				}
 			`,
 			expected: &plain.Ast{
@@ -199,7 +232,7 @@ func TestSyntaxLogi(t *testing.T) {
 		"definition with code block and arguments": {
 			input: `
 				service UserService {
-					createUser (name string, age int) int {
+					createUser ((name string, age int)) int {
 						if (age < 18) {
 							return 0
 						}

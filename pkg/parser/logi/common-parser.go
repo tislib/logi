@@ -26,16 +26,18 @@ const (
 	NodeOpBinaryExpression    = "binary_expression"
 	NodeOpFunctionCall        = "function_call"
 	NodeOpFunctionParams      = "function_params"
-	NodeOpCodeBlock           = "code_block"
 	NodeOpOperator            = "operator"
 	NodeOpArray               = "array"
 	NodeOpParameterList       = "parameter_list"
+	NodeOpNamedParameterList  = "named_parameter_list"
+	NodeOpNamedParameter      = "named_parameter"
 	NodeOpStruct              = "struct"
 	NodeOpJsonObject          = "json_object"
 	NodeOpJsonObjectItem      = "json_object_item"
 	NodeOpJsonObjectItemValue = "json_object_item_value"
 	NodeOpJsonArray           = "json_array"
 	NodeOpJsonIdentifier      = "json_identifier"
+	NodeOpSyntaxSymbolElement = "syntax_symbol_element"
 )
 
 type yaccNode struct {

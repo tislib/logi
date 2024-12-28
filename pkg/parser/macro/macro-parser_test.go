@@ -243,6 +243,90 @@ func TestSyntaxMacro(t *testing.T) {
 				},
 			},
 		},
+		"syntax macro with dynamic parameter list statement": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello (...)
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindParameterList,
+											ParameterList: &astMacro.SyntaxStatementElementParameterList{
+												Dynamic: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"syntax macro with symbol element": {
+			input: `
+				macro simple {
+					kind Syntax
+					
+					syntax {
+						hello: (...)
+					}
+				}
+			`,
+			expected: &astMacro.Ast{
+				Macros: []astMacro.Macro{
+					{
+						Name: "simple",
+						Kind: astMacro.KindSyntax,
+						Syntax: astMacro.Syntax{
+							Statements: []astMacro.SyntaxStatement{
+								{
+									Elements: []astMacro.SyntaxStatementElement{
+										{
+											Kind: astMacro.SyntaxStatementElementKindKeyword,
+											KeywordDef: &astMacro.SyntaxStatementElementKeywordDef{
+												Name: "hello",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindSymbol,
+											SymbolDef: &astMacro.SyntaxStatementElementSymbolDef{
+												Name: ":",
+											},
+										},
+										{
+											Kind: astMacro.SyntaxStatementElementKindParameterList,
+											ParameterList: &astMacro.SyntaxStatementElementParameterList{
+												Dynamic: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"syntax macro with argument list statement": {
 			input: `
 				macro simple {

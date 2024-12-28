@@ -59,15 +59,6 @@ func (s *lexer) Next() (token Token, err error) {
 }
 
 func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool) {
-	// StartsWith   string
-	//	EndsWith     string
-	//	Equals       string
-	//	IsWhiteSpace bool
-	//	IsAlphaNum   bool
-	//	IsAlpha      bool
-	//	IsDigit      bool
-	//	IsEol        bool
-
 	var isSingleChar = config.IsEol
 	var needsToLookAhead = !isSingleChar && (config.StartsWith != "" || config.EndsWith != "" || config.Equals != "")
 	var isLengthKnown = config.Equals != "" || config.EqualsCaseInsensitive != "" || isSingleChar || len(config.EqualOneOf) > 0
@@ -254,7 +245,7 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 
 			for {
 				r := s.read()
-				if r == '"' || r == 0 {
+				if r == '"' || r == 0 || r == '\n' {
 					break
 				}
 				data += string(r)
@@ -267,7 +258,20 @@ func (s *lexer) matchToken(config TokenConfig, startingChar rune) (*Token, bool)
 
 			for {
 				r := s.read()
-				if r == '\'' || r == 0 {
+				if r == '\'' || r == 0 || r == '\n' {
+					break
+				}
+				data += string(r)
+			}
+
+			return &Token{Id: config.Id, Value: data}, true
+		}
+		if startingChar == '`' {
+			var data = ""
+
+			for {
+				r := s.read()
+				if r == '`' || r == 0 {
 					break
 				}
 				data += string(r)

@@ -1,0 +1,32 @@
+macro user {
+    kind Syntax
+
+    syntax {
+        username <username string>
+        password <password string>
+        roles <roles array<Name>>
+    }
+}
+
+macro role {
+    kind Syntax
+
+    syntax {
+        description <description string>
+        permissions { permissions | conditionalPermissions}
+    }
+
+    scopes {
+        permissions {
+            WRITE <object Name>
+            DENY_WRITE <object Name>
+            WRITE <object Name> properties <properties array<Name>>
+            READ <object Name>
+            CRUD <object Name> [owner bool]
+        }
+
+        conditionalPermissions {
+            when (<condition bool>) { permissions }
+        }
+    }
+}

@@ -100,7 +100,6 @@ func (h *handler) tokenizeStatementElements(element plain.DefinitionStatementEle
 			tl = append(tl, h.tokenizeStatement(item)...)
 		}
 		return tl
-	case plain.DefinitionStatementElementKindAttributeList:
 	case plain.DefinitionStatementElementKindArgumentList:
 	case plain.DefinitionStatementElementKindParameterList:
 	}
