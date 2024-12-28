@@ -299,6 +299,12 @@ definition_statement_element_symbol: GreaterThan
 | LessThan {
 	$$ = newNode(NodeOpSyntaxSymbolElement, "<", yyDollar[1].token, yyDollar[1].location)
 }
+| Equal GreaterThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "=>", yyDollar[1].token, yyDollar[1].location)
+}
+| Minus GreaterThan {
+	$$ = newNode(NodeOpSyntaxSymbolElement, "->", yyDollar[1].token, yyDollar[1].location)
+}
 | Colon {
 	$$ = newNode(NodeOpSyntaxSymbolElement, ":", yyDollar[1].token, yyDollar[1].location)
 };
