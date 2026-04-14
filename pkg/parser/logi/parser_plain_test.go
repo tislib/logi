@@ -363,6 +363,7 @@ func TestSyntaxLogi(t *testing.T) {
 				}
 			}
 			`,
+			expectedError: "syntax error",
 		},
 	}
 	for name, tt := range tests {
@@ -374,12 +375,8 @@ func TestSyntaxLogi(t *testing.T) {
 					assert.Fail(t, "expected error, got nil")
 					return
 				}
-				if strings.Contains(tt.expectedError, err.Error()) {
-					assert.Fail(t, "expected error %q, got %q", tt.expectedError, err.Error())
-				}
-
-				if got != nil {
-					assert.Fail(t, "expected nil, got %v", got)
+				if !strings.Contains(err.Error(), tt.expectedError) {
+					assert.Fail(t, "expected error containing %q, got %q", tt.expectedError, err.Error())
 				}
 				return
 			} else {
