@@ -348,6 +348,22 @@ func TestSyntaxLogi(t *testing.T) {
 				},
 			},
 		},
+		"experiment-1": {
+			input: `
+				user TalehIbrahimli {
+				name "Taleh Ibrahimli"
+				age 30 // Assuming an age for Taleh
+				Auth {
+					username "taleh.ibrahimli" // Picked username
+					password "password" // Password must be 8 characters long
+					Token {
+						accessToken "access_token_taleh"
+						refreshToken "refresh_token_taleh"
+					}
+				}
+			}
+			`,
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
